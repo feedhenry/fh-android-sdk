@@ -1,2 +1,4 @@
-bin/*
-gen/*
+sdk/bin/*
+sdk/gen/*
+example/bin/*
+example/gen/*
