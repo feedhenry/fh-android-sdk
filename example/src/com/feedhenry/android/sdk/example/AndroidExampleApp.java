@@ -51,8 +51,5 @@ public class AndroidExampleApp extends ListActivity {
     } catch(Exception e){
       Log.e(TAG, e.getMessage(), e);
     }
-    
-    
   }
-
 }

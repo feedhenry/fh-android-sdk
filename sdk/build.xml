@@ -19,7 +19,6 @@
           <arg value="describe"/>
           <arg value='--match=${package.name}-*'/>
           <arg value="--tags"/>
-          <arg value="--dirty"/>
           <arg value="--always"/>
         </exec>
         <echo message="${package.versionname}" />
@@ -76,7 +75,7 @@
             <attribute name="Implementation-Version" value="${package.versionname}"/> 
         </manifest>
 
-        <jar destfile="${dist.dir}/${package.versionname}.jar" basedir="build/classes" includes="com/feedhenry/sdk/**/*.class,com/loopj/android/http/**/*.class" manifest="${dist.dir}/MANIFEST.MF" />
+        <jar destfile="${dist.dir}/fh-android-sdk.jar" basedir="build/classes" includes="com/feedhenry/sdk/**/*.class,com/loopj/android/http/**/*.class" manifest="${dist.dir}/MANIFEST.MF" />
     </target>
 
     <!-- Clean out the build files -->
