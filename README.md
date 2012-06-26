@@ -10,7 +10,10 @@ Then you can clone the repo, go to the *sdk* directory, create a new file called
 
 Then run the ant task:
 
-```ant```
+```
+ant
+
+```
 
 This will compile the source code and genrate a jar file in the *dist* directory
 
