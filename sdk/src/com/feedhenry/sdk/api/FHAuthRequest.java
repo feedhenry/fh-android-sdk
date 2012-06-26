@@ -10,11 +10,20 @@ import android.util.Log;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHRemote;
 
+/**
+ * The request for calling the authentication function
+ *
+ */
+
 public class FHAuthRequest extends FHRemote {
 
   private static final String AUTH_PATH = "arm/user/auth";
   private String mUDID;
   
+  /**
+   * Constructor
+   * @param pProps the app configurations
+   */
   public FHAuthRequest(Properties pProps){
     super(pProps);
   }

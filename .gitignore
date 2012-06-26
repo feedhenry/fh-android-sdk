@@ -2,3 +2,7 @@ sdk/bin/*
 sdk/gen/*
 example/bin/*
 example/gen/*
+sdk/local.properties
+sdk/dist/*
+sdk/build/*
+sdk/build.num

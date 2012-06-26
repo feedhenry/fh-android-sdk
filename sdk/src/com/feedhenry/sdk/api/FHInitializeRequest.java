@@ -10,16 +10,28 @@ import android.util.Log;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHRemote;
 
+/**
+ * The request for calling the initialization function
+ */
 public class FHInitializeRequest extends FHRemote {
 
   private String mUDID;
+  private JSONObject mInitData;
   
+  /**
+   * Constructor
+   * @param pProps the app configuration
+   */
   public FHInitializeRequest(Properties pProps) {
     super(pProps);
   }
   
   public void setUDID(String pUDID){
     mUDID = pUDID;
+  }
+  
+  public void setInitData(JSONObject pData){
+    mInitData = pData;
   }
 
   @Override
@@ -30,6 +42,9 @@ public class FHInitializeRequest extends FHRemote {
   @Override
   protected JSONObject getRequestArgs(String pDomain, String pAppGuid, String pInstGuid) {
     JSONObject reqData = new JSONObject();
+    if(null != mInitData){
+      reqData = mInitData;
+    }
     try{
       reqData.put("appid", pAppGuid);
       reqData.put("instid", pInstGuid);

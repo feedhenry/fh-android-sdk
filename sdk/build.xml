@@ -1,0 +1,91 @@
+<project default="package">
+    <property file="local.properties"/>
+    <property file="project.properties"/>
+
+    <!-- Package properties -->
+    <property name="package.name" value="fh-android-sdk" />
+    <property name="package.packagename" value="com.feedhenry.sdk" />
+    
+    <!-- Get git commit -->
+    <available file=".git" type="dir" property="git.present"/>
+
+    <target name="git-details">
+        <exec executable="git" outputproperty="git.status">
+            <arg value="status" />
+        </exec>
+        <echo message="${git.status}"/>
+        
+        <exec executable="git" outputproperty="package.versionname">
+          <arg value="describe"/>
+          <arg value='--match=${package.name}-*'/>
+          <arg value="--tags"/>
+          <arg value="--dirty"/>
+          <arg value="--always"/>
+        </exec>
+        <echo message="${package.versionname}" />
+    </target>
+
+    <!-- Standard jar stuff -->
+    <property name="lib.dir" value="${sdk.dir}/platforms/${target}" />
+    <property name="build.dir" value="./build"/>
+	  <property name="dist.dir" value="./dist"/>
+    <property name="classes.dir"  value="${build.dir}/classes"/>
+    
+	  <buildnumber file="build.num" />
+    <!-- Set up classpath -->
+    <path id="classpath">
+        <fileset dir="${lib.dir}" includes="**/*.jar" />
+    </path>
+
+    <!-- Build javadoc -->
+    <target name="doc">
+        <javadoc 
+            classpathref="classpath"
+            destdir="doc"
+            packagenames="${package.packagename},${package.packagename}.api,${package.packagename}.exceptions"
+            linkoffline="http://d.android.com/reference ${sdk.dir}/docs/reference" 
+            additionalparam="-author  -version">
+        <fileset dir="src" defaultexcludes="yes">
+        	<exclude name="com/feedhenry/sdk/FHHttpClient.java" />
+        </fileset>
+       </javadoc>
+    </target>
+
+    <!-- Compile java files into classes -->
+    <target name="compile">
+        <mkdir dir="${build.dir}" />
+        <mkdir dir="${classes.dir}" />
+
+        <javac
+            includeantruntime="false"
+            srcdir="."
+            destdir="${classes.dir}"
+            classpathref="classpath"
+            debug="true"
+            debuglevel="lines,source" />
+    </target>
+
+    <!-- Package a jar from compiled class files -->
+    <target name="jar" depends="git-details,compile">
+        <delete dir="." includes="${dist.dir}/*.jar" />
+        <delete file="${dist.dir}/MANIFEST.MF" />
+    	  <delete dir="${dist.dir}" />
+    	  <mkdir dir="${dist.dir}" />
+        <manifest file="${dist.dir}/MANIFEST.MF">
+            <attribute name="Built-By" value="FeedHenry" />
+            <attribute name="Implementation-Version" value="${package.versionname}"/> 
+        </manifest>
+
+        <jar destfile="${dist.dir}/${package.versionname}.jar" basedir="build/classes" includes="com/feedhenry/sdk/**/*.class,com/loopj/android/http/**/*.class" manifest="${dist.dir}/MANIFEST.MF" />
+    </target>
+
+    <!-- Clean out the build files -->
+    <target name="clean">
+        <delete dir="build" />
+        <delete dir="doc" />
+        <delete dir="${dist.dir}" />
+    </target>
+
+    <!-- Compile and package a jar -->
+    <target name="package" depends="compile,jar" />
+</project>

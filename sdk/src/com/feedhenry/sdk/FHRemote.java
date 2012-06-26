@@ -10,9 +10,9 @@ import android.util.Log;
 public abstract class FHRemote implements FHAct{
   
   private static final String API_URL_KEY = "apiurl";
-  private static final String GUID_KEY = "guid";
+  private static final String GUID_KEY = "app";
   private static final String DOMAIN_KEY = "domain";
-  private static final String APP_INST_ID_KEY = "appinstid";
+  private static final String APP_INST_ID_KEY = "inst";
   private static final String PATH_PREFIX = "/box/srv/1.1/";
   
   protected Properties mProperties;
