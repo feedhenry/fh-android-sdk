@@ -35,19 +35,19 @@ public class FHInitializeRequest extends FHRemote {
   }
 
   @Override
-  protected String getPath(String pDomain, String pAppGuid, String pInstGuid) {
+  protected String getPath(String pDomain, String pAppGuid) {
     return "wid/" + pDomain + "/android/" + pAppGuid + "/initialise";
   }
 
   @Override
-  protected JSONObject getRequestArgs(String pDomain, String pAppGuid, String pInstGuid) {
+  protected JSONObject getRequestArgs(String pDomain, String pAppGuid) {
     JSONObject reqData = new JSONObject();
     if(null != mInitData){
       reqData = mInitData;
     }
     try{
       reqData.put("appid", pAppGuid);
-      reqData.put("instid", pInstGuid);
+      reqData.put("instid", pAppGuid);
       reqData.put("uuid", mUDID);
       reqData.put("destination", "android");
       reqData.put("domain", pDomain);

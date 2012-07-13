@@ -33,17 +33,17 @@ public class FHAuthRequest extends FHRemote {
   }
   
   @Override
-  protected String getPath(String pDomain, String pAppGuid, String pInstGuid) {
+  protected String getPath(String pDomain, String pAppGuid) {
     return AUTH_PATH; 
   }
 
   @Override
-  protected JSONObject getRequestArgs(String pDomain, String pAppGuid, String pInstGuid) {
+  protected JSONObject getRequestArgs(String pDomain, String pAppGuid) {
     JSONObject reqData = new JSONObject();
     try{
       reqData.put("type", mArgs.optString("type", null) == null ? "default" : mArgs.opt("type"));
       JSONObject params = new JSONObject();
-      params.put("appId", pInstGuid);
+      params.put("appId", pAppGuid);
       params.put("device", mUDID);
       params.put("userId", mArgs.getString("user"));
       params.put("password", mArgs.getString("password"));

@@ -30,7 +30,7 @@ public class FHActRequest extends FHRemote {
   }
 
   @Override
-  protected String getPath(String pDomain, String pAppGuid, String pInstGuid) {
-    return METHOD + "/" + pDomain + "/" + pAppGuid + "/" + mRemoteAct + "/" + pInstGuid;
+  protected String getPath(String pDomain, String pAppGuid) {
+    return METHOD + "/" + pDomain + "/" + pAppGuid + "/" + mRemoteAct + "/" + pAppGuid;
   }
 }
