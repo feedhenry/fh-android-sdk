@@ -25,7 +25,7 @@ To use the Android SDK with your app, you'll need to do the following:
 * Create a file called *fh.properties* in your application's *assets* directory. This file should contain the following properties:
   * **apiurl** - this is the base SDK URL, by default this is *http://apps.feedhenry.com- change this if your app lives on another domain.
   * **domain** - the domain is a shortened version of the apiurl - it's name which proceeds *.feedhenry.com* (e.g. the domain for http://**apps**.feedhenry.com is **apps**)
-  * **app** & **inst** - these is the app's identifiers (**app** being an app's unique ID, an **inst** being an identifier for a particular version of an app). These can be obtained by logging into the Studio, opening your app and pressing **CTRL+ALT+G**
+  * **app** - this is the app's identifier. It can be obtained by logging into the Studio, check the app details or use FHC
   * With these configured, you can now make Cloud action calls with the FeedHenry Android SDK. Examples of Cloud calls are included in the SDK, as well as below. 
 
 ### Examples
