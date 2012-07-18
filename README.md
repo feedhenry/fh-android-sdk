@@ -21,12 +21,14 @@ This will compile the source code and genrate a jar file in the *dist* directory
 
 To use the Android SDK with your app, you'll need to do the following:
 
-* Add fh-android-sdk.jar file to your application's build path in Eclipse
+* Add fh-android-sdk.jar file to your application's libs directory. The ADT tool should automatically add the jar file to the project's build path.
 * Create a file called *fh.properties* in your application's *assets* directory. This file should contain the following properties:
   * **apiurl** - this is the base SDK URL, by default this is *http://apps.feedhenry.com- change this if your app lives on another domain.
   * **domain** - the domain is a shortened version of the apiurl - it's name which proceeds *.feedhenry.com* (e.g. the domain for http://**apps**.feedhenry.com is **apps**)
   * **app** - this is the app's identifier. It can be obtained by logging into the Studio, check the app details or use FHC
-  * With these configured, you can now make Cloud action calls with the FeedHenry Android SDK. Examples of Cloud calls are included in the SDK, as well as below. 
+* Add internet permissions in the application's AndroidManifest.xml file
+  
+With these configured, you can now make Cloud action calls with the FeedHenry Android SDK. Examples of Cloud calls are included in the SDK, as well as below. 
 
 ### Examples
 
