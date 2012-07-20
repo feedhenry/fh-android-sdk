@@ -35,8 +35,7 @@ class FHHttpClient {
 	}
 
 	static class FHJsonHttpResponseHandler extends JsonHttpResponseHandler {
-
-		private FHActCallback callback = null;
+		private FHActCallback callback;
 
 		public FHJsonHttpResponseHandler(FHActCallback pCallback) {
 			super();
@@ -46,25 +45,38 @@ class FHHttpClient {
 		@Override
 		public void onSuccess(JSONArray pRes) {
 			Log.d(FH.LOG_TAG, "Got response : " + pRes.toString());
-			if (null != callback) {
-				FHResponse fhres = new FHResponse(null, pRes, null, null);
-				callback.success(fhres);
-			}
+			FHResponse fhres = new FHResponse(null, pRes, null, null);
+			doCallback("success", fhres);
 		}
 
+		@Override
 		public void onSuccess(JSONObject pRes) {
 			Log.d(FH.LOG_TAG, "Got response : " + pRes.toString());
-			if (null != callback) {
-				FHResponse fhres = new FHResponse(pRes, null, null, null);
-				callback.success(fhres);
-			}
+			FHResponse fhres = new FHResponse(pRes, null, null, null);
+			doCallback("success", fhres);
 		}
 
+		@Override
 		public void onFailure(Throwable e, String content) {
 			Log.e(FH.LOG_TAG, e.getMessage(), e);
-			if (null != callback) {
-				FHResponse fhres = new FHResponse(null, null, e, content);
-				callback.fail(fhres);
+			FHResponse fhres = new FHResponse(null, null, e, content);
+			doCallback("fail", fhres);
+		}
+		
+		/**
+		 * Helper method which only calls the callback function providing it
+		 * isn't null. Saves us from having to do a null check in every block.
+		 * 
+		 * @param method Either "success" or "failure".
+		 * @param res The response given from the request.
+		 */
+		private void doCallback(String method, FHResponse res) {
+			if (callback != null) {
+				if (method == "success") {
+					callback.success(res);
+				} else if (method == "fail") {
+					callback.fail(res);
+				}
 			}
 		}
 	}
