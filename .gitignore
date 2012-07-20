@@ -6,3 +6,5 @@ sdk/local.properties
 sdk/dist/*.MF
 sdk/build/*
 sdk/build.num
+.metadata
+.settings
