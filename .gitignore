@@ -6,3 +6,6 @@ sdk/local.properties
 sdk/dist/*.MF
 sdk/build/*
 sdk/build.num
+FHStarterProject/bin/*
+FHStarterProject/gen/*
+*android-support-*.jar

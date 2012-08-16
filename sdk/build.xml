@@ -3,6 +3,7 @@
     <property file="project.properties"/>
 
     <!-- Package properties -->
+    <loadfile property="sdk.version" srcFile="VERSION.txt" />
     <property name="package.name" value="fh-android-sdk" />
     <property name="package.packagename" value="com.feedhenry.sdk" />
     
@@ -75,7 +76,7 @@
             <attribute name="Implementation-Version" value="${package.versionname}"/> 
         </manifest>
 
-        <jar destfile="${dist.dir}/fh-android-sdk.jar" basedir="build/classes" includes="com/feedhenry/sdk/**/*.class,com/loopj/android/http/**/*.class" manifest="${dist.dir}/MANIFEST.MF" />
+        <jar destfile="${dist.dir}/fh-${sdk.version}.jar" basedir="build/classes" includes="com/feedhenry/sdk/**/*.class,com/loopj/android/http/**/*.class" manifest="${dist.dir}/MANIFEST.MF" />
     </target>
 
     <!-- Clean out the build files -->
