@@ -45,10 +45,20 @@ public class FHAuthRequest extends FHRemote {
     super(pProps);
   }
   
+  /**
+   * Set the policy id for this auth request
+   * @param pPolicyId the auth policy id. It is required for all the auth requests
+   */
   public void setAuthPolicyId(String pPolicyId){
     mPolicyId = pPolicyId;
   }
   
+  /**
+   * Set the user name for the auth request. Only required if the auth policy type is FeedHenry or LDAP.
+   * @param pPolicyId the auth policy id
+   * @param pUserName the user name
+   * @param pPassword the password
+   */
   public void setAuthUser(String pPolicyId, String pUserName, String pPassword){
     mPolicyId = pPolicyId;
     mUserName = pUserName;
@@ -79,6 +89,12 @@ public class FHAuthRequest extends FHRemote {
     return reqData;
   }
   
+  /**
+   * If the auth policy type is OAuth, user need to enter their username and password for the OAuth provider. If an Activity instance
+   * is provided, the SDK will automatically handle this (By presenting the OAuth login page in a WebView and back to the application once the authentication process is finished).
+   * If it's not provided, the application need to handle the OAuth process itself.
+   * @param pActivity the parent Activity instance to invoke the WebView
+   */
   public void setPresentingActivity(Context pActivity){
     mPresentingActivity = pActivity;
   }

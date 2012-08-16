@@ -14,6 +14,11 @@ public class FHResponse {
   private JSONArray mResultArray;
   private Throwable mError;
   private String mErrorMessage;
+  private String mRawResponse;
+  
+  public FHResponse(String pRawResponse){
+    mRawResponse = pRawResponse;
+  }
   
   public FHResponse(JSONObject pResults, JSONArray pResultArray, Throwable e, String pError){
     mResults = pResults;
@@ -52,5 +57,13 @@ public class FHResponse {
    */
   public String getErrorMessage(){
     return mErrorMessage;
+  }
+  
+  public void setRawResponse(String pRawResponse){
+    mRawResponse = pRawResponse;
+  }
+  
+  public String getRawResponse(){
+    return mRawResponse;
   }
 }

@@ -23,6 +23,7 @@ public class FHActRequest extends FHRemote {
   /**
    * Constructor
    * @param pProps the app configuration
+   * @param pCloudProps the properties returned from the cloud
    */
   public FHActRequest(Properties pProps, JSONObject pCloudProps){
     super(pProps);
@@ -53,6 +54,10 @@ public class FHActRequest extends FHRemote {
     mRemoteAct = pAction;
   }
   
+  /**
+   * Set the parameters for the cloud side function
+   * @param pArgs the parameters that will be passed to the cloud side function
+   */
   public void setArgs(JSONObject pArgs) {
     mArgs = pArgs;
   }

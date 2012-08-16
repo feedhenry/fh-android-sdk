@@ -33,6 +33,7 @@ public class FH {
   /**
    * Initialize the application. It must be called before any other FH method can be used. Otherwise FH will throw an exception.
    * @param pActivity an instance of the application's activity
+   * @param pCallback the callback function to be executed after the initialization is finished
    */
   public static void init(Activity pActivity, FHActCallback pCallback){
     if(!mReady){
@@ -124,6 +125,12 @@ public class FH {
     return request;
   }
   
+  /**
+   * Build an instance of FHAuthRequest object to perform authentication request and set the auth policy id
+   * @param pPolicyId the auth policy id used by this auth request
+   * @return
+   * @throws FHNotReadyException
+   */
   public static FHAuthRequest buildAuthRequest(String pPolicyId) throws FHNotReadyException{
     FHAuthRequest request = (FHAuthRequest) buildAction(FH_ACTION_AUTH);
     request.setUDID(mUDID);
@@ -131,6 +138,14 @@ public class FH {
     return request;
   }
   
+  /**
+   * Build an instance of FHAuthRequest object to perform authentication request and set the auth policy id, user name and passowrd
+   * @param pPolicyId the auth policy id used by this auth request
+   * @param pUserName the required user name for the auth request
+   * @param pPassword the required password for the auth request
+   * @return
+   * @throws FHNotReadyException
+   */
   public static FHAuthRequest buildAuthRequest(String pPolicyId, String pUserName, String pPassword) throws FHNotReadyException {
     FHAuthRequest request = (FHAuthRequest) buildAction(FH_ACTION_AUTH);
     request.setUDID(mUDID);
