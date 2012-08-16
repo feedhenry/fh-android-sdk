@@ -1,6 +1,5 @@
 package com.feedhenry.sdk;
 
-import org.json.JSONObject;
 
 /**
  * Representing a action call to FeedHenry's cloud side function
@@ -8,12 +7,6 @@ import org.json.JSONObject;
  */
 
 public interface FHAct {
-   /**
-    * Set the parameters for the action
-    * @param pArgs the parameters for the cloud side function
-    */
-   public void setArgs(JSONObject pArgs);
-   
    /**
     * Set the callback function to be executed when the action is finished
     * @param pCallback the callback function

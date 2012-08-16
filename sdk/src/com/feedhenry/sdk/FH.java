@@ -22,13 +22,11 @@ public class FH {
 
   private static boolean mReady = false;
   private static Properties mProperties = null;
+  private static JSONObject mCloudProps = null;
   private static final String PROPERTY_FILE = "fh.properties";
   public static final String LOG_TAG = "FH_SDK";
   
-  private static final String FH_INIT_PREF_NAME = "__fhinitpref__";
-  private static final String FH_INIT_DATA_NAME = "__fhinit__";
-  
-  public static final String FH_ACTION_ACT = "act";
+  public static final String FH_ACTION_CLOUD = "cloud";
   public static final String FH_ACTION_AUTH = "auth";
   private static String mUDID;
   
@@ -36,36 +34,36 @@ public class FH {
    * Initialize the application. It must be called before any other FH method can be used. Otherwise FH will throw an exception.
    * @param pActivity an instance of the application's activity
    */
-  public static void initializeFH(Activity pActivity){
+  public static void init(Activity pActivity, FHActCallback pCallback){
     if(!mReady){
-      mReady = true;
+      getDeviceId(pActivity);
       InputStream in = null;
-      mUDID = android.provider.Settings.System.getString(pActivity.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
-      final SharedPreferences sp = pActivity.getSharedPreferences(FH_INIT_PREF_NAME, 0);
-      String initData = sp.getString(FH_INIT_DATA_NAME, null);
       try{
         in = pActivity.getAssets().open(PROPERTY_FILE);
         mProperties = new Properties();
         mProperties.load(in);
         FHInitializeRequest initRequest = new FHInitializeRequest(mProperties);
         initRequest.setUDID(mUDID);
+        final FHActCallback cb = pCallback;
         try{
-          if(null != initData){
-            initRequest.setInitData(new JSONObject(initData));
-          }
           initRequest.executeAsync(new FHActCallback() {
             @Override
             public void success(FHResponse pResponse) {
+              mReady = true;
               Log.d(LOG_TAG, pResponse.getJson().toString());
-              SharedPreferences.Editor editor = sp.edit();
-              editor.putString(FH_INIT_DATA_NAME, pResponse.getJson().toString());
-              editor.commit();
+              mCloudProps = pResponse.getJson();
+              if(null != cb){
+                cb.success(null);
+              }
             }
             
             @Override
             public void fail(FHResponse pResponse) {
               mReady = false;
               Log.d(LOG_TAG, pResponse.getErrorMessage(), pResponse.getError());
+              if(null != cb){
+                cb.fail(pResponse);
+              }
             }
           });
         }catch(Exception e){
@@ -91,8 +89,8 @@ public class FH {
       throw new FHNotReadyException();
     }
     FHAct action = null;
-    if(FH_ACTION_ACT.equalsIgnoreCase(pAction)){
-      action = new FHActRequest(mProperties);
+    if(FH_ACTION_CLOUD.equalsIgnoreCase(pAction)){
+      action = new FHActRequest(mProperties, mCloudProps);
     } else if(FH_ACTION_AUTH.equalsIgnoreCase(pAction)){
       action = new FHAuthRequest(mProperties);
     } else {
@@ -109,7 +107,7 @@ public class FH {
    * @throws FHNotReadyException
    */
   public static FHActRequest buildActRequest(String pRemoteAction, JSONObject pParams) throws FHNotReadyException {
-    FHActRequest request = (FHActRequest) buildAction(FH_ACTION_ACT);
+    FHActRequest request = (FHActRequest) buildAction(FH_ACTION_CLOUD);
     request.setRemoteAction(pRemoteAction);
     request.setArgs(pParams);
     return request;
@@ -117,15 +115,31 @@ public class FH {
   
   /**
    * Build an instance of FHAuthRequest object to perform authentication request
-   * @param pParams authentication details
    * @return an instance of FHAuthRequest
    * @throws FHNotReadyException
    */
-  public static FHAuthRequest buildAuthRequest(JSONObject pParams) throws FHNotReadyException{
+  public static FHAuthRequest buildAuthRequest() throws FHNotReadyException{
     FHAuthRequest request = (FHAuthRequest) buildAction(FH_ACTION_AUTH);
     request.setUDID(mUDID);
-    request.setArgs(pParams);
     return request;
   }
   
+  public static FHAuthRequest buildAuthRequest(String pPolicyId) throws FHNotReadyException{
+    FHAuthRequest request = (FHAuthRequest) buildAction(FH_ACTION_AUTH);
+    request.setUDID(mUDID);
+    request.setAuthPolicyId(pPolicyId);
+    return request;
+  }
+  
+  public static FHAuthRequest buildAuthRequest(String pPolicyId, String pUserName, String pPassword) throws FHNotReadyException {
+    FHAuthRequest request = (FHAuthRequest) buildAction(FH_ACTION_AUTH);
+    request.setUDID(mUDID);
+    request.setAuthUser(pPolicyId, pUserName, pPassword);
+    return request;
+  }
+  
+  
+  private static void getDeviceId(Activity pActivity){
+    mUDID = android.provider.Settings.System.getString(pActivity.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+  }
 }

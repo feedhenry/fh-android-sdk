@@ -9,22 +9,22 @@ import android.util.Log;
 
 public abstract class FHRemote implements FHAct{
   
-  private static final String API_URL_KEY = "apiurl";
-  private static final String GUID_KEY = "app";
-  private static final String DOMAIN_KEY = "domain";
-  private static final String PATH_PREFIX = "/box/srv/1.1/";
+  protected static final String APP_HOST_KEY = "host";
+  protected static final String APP_ID_KEY = "appID";
+  protected static final String APP_APIKEY_KEY = "appKey";
+  protected static final String APP_MODE_KEY = "mode";
+  protected static final String PATH_PREFIX = "/box/srv/1.1/";
   
   protected Properties mProperties;
-  protected JSONObject mArgs;
   protected FHActCallback mCallback;
-  
-  private String mAppGuid;
-  private String mDomain;
+  protected String mUDID;
   
   public FHRemote(Properties pProps){
     mProperties = pProps;
-    mAppGuid = mProperties.getProperty(GUID_KEY);
-    mDomain = mProperties.getProperty(DOMAIN_KEY);
+  }
+  
+  public void setUDID(String pUDID){
+    mUDID = pUDID;
   }
 
   @Override
@@ -35,7 +35,7 @@ public abstract class FHRemote implements FHAct{
   @Override
   public void executeAsync(FHActCallback pCallback) throws Exception {
     try{
-      FHHttpClient.post(getApiURl(), getRequestArgs(mDomain, mAppGuid), pCallback);
+      FHHttpClient.post(getApiURl(), getRequestArgs(), pCallback);
     }catch(Exception e){
       Log.e(FH.LOG_TAG, e.getMessage(), e);
       throw e;
@@ -45,22 +45,14 @@ public abstract class FHRemote implements FHAct{
   public void setCallback(FHActCallback pCallback){
     mCallback = pCallback;
   }
-
-  @Override
-  public void setArgs(JSONObject pArgs) {
-    mArgs = pArgs;
-  }
   
-  private String getApiURl(){
-    String apiUrl = mProperties.getProperty(API_URL_KEY);
-    String url = (apiUrl.endsWith("/") ? apiUrl.substring(0, apiUrl.length() - 1) : apiUrl) + PATH_PREFIX + getPath(mDomain, mAppGuid);
+  protected String getApiURl(){
+    String apiUrl = mProperties.getProperty(APP_HOST_KEY);
+    String url = (apiUrl.endsWith("/") ? apiUrl.substring(0, apiUrl.length() - 1) : apiUrl) + PATH_PREFIX + getPath();
     return url;
   }
   
-  protected abstract String getPath(String pDomain, String pAppGuid);
-  
-  protected JSONObject getRequestArgs(String pDomain, String pAppGuid){
-    return mArgs;
-  }
+  protected abstract String getPath();
+  protected abstract JSONObject getRequestArgs();
 
 }

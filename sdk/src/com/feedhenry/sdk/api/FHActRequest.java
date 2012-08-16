@@ -2,6 +2,11 @@ package com.feedhenry.sdk.api;
 
 import java.util.Properties;
 
+import org.json.JSONObject;
+
+import android.util.Log;
+
+import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHRemote;
 
 /**
@@ -11,14 +16,33 @@ import com.feedhenry.sdk.FHRemote;
 public class FHActRequest extends FHRemote {
 
   private String mRemoteAct;
-  private static final String METHOD = "act";
+  private static final String METHOD = "cloud";
+  private JSONObject mCloudProps;
+  protected JSONObject mArgs;
   
   /**
    * Constructor
    * @param pProps the app configuration
    */
-  public FHActRequest(Properties pProps){
+  public FHActRequest(Properties pProps, JSONObject pCloudProps){
     super(pProps);
+    mCloudProps = pCloudProps;
+  }
+  
+  protected String getApiURl(){
+    String hostUrl = null;
+    String appMode = mProperties.getProperty(APP_MODE_KEY);
+    try{
+      JSONObject hosts = mCloudProps.getJSONObject("hosts");
+      if("dev".equalsIgnoreCase(appMode)){
+        hostUrl = hosts.getString("debugCloudUrl");
+      } else {
+        hostUrl = hosts.getString("releaseCloudUrl");
+      }
+    } catch (Exception e){
+       Log.e(FH.LOG_TAG, e.getMessage(), e);
+    }
+    return hostUrl.endsWith("/") ? hostUrl + getPath() : hostUrl + "/" + getPath();
   }
   
   /**
@@ -28,9 +52,17 @@ public class FHActRequest extends FHRemote {
   public void setRemoteAction(String pAction){
     mRemoteAct = pAction;
   }
+  
+  public void setArgs(JSONObject pArgs) {
+    mArgs = pArgs;
+  }
+  
+  protected JSONObject getRequestArgs(){
+    return mArgs;
+  }
 
   @Override
-  protected String getPath(String pDomain, String pAppGuid) {
-    return METHOD + "/" + pDomain + "/" + pAppGuid + "/" + mRemoteAct + "/" + pAppGuid;
+  protected String getPath() {
+    return "cloud/" + mRemoteAct;
   }
 }
