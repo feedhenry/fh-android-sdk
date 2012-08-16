@@ -1,6 +1,6 @@
 # FeedHenry Android SDK (Alpha)
 
-This SDK should provide you with all you'll need to start developing cloud-connected apps with the FeedHenry platform. The SDK provides access to cloud action calls.
+This SDK should provide you with all you'll need to start developing cloud-connected apps with the FeedHenry platform. The SDK provides access to cloud action calls, app authentication and authorization. 
 
 ### Build
 
@@ -19,61 +19,28 @@ This will compile the source code and genrate a jar file in the *dist* directory
 
 ### Usage
 
-To use the Android SDK with your app, you'll need to do the following:
+#### Start with a new project
 
-* Add fh-android-sdk.jar file to your application's libs directory. The ADT tool should automatically add the jar file to the project's build path.
+* The *FHStarterProject* directory contains a new empty project for you to start with. The SDK is included in the project and setup. You just need to update the fh.properties files with your app's configurations
+
+#### Existing project
+
+To use the Android SDK with your existing app, you'll need to do the following:
+
+* Add fh-<version>.jar file to your application's libs directory. The ADT tool should automatically add the jar file to the project's build path.
 * Create a file called *fh.properties* in your application's *assets* directory. This file should contain the following properties:
-  * **apiurl** - this is the base SDK URL, by default this is *http://apps.feedhenry.com- change this if your app lives on another domain.
-  * **domain** - the domain is a shortened version of the apiurl - it's name which proceeds *.feedhenry.com* (e.g. the domain for http://**apps**.feedhenry.com is **apps**)
-  * **app** - this is the app's identifier. It can be obtained by logging into the Studio, check the app details or use FHC
+  * **host** - <the app's host name>
+  * **appID** - <id of the app>
+  * **appKey** - <the api key of the app>
+  * **mode** - <should be dev or prod>
+
 * Add internet permissions in the application's AndroidManifest.xml file
   
-With these configured, you can now make Cloud action calls with the FeedHenry Android SDK. Examples of Cloud calls are included in the SDK, as well as below. 
+With these configured, you can now make Cloud action calls with the FeedHenry Android SDK. 
 
-### Examples
+### Example
 
-```
-public class AndroidExampleApp extends ListActivity {
-
-  private static final String TAG = "FHAndroidSDKExample";
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    final ProgressDialog diglog = ProgressDialog.show(this, "Loading", "Please wait...");
-    FH.initializeFH(this);
-    final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.list_event);
-    getListView().setAdapter(adapter);
-    try{
-      FHActRequest request = FH.buildActRequest("getEventsByLocation", new JSONObject().put("longi", "-7.12").put("lati", "52.25"));
-      request.executeAsync(new FHActCallback() {
-        
-        @Override
-        public void success(FHResponse res) {
-          JSONArray resObj = res.getArray();
-          try{
-            Log.d(TAG, resObj.toString(2));
-            for(int i=0;i<resObj.length();i++){
-              JSONObject event = resObj.getJSONObject(i);
-              adapter.add(event.getString("title"));
-            }
-            diglog.dismiss();
-          } catch(Exception e){
-            Log.e(TAG, e.getMessage(), e);
-          }
-        }
-        
-        @Override
-        public void fail(FHResponse res) {
-          Log.e(TAG, res.getErrorMessage(), res.getError());
-        }
-      });
-    } catch(Exception e){
-      Log.e(TAG, e.getMessage(), e);
-    }
-  }
-}
-
-```
+The *example* directory contains an example to demostrate how to use all the android native APIs. You can import it into Eclipse and run it on the emulator or device.
 	
 ### Links
 * [FeedHenry Documentation](http://docs.feedhenry.com)
