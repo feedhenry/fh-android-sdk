@@ -27,12 +27,12 @@ This will compile the source code and genrate a jar file in the *dist* directory
 
 To use the Android SDK with your existing app, you'll need to do the following:
 
-* Add fh-<version>.jar file to your application's libs directory. The ADT tool should automatically add the jar file to the project's build path.
+* Add fh-&lt;version&gt;.jar file to your application's libs directory. The ADT tool should automatically add the jar file to the project's build path.
 * Create a file called *fh.properties* in your application's *assets* directory. This file should contain the following properties:
-  * **host** - <the app's host name>
-  * **appID** - <id of the app>
-  * **appKey** - <the api key of the app>
-  * **mode** - <should be dev or prod>
+  * **host** - &lt;the app's host name&gt;
+  * **appID** - &lt;id of the app&gt;
+  * **appKey** - &lt;the api key of the app&gt;
+  * **mode** - &lt;should be dev or prod&gt;
 
 * Add internet permissions in the application's AndroidManifest.xml file
   
