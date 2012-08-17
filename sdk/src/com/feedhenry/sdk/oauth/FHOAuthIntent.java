@@ -2,11 +2,14 @@ package com.feedhenry.sdk.oauth;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
 
+/**
+ * An intent wrapper for the webview
+ *
+ */
 public class FHOAuthIntent extends Activity {
 
   private FHOAuthWebView mWebview;
@@ -23,7 +26,6 @@ public class FHOAuthIntent extends Activity {
   public boolean onKeyDown(int pkeyCode, KeyEvent pEvent){
     if(pkeyCode == KeyEvent.KEYCODE_BACK){
       mWebview.close();
-      Log.d("OAuthWebView", "Back button clicked");
       return true;
     } else {
       return super.onKeyDown(pkeyCode, pEvent);

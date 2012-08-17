@@ -44,9 +44,15 @@
             destdir="doc"
             packagenames="${package.packagename},${package.packagename}.api,${package.packagename}.exceptions"
             linkoffline="http://d.android.com/reference ${sdk.dir}/docs/reference" 
+        	  Windowtitle="FeedHenry Android SDK"
+        	  Doctitle="FeedHenry Android SDK API Doc"
             additionalparam="-author  -version">
         <fileset dir="src" defaultexcludes="yes">
         	<exclude name="com/feedhenry/sdk/FHHttpClient.java" />
+        	<exclude name="com/feedhenry/sdk/exceptions/FHInvalidActionException.java" />
+        	<exclude name="com/feedhenry/sdk/api/FHInitializeRequest.java" />
+        	<exclude name="com/feedhenry/sdk/utils/*.java" />
+        	<exclude name="com/loopj/android/http/*.java" />
         </fileset>
        </javadoc>
     </target>

@@ -1,11 +1,12 @@
 package com.feedhenry.sdk.oauth;
 
+import com.feedhenry.sdk.utils.FHLog;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,10 @@ import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+/**
+ * Construct a WebView window and load a url request. Broadcast url changes event to anyone who's interested.
+ *
+ */
 public class FHOAuthWebView {
 
   private WebView mWebView;
@@ -23,6 +28,7 @@ public class FHOAuthWebView {
   private ViewGroup mMainLayout = null;
   private String mFinishedUrl = "NOT_FINISHED";
   private boolean mFinished = false;
+  private static final String LOG_TAG = "com.feedhenry.sdk.oauth.FHOAuthWebView";
   
   public static final String BROADCAST_ACTION_FILTER = "com.feedhenry.sdk.oauth.urlChanged";
   
@@ -53,7 +59,7 @@ public class FHOAuthWebView {
     mWebView.setWebViewClient(new WebViewClient() {
 
       public boolean shouldOverrideUrlLoading(WebView view, String url) {
-        Log.d("Webview window", "going to load url " + url);
+        FHLog.d(LOG_TAG, "going to load url " + url);
         if (url.contains("http")) {
           return false;
         }
@@ -61,7 +67,7 @@ public class FHOAuthWebView {
       }
 
       public void onPageStarted(WebView view, String url, Bitmap favicon) {
-        Log.d("Webview window", "start to load " + url);
+        FHLog.d(LOG_TAG, "start to load " + url);
         if(url.indexOf("status=complete") > -1){
           mFinishedUrl = url;
           mFinished = true;
@@ -69,7 +75,7 @@ public class FHOAuthWebView {
       }
 
       public void onPageFinished(WebView view, String url) {
-        Log.d("Webview window", "finish loading " + url);
+        FHLog.d(LOG_TAG, "finish loading " + url);
         if(mFinished && !"about:blank".equals(url)){
           close();
         }
@@ -77,7 +83,7 @@ public class FHOAuthWebView {
 
       @Override
       public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-        Log.d("Webview window", "error: " + description + "url: " + failingUrl);
+        FHLog.d(LOG_TAG, "error: " + description + "url: " + failingUrl);
       }
     });
     

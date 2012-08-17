@@ -4,14 +4,30 @@ import java.util.Properties;
 
 import org.json.JSONObject;
 
-import android.util.Log;
-
-import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHRemote;
+import com.feedhenry.sdk.utils.FHLog;
 
 /**
- * The request for calling the cloud side function of the app
- *
+ * The request for calling the cloud side function of the app.
+ * Example:
+ * <pre>
+ * {@code
+ *   //calling a cloud side function called "getTweets" and pass in the keywords
+ *   FHActRequest request = FH.buildActRequest("getTweets", new JSONObject().put("keyword", "FeedHenry"));
+ *   reqeust.executeAsync(new FHActCallback(){
+ *     public void success(FHResponse pResp){
+ *       JSONObject tweetsObj = pResp.getJson();
+ *       ...
+ *     }
+ *        
+ *     public void fail(FHResponse pResp){
+ *       //process error data
+ *       ...
+ *     }
+ *   });
+ * }
+ * </pre>
+ * @see <a href="http://docs.feedhenry.com/v2/feedhenry-api.html#$fh.act">FH Act API doc</a>
  */
 public class FHActRequest extends FHRemote {
 
@@ -19,6 +35,8 @@ public class FHActRequest extends FHRemote {
   private static final String METHOD = "cloud";
   private JSONObject mCloudProps;
   protected JSONObject mArgs;
+  
+  protected static String LOG_TAG = "com.feedhenry.sdk.api.FHActRequest";
   
   /**
    * Constructor
@@ -40,8 +58,9 @@ public class FHActRequest extends FHRemote {
       } else {
         hostUrl = hosts.getString("releaseCloudUrl");
       }
+      FHLog.v(LOG_TAG, "act url = " + hostUrl);
     } catch (Exception e){
-       Log.e(FH.LOG_TAG, e.getMessage(), e);
+      FHLog.e(LOG_TAG, e.getMessage(), e);
     }
     return hostUrl.endsWith("/") ? hostUrl + getPath() : hostUrl + "/" + getPath();
   }

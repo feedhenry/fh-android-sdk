@@ -2,4 +2,3 @@ com.feedhenry.sdk
 com.feedhenry.sdk.api
 com.feedhenry.sdk.exceptions
 com.feedhenry.sdk.oauth
-com.loopj.android.http

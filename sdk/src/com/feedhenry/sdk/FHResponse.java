@@ -4,8 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
- * Representing the response data from FeedHenry when an action call is finished
- *
+ * Representing the response data from FeedHenry when an API call is finished
  */
 
 public class FHResponse {
@@ -54,6 +53,10 @@ public class FHResponse {
     return mErrorMessage;
   }
   
+  /**
+   * Get the raw response content
+   * @return the raw response content
+   */
   public String getRawResponse(){
     if(null != mResults){
       return mResults.toString();
