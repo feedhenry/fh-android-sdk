@@ -32,7 +32,7 @@ To use the Android SDK with your existing app, you'll need to do the following:
   * **host** - &lt;the app's host name&gt;
   * **appID** - &lt;id of the app&gt;
   * **appKey** - &lt;the api key of the app&gt;
-  * **mode** - &lt;should be dev or prod&gt;
+  * **mode** - &lt;should be dev or live&gt;
 
 * Add internet permissions in the application's AndroidManifest.xml file
   
