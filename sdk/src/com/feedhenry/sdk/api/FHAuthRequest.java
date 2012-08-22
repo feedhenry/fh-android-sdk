@@ -103,6 +103,7 @@ public class FHAuthRequest extends FHRemote {
         params.put("password", mPassword);
       }
       reqData.put("params", params);
+      addDefaultParams(reqData);
       FHLog.v(LOG_TAG, "auth params = " + reqData.toString());
     }catch(JSONException e){
       FHLog.e(LOG_TAG, e.getMessage(), e);

@@ -56,6 +56,22 @@ public abstract class FHRemote implements FHAct{
     return url;
   }
   
+  protected void addDefaultParams(JSONObject pParams){
+    try{
+      if(null != pParams){
+        JSONObject defaultParams = new JSONObject();
+        defaultParams.put("cuid", mUDID);
+        defaultParams.put("appid", mProperties.getProperty(APP_ID_KEY));
+        defaultParams.put("appke", mProperties.getProperty(APP_APIKEY_KEY));
+        if(!pParams.has("__fh")){
+          pParams.put("__fh", defaultParams);
+        }
+      }
+    } catch (Exception e){
+      FHLog.e(LOG_TAG, e.getMessage(), e);
+    }
+  }
+  
   protected abstract String getPath();
   protected abstract JSONObject getRequestArgs();
 

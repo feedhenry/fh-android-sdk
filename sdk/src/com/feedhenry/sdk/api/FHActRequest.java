@@ -34,7 +34,7 @@ public class FHActRequest extends FHRemote {
   private String mRemoteAct;
   private static final String METHOD = "cloud";
   private JSONObject mCloudProps;
-  protected JSONObject mArgs;
+  protected JSONObject mArgs = new JSONObject();
   
   protected static String LOG_TAG = "com.feedhenry.sdk.api.FHActRequest";
   
@@ -50,19 +50,30 @@ public class FHActRequest extends FHRemote {
   
   protected String getApiURl(){
     String hostUrl = null;
+    String appType = null;
     String appMode = mProperties.getProperty(APP_MODE_KEY);
     try{
       JSONObject hosts = mCloudProps.getJSONObject("hosts");
       if("dev".equalsIgnoreCase(appMode)){
         hostUrl = hosts.getString("debugCloudUrl");
+        appType = hosts.getString("debugCloudType");
       } else {
         hostUrl = hosts.getString("releaseCloudUrl");
+        appType = hosts.getString("releaseCloudType");
+      }
+      hostUrl = hostUrl.endsWith("/") ? hostUrl : hostUrl + "/";
+      if("node".equalsIgnoreCase(appType)){
+        hostUrl = hostUrl + getPath();
+      } else {
+        String domain = mCloudProps.getString("domain");
+        String appId = mProperties.getProperty(APP_ID_KEY);
+        hostUrl = hostUrl + "box/srv/1.1/act/" + domain + "/" + appId + "/" + mRemoteAct + "/" + appId;
       }
       FHLog.v(LOG_TAG, "act url = " + hostUrl);
     } catch (Exception e){
       FHLog.e(LOG_TAG, e.getMessage(), e);
     }
-    return hostUrl.endsWith("/") ? hostUrl + getPath() : hostUrl + "/" + getPath();
+    return hostUrl;
   }
   
   /**
@@ -82,6 +93,7 @@ public class FHActRequest extends FHRemote {
   }
   
   protected JSONObject getRequestArgs(){
+    addDefaultParams(mArgs);
     return mArgs;
   }
 
