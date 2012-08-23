@@ -2,6 +2,7 @@ package com.feedhenry.sdk;
 
 import java.util.Properties;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.feedhenry.sdk.utils.FHLog;
@@ -59,10 +60,7 @@ public abstract class FHRemote implements FHAct{
   protected void addDefaultParams(JSONObject pParams){
     try{
       if(null != pParams){
-        JSONObject defaultParams = new JSONObject();
-        defaultParams.put("cuid", mUDID);
-        defaultParams.put("appid", mProperties.getProperty(APP_ID_KEY));
-        defaultParams.put("appkey", mProperties.getProperty(APP_APIKEY_KEY));
+        JSONObject defaultParams = getFHParams();
         if(!pParams.has("__fh")){
           pParams.put("__fh", defaultParams);
         }
@@ -70,6 +68,16 @@ public abstract class FHRemote implements FHAct{
     } catch (Exception e){
       FHLog.e(LOG_TAG, e.getMessage(), e);
     }
+  }
+  
+  protected JSONObject getFHParams() throws JSONException {
+    JSONObject defaultParams = new JSONObject();
+    defaultParams.put("appid", mProperties.getProperty(APP_ID_KEY));
+    defaultParams.put("appkey", mProperties.getProperty(APP_APIKEY_KEY));
+    defaultParams.put("cuid", mUDID);
+    defaultParams.put("destination", "android");
+    defaultParams.put("sdk_version", "FH_ANDROID_SDK/" + FH.VERSION);
+    return defaultParams;
   }
   
   protected abstract String getPath();
