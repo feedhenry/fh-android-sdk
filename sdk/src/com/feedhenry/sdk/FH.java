@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.webkit.WebView;
 
 import com.feedhenry.sdk.api.FHActRequest;
 import com.feedhenry.sdk.api.FHAuthRequest;
@@ -37,6 +38,9 @@ public class FH {
   public static final int LOG_LEVEL_NONE = Integer.MAX_VALUE;
   
   private static int mLogLevel = LOG_LEVEL_ERROR;
+  
+  public static final String VERSION = "1.0.0"; //TODO: need to find a better way to automatically update this version value
+  private static String USER_AGENT = null;
   
   private FH() throws Exception {
     throw new Exception("Not Supported");
@@ -76,6 +80,7 @@ public class FH {
   public static void init(Activity pActivity, FHActCallback pCallback){
     if(!mReady){
       getDeviceId(pActivity);
+      setUserAgent(pActivity);
       InputStream in = null;
       try{
         in = pActivity.getAssets().open(PROPERTY_FILE);
@@ -230,8 +235,21 @@ public class FH {
     return mLogLevel;
   }
   
+  /**
+   * Get the customized user-agent string for the SDK
+   * @return customized user-agent string
+   */
+  public static String getUserAgent(){
+    return USER_AGENT;
+  }
   
   private static void getDeviceId(Activity pActivity){
     mUDID = android.provider.Settings.System.getString(pActivity.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+  }
+  
+  private static void setUserAgent(Activity pActivity){
+    if(null == USER_AGENT){
+      USER_AGENT = new WebView(pActivity).getSettings().getUserAgentString() + " FH_ANDROID_SDK/" + VERSION;
+    }
   }
 }

@@ -11,12 +11,11 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 public class FHHttpClient {
 
   private static AsyncHttpClient mClient = new AsyncHttpClient();
-  private static final String USER_AGENT = "fh_android_sdk";
   
   private static final String LOG_TAG = "com.feedhenry.sdk.FHHttpClient";
   
   public static void post(String pUrl, JSONObject pParams, FHActCallback pCallback) throws Exception {
-    mClient.setUserAgent(USER_AGENT);
+    mClient.setUserAgent(FH.getUserAgent());
     StringEntity entity = new StringEntity(new JSONObject().toString());
     if(null != pParams){
       entity = new StringEntity(pParams.toString(), "UTF-8");

@@ -12,8 +12,8 @@ import com.feedhenry.sdk.utils.FHLog;
 public abstract class FHRemote implements FHAct{
   
   protected static final String APP_HOST_KEY = "host";
-  protected static final String APP_ID_KEY = "appID";
-  protected static final String APP_APIKEY_KEY = "appKey";
+  protected static final String APP_ID_KEY = "appid";
+  protected static final String APP_APIKEY_KEY = "appkey";
   protected static final String APP_MODE_KEY = "mode";
   protected static final String PATH_PREFIX = "/box/srv/1.1/";
   
@@ -62,7 +62,8 @@ public abstract class FHRemote implements FHAct{
         JSONObject defaultParams = new JSONObject();
         defaultParams.put("cuid", mUDID);
         defaultParams.put("appid", mProperties.getProperty(APP_ID_KEY));
-        defaultParams.put("appke", mProperties.getProperty(APP_APIKEY_KEY));
+        defaultParams.put("appkey", mProperties.getProperty(APP_APIKEY_KEY));
+        defaultParams.put("agent", FH.getUserAgent());
         if(!pParams.has("__fh")){
           pParams.put("__fh", defaultParams);
         }
