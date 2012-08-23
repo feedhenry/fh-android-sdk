@@ -38,8 +38,7 @@ public class FHInitializeRequest extends FHRemote {
       reqData.put("appkey", mProperties.getProperty(APP_APIKEY_KEY));
       reqData.put("cuid", mUDID);
       reqData.put("destination", "android");
-      reqData.put("sdk_version", FH.VERSION);
-      reqData.put("agent", FH.getUserAgent());
+      reqData.put("sdk_version", "FH_ANDROID_SDK/" + FH.VERSION);
       FHLog.v(LOG_TAG, "FH init request data : " + reqData.toString());
     }catch(JSONException e){
       FHLog.w(LOG_TAG, "Failed to add data to initialise request");

@@ -63,7 +63,6 @@ public abstract class FHRemote implements FHAct{
         defaultParams.put("cuid", mUDID);
         defaultParams.put("appid", mProperties.getProperty(APP_ID_KEY));
         defaultParams.put("appkey", mProperties.getProperty(APP_APIKEY_KEY));
-        defaultParams.put("agent", FH.getUserAgent());
         if(!pParams.has("__fh")){
           pParams.put("__fh", defaultParams);
         }

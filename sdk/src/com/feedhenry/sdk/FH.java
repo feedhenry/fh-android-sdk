@@ -249,7 +249,7 @@ public class FH {
   
   private static void setUserAgent(Activity pActivity){
     if(null == USER_AGENT){
-      USER_AGENT = new WebView(pActivity).getSettings().getUserAgentString() + " FH_ANDROID_SDK/" + VERSION;
+      USER_AGENT = new WebView(pActivity).getSettings().getUserAgentString();
     }
   }
 }
