@@ -43,7 +43,6 @@ import com.feedhenry.sdk.utils.FHLog;
  *  });
  * }
  * </pre>
- * @see <a href="http://docs.feedhenry.com/v2/feedhenry-api.html#$fh.auth"> FH Auth API doc </a>
  */
 
 public class FHAuthRequest extends FHRemote {

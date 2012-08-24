@@ -1,4 +1,4 @@
-# FeedHenry Android SDK (Alpha)
+# FeedHenry Android SDK
 
 This SDK should provide you with all you'll need to start developing cloud-connected apps with the FeedHenry platform. The SDK provides access to cloud action calls, app authentication and authorization. 
 
@@ -17,26 +17,20 @@ ant
 
 This will compile the source code and genrate a jar file in the *dist* directory
 
+### Update Java Docs
+
+We use Github Pages to serve Java Docs. To update the docs, you should do the following:
+
+* Clone the repo
+* Checkout master branch, update Java Docs comments in the code
+* Go to *sdk* directory, run *ant doc* command to re-generate all the docs
+* Commit the changes
+* Checkout *gh-pages* branch, rebase it to master branch
+* Push the chagnes for both branches
+
 ### Usage
 
-#### Start with a new project
-
-* The *FHStarterProject* directory contains a new empty project for you to start with. The SDK is included in the project and setup. You just need to update the fh.properties files with your app's configurations
-
-#### Existing project
-
-To use the Android SDK with your existing app, you'll need to do the following:
-
-* Add fh-&lt;version&gt;.jar file to your application's libs directory. The ADT tool should automatically add the jar file to the project's build path.
-* Create a file called *fh.properties* in your application's *assets* directory. This file should contain the following properties:
-  * **host** - &lt;the app's host name&gt;
-  * **appID** - &lt;id of the app&gt;
-  * **appKey** - &lt;the api key of the app&gt;
-  * **mode** - &lt;should be dev or live&gt;
-
-* Add internet permissions in the application's AndroidManifest.xml file
-  
-With these configured, you can now make Cloud action calls with the FeedHenry Android SDK. 
+See [FH Android SDK Guide](http://docs.feedhenry.com/v2/sdk_android.html)
 
 ### Example
 

@@ -27,7 +27,6 @@ import com.feedhenry.sdk.utils.FHLog;
  *   });
  * }
  * </pre>
- * @see <a href="http://docs.feedhenry.com/v2/feedhenry-api.html#$fh.act">FH Act API doc</a>
  */
 public class FHActRequest extends FHRemote {
 

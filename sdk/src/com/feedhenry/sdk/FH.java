@@ -155,7 +155,6 @@ public class FH {
   
   /**
    * Build an instance of {@link FHActRequest} object to perform act request. 
-   * @see <a href="http://docs.feedhenry.com/v2/feedhenry-api.html#$fh.act">FH Act API doc</a>
    * @param pRemoteAction the name of the cloud side function
    * @param pParams the parameters for the cloud side function
    * @return an instance of FHActRequest
@@ -170,7 +169,6 @@ public class FH {
   
   /**
    * Build an instance of FHAuthRequest object to perform authentication request.
-   * @see <a href="http://docs.feedhenry.com/v2/feedhenry-api.html#$fh.auth"> FH Auth API doc </a>
    * @return an instance of FHAuthRequest
    * @throws FHNotReadyException
    */
@@ -182,7 +180,6 @@ public class FH {
   
   /**
    * Build an instance of FHAuthRequest object to perform authentication request and set the auth policy id
-   * @see <a href="http://docs.feedhenry.com/v2/feedhenry-api.html#$fh.auth"> FH Auth API doc </a>
    * @param pPolicyId the auth policy id used by this auth request
    * @return an instance of FHAuthRequest
    * @throws FHNotReadyException
@@ -196,7 +193,6 @@ public class FH {
   
   /**
    * Build an instance of FHAuthRequest object to perform authentication request and set the auth policy id, user name and passowrd
-   * @see <a href="http://docs.feedhenry.com/v2/feedhenry-api.html#$fh.auth"> FH Auth API doc </a>
    * @param pPolicyId the auth policy id used by this auth request
    * @param pUserName the required user name for the auth request
    * @param pPassword the required password for the auth request
