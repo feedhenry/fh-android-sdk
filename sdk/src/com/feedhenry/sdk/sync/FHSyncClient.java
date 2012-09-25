@@ -201,7 +201,7 @@ public class FHSyncClient {
     pendingObj = new JSONObject();
     pendingObj.put("uid", pUID);
     pendingObj.put("action", pAction);
-    pendingObj.put("pre", data);
+    pendingObj.put("pre", data.optJSONObject("data"));
     pendingObj.put("post", pData);
     String hash = generateHash(pendingObj.toString());
     pendingObj.put("hash", hash);
