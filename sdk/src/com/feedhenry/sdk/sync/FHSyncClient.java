@@ -21,22 +21,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
+import android.os.Message;
+
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.api.FHActRequest;
 import com.feedhenry.sdk.utils.FHLog;
-
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 
 public class FHSyncClient {
   
@@ -95,9 +90,6 @@ public class FHSyncClient {
   private FHSyncConfig mConfig = new FHSyncConfig();
   private FHSyncListener mSyncListener = null;
   
-  private NetworkReceiver mReceiver;
-  private boolean mIsOnLine;
-  
   private HashMap<String, SyncTask> mSyncTasks;
   private HashMap<String, Thread> mSyncTaskThreads;
   
@@ -111,10 +103,6 @@ public class FHSyncClient {
     mSyncTasks = new HashMap<String, SyncTask>();
     mSyncTaskThreads = new HashMap<String, Thread>();
     initHanlders();
-    checkNetworkStatus();
-    IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
-    mReceiver = new NetworkReceiver();
-    mContext.registerReceiver(mReceiver, filter);
     try{
       FileInputStream fis = mContext.openFileInput(STORAGE_FILE);
       ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -196,7 +184,7 @@ public class FHSyncClient {
   }
   
   private JSONObject addPendingObject(String pDataId, String pUID, JSONObject pData, String pAction) throws Exception {
-    if(!mIsOnLine){
+    if(!FH.isOnline()){
       this.doNotify(pDataId, pUID, OFFLINE_UPDATE_CODE, pAction);
     }
     JSONObject data = read(pDataId, pUID);
@@ -321,7 +309,6 @@ public class FHSyncClient {
       mSyncListener = null;
       mNotificationHandler = null;
       mDataSets = null;
-      mContext.unregisterReceiver(mReceiver);
       mInitialised = false;
     }
   }
@@ -353,20 +340,6 @@ public class FHSyncClient {
     return new String(out);
   }
   
-  private void checkNetworkStatus() {
-    ConnectivityManager connMgr = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-    if(null != networkInfo && networkInfo.isConnected()){
-      String type = networkInfo.getTypeName();
-      FHLog.i(LOG_TAG, "Device is online. Connection type : " + type);
-      mIsOnLine = true;
-    } else {
-      FHLog.i(LOG_TAG, "Device is offline.");
-      mIsOnLine = false;
-    }
-    
-  }
-  
   private synchronized void flushData() {
     try{
       FileOutputStream fos = mContext.openFileOutput(STORAGE_FILE, Context.MODE_PRIVATE);
@@ -395,14 +368,6 @@ public class FHSyncClient {
     }
   }
   
-  
-  private class NetworkReceiver extends BroadcastReceiver {
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      checkNetworkStatus();
-    }
-    
-  }
   
   static class NotificationHandler extends Handler {
     private final WeakReference<FHSyncClient> mService;
@@ -450,7 +415,7 @@ public class FHSyncClient {
     
     private void startSync() throws Exception {
       doNotify(mDataId, null, SYNC_STARTED_CODE, null);
-      if(!mIsOnLine){
+      if(!FH.isOnline()){
         syncComplete("offline");
       } else {
         JSONObject dataset = mDataSets.optJSONObject(mDataId);

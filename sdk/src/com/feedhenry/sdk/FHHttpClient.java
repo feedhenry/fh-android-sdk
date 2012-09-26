@@ -15,12 +15,17 @@ public class FHHttpClient {
   private static final String LOG_TAG = "com.feedhenry.sdk.FHHttpClient";
   
   public static void post(String pUrl, JSONObject pParams, FHActCallback pCallback) throws Exception {
-    mClient.setUserAgent(FH.getUserAgent());
-    StringEntity entity = new StringEntity(new JSONObject().toString());
-    if(null != pParams){
-      entity = new StringEntity(pParams.toString(), "UTF-8");
+    if(FH.isOnline()){
+      mClient.setUserAgent(FH.getUserAgent());
+      StringEntity entity = new StringEntity(new JSONObject().toString());
+      if(null != pParams){
+        entity = new StringEntity(pParams.toString(), "UTF-8");
+      }
+      mClient.post(null, pUrl, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+    } else {
+      FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
+      pCallback.fail(res);
     }
-    mClient.post(null, pUrl, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
   }
   
   static class FHJsonHttpResponseHandler extends JsonHttpResponseHandler {
