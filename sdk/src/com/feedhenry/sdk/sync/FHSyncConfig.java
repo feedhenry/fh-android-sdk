@@ -10,6 +10,7 @@ public class FHSyncConfig {
   private boolean mNotifyUpdateFailed = false;
   private boolean mNotifyUpdateApplied = false;
   private boolean mNotifyDeltaReceived = false;
+  private boolean mNotifySyncFailed = false;
   private boolean mNotifyClientStorageFailed = false;
 
   public void setSyncFrequency(int pFrequency){
@@ -74,6 +75,14 @@ public class FHSyncConfig {
 
   public void setNotifyDeltaReceived(boolean pNotifyDeltaReceived) {
     this.mNotifyDeltaReceived = pNotifyDeltaReceived;
+  }
+
+  public boolean isNotifySyncFailed() {
+    return mNotifySyncFailed;
+  }
+
+  public void setNotifySyncFailed(boolean pNotifySyncFailed) {
+    this.mNotifySyncFailed = pNotifySyncFailed;
   }
   
   public void setNotifyClientStorageFailed(boolean pNotifyClientStorageFailed){

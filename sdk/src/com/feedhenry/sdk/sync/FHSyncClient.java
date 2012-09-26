@@ -57,6 +57,7 @@ public class FHSyncClient {
   private static final int UPDATE_APPLIED_CODE = 5;
   private static final int DELTA_RECEIVED_CODE= 6;
   private static final int CLIENT_STORAGE_FAILED_CODE = 7;
+  private static final int SYNC_FAILED_CODE = 8;
   
   private static final String SYNC_STARTED_MESSAGE = "SYNC_STARTED";
   private static final String SYNC_COMPLETE_MESSAGE = "SYNC_COMPLETE";
@@ -66,6 +67,7 @@ public class FHSyncClient {
   private static final String UPDATE_APPLIED_MESSAGE = "UPDATE_APPLIED";
   private static final String DELTA_RECEIVED_MESSAGE = "DELTA_RECEIVED";
   private static final String CLIENT_STORAGE_FAILED_MESSAGE = "CLIENT_STORAGE_FAILED";
+  private static final String SYNC_FAILED_MESSAGE = "SYNC_FAILED";
   
   private static Map<Integer, String> mMessageMap = new HashMap<Integer, String>();
   
@@ -85,6 +87,7 @@ public class FHSyncClient {
     mMessageMap.put(UPDATE_APPLIED_CODE, UPDATE_APPLIED_MESSAGE);
     mMessageMap.put(DELTA_RECEIVED_CODE, DELTA_RECEIVED_MESSAGE);
     mMessageMap.put(CLIENT_STORAGE_FAILED_CODE, CLIENT_STORAGE_FAILED_MESSAGE);
+    mMessageMap.put(SYNC_FAILED_CODE, SYNC_FAILED_MESSAGE);
   }
   
   private Context mContext;
@@ -260,6 +263,11 @@ public class FHSyncClient {
       case DELTA_RECEIVED_CODE:
         if(mConfig.isNotifyDeltaReceived()){
           mSyncListener.onDeltaReceived(notification);
+        }
+        break;
+      case SYNC_FAILED_CODE:
+        if(mConfig.isNotifySyncFailed()){
+          mSyncListener.onSyncFailed(notification);
         }
         break;
       case CLIENT_STORAGE_FAILED_CODE:
@@ -518,6 +526,7 @@ public class FHSyncClient {
             @Override
             public void fail(FHResponse pResponse) {
               FHLog.e(LOG_TAG, "FHSync fail response:: " + pResponse.getRawResponse(), pResponse.getError());
+              doNotify(mDataId, null, SYNC_FAILED_CODE, pResponse.getRawResponse() + " :: " + pResponse.getError().toString());
               syncComplete(pResponse.getErrorMessage());
             }
           });

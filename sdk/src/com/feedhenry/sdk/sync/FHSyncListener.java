@@ -8,5 +8,6 @@ public interface FHSyncListener {
   public void onUpdateFailed(NotificationMessage pMessage);
   public void onUpdateApplied(NotificationMessage pMessage);
   public void onDeltaReceived(NotificationMessage pMessage);
+  public void onSyncFailed(NotificationMessage pMessage);
   public void onClientStorageFailed(NotificationMessage pMessage);
 }
