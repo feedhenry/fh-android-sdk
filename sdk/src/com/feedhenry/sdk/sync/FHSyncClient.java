@@ -48,18 +48,20 @@ public class FHSyncClient {
   private static final int SYNC_COMPLETE_CODE = 1;
   private static final int OFFLINE_UPDATE_CODE = 2;
   private static final int COLLISION_DETECTED_CDOE = 3;
-  private static final int UPDATE_FAILED_CDOE = 4;
-  private static final int UPDATE_APPLIED_CODE = 5;
+  private static final int REMOTE_UPDATE_FAILED_CDOE = 4;
+  private static final int REMOTE_UPDATE_APPLIED_CODE = 5;
   private static final int DELTA_RECEIVED_CODE= 6;
   private static final int CLIENT_STORAGE_FAILED_CODE = 7;
   private static final int SYNC_FAILED_CODE = 8;
+  private static final int LOCAL_UPDATE_APPLIED_CODE = 9;
   
   private static final String SYNC_STARTED_MESSAGE = "SYNC_STARTED";
   private static final String SYNC_COMPLETE_MESSAGE = "SYNC_COMPLETE";
   private static final String OFFLINE_UPDATE_MESSAGE = "OFFLINE_UPDATE";
   private static final String COLLISION_DETECTED_MESSAGE = "COLLISION_DETECTED";
-  private static final String UPDATE_FAILED_MESSAGE = "UPDATE_FAILED";
-  private static final String UPDATE_APPLIED_MESSAGE = "UPDATE_APPLIED";
+  private static final String REMOTE_UPDATE_FAILED_MESSAGE = "REMOTE_UPDATE_FAILED";
+  private static final String REMOTE_UPDATE_APPLIED_MESSAGE = "REMOTE_UPDATE_APPLIED";
+  private static final String LOCAL_UPDATE_APPLIED_MESSAGE = "LOCAL_UPDATE_APPLIED";
   private static final String DELTA_RECEIVED_MESSAGE = "DELTA_RECEIVED";
   private static final String CLIENT_STORAGE_FAILED_MESSAGE = "CLIENT_STORAGE_FAILED";
   private static final String SYNC_FAILED_MESSAGE = "SYNC_FAILED";
@@ -78,8 +80,9 @@ public class FHSyncClient {
     mMessageMap.put(SYNC_COMPLETE_CODE, SYNC_COMPLETE_MESSAGE);
     mMessageMap.put(OFFLINE_UPDATE_CODE, OFFLINE_UPDATE_MESSAGE);
     mMessageMap.put(COLLISION_DETECTED_CDOE, COLLISION_DETECTED_MESSAGE);
-    mMessageMap.put(UPDATE_FAILED_CDOE, UPDATE_FAILED_MESSAGE);
-    mMessageMap.put(UPDATE_APPLIED_CODE, UPDATE_APPLIED_MESSAGE);
+    mMessageMap.put(REMOTE_UPDATE_FAILED_CDOE, REMOTE_UPDATE_FAILED_MESSAGE);
+    mMessageMap.put(REMOTE_UPDATE_APPLIED_CODE, REMOTE_UPDATE_APPLIED_MESSAGE);
+    mMessageMap.put(LOCAL_UPDATE_APPLIED_CODE, LOCAL_UPDATE_APPLIED_MESSAGE);
     mMessageMap.put(DELTA_RECEIVED_CODE, DELTA_RECEIVED_MESSAGE);
     mMessageMap.put(CLIENT_STORAGE_FAILED_CODE, CLIENT_STORAGE_FAILED_MESSAGE);
     mMessageMap.put(SYNC_FAILED_CODE, SYNC_FAILED_MESSAGE);
@@ -201,7 +204,15 @@ public class FHSyncClient {
     JSONObject dataset = mDataSets.optJSONObject(pDataId);
     if(null != dataset){
       dataset.getJSONObject("pending").put(hash, pendingObj);
+      // update local data straight away
+      if (pUID != null) {
+    	// TODO: what is pData on 'delete'?
+        dataset.getJSONObject("data").put(pUID, pData);
+      } else {
+    	// TODO: create new entry
+      }
       flushData();
+      this.doNotify(pDataId, pUID, LOCAL_UPDATE_APPLIED_CODE, pAction);
     }
     return pendingObj;
   }
@@ -238,16 +249,21 @@ public class FHSyncClient {
           mSyncListener.onCollisionDetected(notification);
         }
         break;
-      case UPDATE_FAILED_CDOE:
+      case REMOTE_UPDATE_FAILED_CDOE:
         if(mConfig.isNotifyUpdateFailed()){
-          mSyncListener.onUpdateFailed(notification);
+          mSyncListener.onRemoteUpdateFailed(notification);
         }
         break;
-      case UPDATE_APPLIED_CODE:
-        if(mConfig.isNotifyUpdateApplied()){
-          mSyncListener.onUpdateApplied(notification);
+      case REMOTE_UPDATE_APPLIED_CODE:
+        if(mConfig.isNotifyRemoteUpdateApplied()){
+          mSyncListener.onRemoteUpdateApplied(notification);
         }
         break;
+      case LOCAL_UPDATE_APPLIED_CODE:
+          if(mConfig.isNotifyLocalUpdateApplied()){
+            mSyncListener.onLocalUpdateApplied(notification);
+          }
+          break;
       case DELTA_RECEIVED_CODE:
         if(mConfig.isNotifyDeltaReceived()){
           mSyncListener.onDeltaReceived(notification);
@@ -455,10 +471,10 @@ public class FHSyncClient {
                 if(resData.has("updates")){
                   JSONObject updatesData = resData.getJSONObject("updates");
                   if(updatesData.has("applied")){
-                    processData(updatesData.getJSONObject("applied"), UPDATE_APPLIED_CODE);
+                    processData(updatesData.getJSONObject("applied"), REMOTE_UPDATE_APPLIED_CODE);
                   }
                   if(updatesData.has("failed")){
-                    processData(updatesData.getJSONObject("failed"), UPDATE_FAILED_CDOE);
+                    processData(updatesData.getJSONObject("failed"), REMOTE_UPDATE_FAILED_CDOE);
                   }
                   if(updatesData.has("collisions")){
                     processData(updatesData.getJSONObject("collisions"), COLLISION_DETECTED_CDOE);

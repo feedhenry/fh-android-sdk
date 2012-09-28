@@ -7,8 +7,9 @@ public class FHSyncConfig {
   private boolean mNotifySyncComplete = false;
   private boolean mNotifySyncCollisions = false;
   private boolean mNotifyOfflineUpdate = false;
-  private boolean mNotifyUpdateFailed = false;
-  private boolean mNotifyUpdateApplied = false;
+  private boolean mNotifyRemoteUpdateFailed = false;
+  private boolean mNotifyRemoteUpdateApplied = false;
+  private boolean mNotifyLocalUpdateApplied = false;
   private boolean mNotifyDeltaReceived = false;
   private boolean mNotifySyncFailed = false;
   private boolean mNotifyClientStorageFailed = false;
@@ -54,19 +55,27 @@ public class FHSyncConfig {
   }
 
   public boolean isNotifyUpdateFailed() {
-    return mNotifyUpdateFailed;
+    return mNotifyRemoteUpdateFailed;
   }
 
   public void setNotifyUpdateFailed(boolean pNotifyUpdateFailed) {
-    this.mNotifyUpdateFailed = pNotifyUpdateFailed;
+    this.mNotifyRemoteUpdateFailed = pNotifyUpdateFailed;
   }
 
-  public boolean isNotifyUpdateApplied() {
-    return mNotifyUpdateApplied;
+  public boolean isNotifyRemoteUpdateApplied() {
+    return mNotifyRemoteUpdateApplied;
   }
 
-  public void setNotifyUpdateApplied(boolean pNotifyUpdateApplied) {
-    this.mNotifyUpdateApplied = pNotifyUpdateApplied;
+  public void setNotifyRemoteUpdateApplied(boolean pNotifyRemoteUpdateApplied) {
+    this.mNotifyRemoteUpdateApplied = pNotifyRemoteUpdateApplied;
+  }
+
+  public boolean isNotifyLocalUpdateApplied() {
+    return mNotifyLocalUpdateApplied;
+  }
+
+  public void setNotifyLocalUpdateApplied(boolean pNotifyLocalUpdateApplied) {
+    this.mNotifyLocalUpdateApplied = pNotifyLocalUpdateApplied;
   }
 
   public boolean isNotifyDeltaReceived() {
