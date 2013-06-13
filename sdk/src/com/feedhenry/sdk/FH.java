@@ -4,9 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.webkit.WebView;
 
 import com.feedhenry.sdk.api.FHActRequest;
@@ -22,6 +26,7 @@ public class FH {
   private static boolean mReady = false;
   private static Properties mProperties = null;
   private static JSONObject mCloudProps = null;
+  private static Context mContext = null;
   private static final String PROPERTY_FILE = "fh.properties";
   private static final String LOG_TAG = "com.feedhenry.sdk.FH";
   
@@ -78,6 +83,7 @@ public class FH {
    * @param pCallback the callback function to be executed after the initialization is finished
    */
   public static void init(Activity pActivity, FHActCallback pCallback){
+    mContext = pActivity;
     if(!mReady){
       getDeviceId(pActivity);
       setUserAgent(pActivity);
@@ -86,16 +92,29 @@ public class FH {
         in = pActivity.getAssets().open(PROPERTY_FILE);
         mProperties = new Properties();
         mProperties.load(in);
-        FHInitializeRequest initRequest = new FHInitializeRequest(mProperties);
+        FHInitializeRequest initRequest = new FHInitializeRequest(mContext, mProperties);
         initRequest.setUDID(mUDID);
         final FHActCallback cb = pCallback;
         try{
           initRequest.executeAsync(new FHActCallback() {
             @Override
-            public void success(FHResponse pResponse) {
+            public void success(FHResponse pResponse) {            
               mReady = true;
               FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
               mCloudProps = pResponse.getJson();
+              
+              // Save trackId
+              SharedPreferences prefs = mContext.getSharedPreferences("fh_track_id", Context.MODE_PRIVATE);
+              SharedPreferences.Editor editor = prefs.edit();
+              if (mCloudProps.has("trackId")) {
+                try {
+                  editor.putString("fh_track_id", mCloudProps.getString("trackId"));
+                  editor.commit();
+                } catch (JSONException e) {
+                  e.printStackTrace();
+                }
+              }
+
               if(null != cb){
                 cb.success(null);
               }
@@ -136,9 +155,9 @@ public class FH {
     }
     FHAct action = null;
     if(FH_API_ACT.equalsIgnoreCase(pAction)){
-      action = new FHActRequest(mProperties, mCloudProps);
+      action = new FHActRequest(mContext, mProperties, mCloudProps);
     } else if(FH_API_AUTH.equalsIgnoreCase(pAction)){
-      action = new FHAuthRequest(mProperties);
+      action = new FHAuthRequest(mContext, mProperties);
     } else {
       FHLog.w(LOG_TAG, "Invalid action : " + pAction);
     }
