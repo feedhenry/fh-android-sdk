@@ -104,11 +104,11 @@ public class FH {
               mCloudProps = pResponse.getJson();
               
               // Save trackId
-              SharedPreferences prefs = mContext.getSharedPreferences("fh_track_id", Context.MODE_PRIVATE);
+              SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
               SharedPreferences.Editor editor = prefs.edit();
-              if (mCloudProps.has("trackId")) {
+              if (mCloudProps.has("init")) {
                 try {
-                  editor.putString("fh_track_id", mCloudProps.getString("trackId"));
+                  editor.putString("init", mCloudProps.getString("init"));
                   editor.commit();
                 } catch (JSONException e) {
                   e.printStackTrace();

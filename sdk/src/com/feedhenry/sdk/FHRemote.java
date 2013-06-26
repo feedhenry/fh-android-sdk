@@ -84,9 +84,9 @@ public abstract class FHRemote implements FHAct{
     defaultParams.put("sdk_version", "FH_ANDROID_SDK/" + FH.VERSION);
     
     // Load trackId
-    SharedPreferences prefs = mContext.getSharedPreferences("fh_track_id", Context.MODE_PRIVATE);
-    String trackId = prefs.getString("fh_track_id", null);
-    defaultParams.put("trackId", trackId);
+    SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
+    String trackId = prefs.getString("init", null);
+    defaultParams.put("init", trackId);
     
     return defaultParams;
   }
