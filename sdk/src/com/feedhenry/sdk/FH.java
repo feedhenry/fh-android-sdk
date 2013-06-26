@@ -103,7 +103,7 @@ public class FH {
               FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
               mCloudProps = pResponse.getJson();
               
-              // Save trackId
+              // Save init
               SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
               SharedPreferences.Editor editor = prefs.edit();
               if (mCloudProps.has("init")) {
