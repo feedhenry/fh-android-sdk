@@ -85,8 +85,13 @@ public abstract class FHRemote implements FHAct{
     
     // Load init
     SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
-    String init = prefs.getString("init", null);
-    defaultParams.put("init", init);
+    if (prefs != null) {
+      String init = prefs.getString("init", null);
+      if (init != null) {
+        JSONObject initObj = new JSONObject(init);
+        defaultParams.put("init", initObj);
+      }
+    }
     
     return defaultParams;
   }
