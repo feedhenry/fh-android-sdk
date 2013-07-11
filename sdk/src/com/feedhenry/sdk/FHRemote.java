@@ -5,6 +5,9 @@ import java.util.Properties;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.feedhenry.sdk.utils.FHLog;
 
 /**
@@ -23,8 +26,10 @@ public abstract class FHRemote implements FHAct{
   protected Properties mProperties;
   protected FHActCallback mCallback;
   protected String mUDID;
+  protected Context mContext;
   
-  public FHRemote(Properties pProps){
+  public FHRemote(Context context, Properties pProps){
+    mContext = context;
     mProperties = pProps;
   }
   
@@ -77,6 +82,17 @@ public abstract class FHRemote implements FHAct{
     defaultParams.put("cuid", mUDID);
     defaultParams.put("destination", "android");
     defaultParams.put("sdk_version", "FH_ANDROID_SDK/" + FH.VERSION);
+    
+    // Load init
+    SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
+    if (prefs != null) {
+      String init = prefs.getString("init", null);
+      if (init != null) {
+        JSONObject initObj = new JSONObject(init);
+        defaultParams.put("init", initObj);
+      }
+    }
+    
     return defaultParams;
   }
   
