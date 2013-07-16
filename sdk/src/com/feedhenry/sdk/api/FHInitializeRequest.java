@@ -5,6 +5,7 @@ import java.util.Properties;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.feedhenry.sdk.FH;
@@ -21,8 +22,8 @@ public class FHInitializeRequest extends FHRemote {
    * Constructor
    * @param pProps the app configuration
    */
-  public FHInitializeRequest(Properties pProps) {
-    super(pProps);
+  public FHInitializeRequest(Context context, Properties pProps) {
+    super(context, pProps);
   }
 
   @Override

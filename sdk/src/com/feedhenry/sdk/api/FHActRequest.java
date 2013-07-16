@@ -4,6 +4,8 @@ import java.util.Properties;
 
 import org.json.JSONObject;
 
+import android.content.Context;
+
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.utils.FHLog;
 
@@ -42,8 +44,8 @@ public class FHActRequest extends FHRemote {
    * @param pProps the app configuration
    * @param pCloudProps the properties returned from the cloud
    */
-  public FHActRequest(Properties pProps, JSONObject pCloudProps){
-    super(pProps);
+  public FHActRequest(Context context, Properties pProps, JSONObject pCloudProps){
+    super(context, pProps);
     mCloudProps = pCloudProps;
   }
   
