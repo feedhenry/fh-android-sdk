@@ -60,8 +60,8 @@ public class FHAuthRequest extends FHRemote {
    * Constructor
    * @param pProps the app configurations
    */
-  public FHAuthRequest(Properties pProps){
-    super(pProps);
+  public FHAuthRequest(Context context, Properties pProps){
+    super(context, pProps);
   }
   
   /**

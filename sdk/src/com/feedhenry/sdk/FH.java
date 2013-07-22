@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.BroadcastReceiver;
@@ -12,6 +13,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.app.Activity;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.webkit.WebView;
 
 import com.feedhenry.sdk.api.FHActRequest;
@@ -89,8 +93,8 @@ public class FH {
    * @param pCallback the callback function to be executed after the initialization is finished
    */
   public static void init(Context pContext, FHActCallback pCallback){
-    if(!mInitCalled){
-      mContext = pContext;
+	mContext = pContext;
+	if(!mInitCalled){
       getDeviceId(pContext);
       setUserAgent(pContext);
       checkNetworkStatus();
@@ -102,7 +106,8 @@ public class FH {
         in = pContext.getAssets().open(PROPERTY_FILE);
         mProperties = new Properties();
         mProperties.load(in);
-      }catch(IOException e){
+      } catch(IOException e){
+        mReady = false;
         FHLog.e(LOG_TAG, "Can not load property file : " + PROPERTY_FILE, e);
       } finally{
         if(null != in){
@@ -116,33 +121,46 @@ public class FH {
       mInitCalled = true;
     }
     if(!mReady){
-      FHInitializeRequest initRequest = new FHInitializeRequest(mProperties);
-      initRequest.setUDID(mUDID);
-      final FHActCallback cb = pCallback;
-      try{
-        initRequest.executeAsync(new FHActCallback() {
-          @Override
-          public void success(FHResponse pResponse) {
-            mReady = true;
-            FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
-            mCloudProps = pResponse.getJson();
-            if(null != cb){
-              cb.success(null);
+    	FHInitializeRequest initRequest = new FHInitializeRequest(mContext, mProperties);
+        initRequest.setUDID(mUDID);
+        final FHActCallback cb = pCallback;
+        try{
+          initRequest.executeAsync(new FHActCallback() {
+            @Override
+            public void success(FHResponse pResponse) {            
+              mReady = true;
+              FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
+              mCloudProps = pResponse.getJson();
+              
+              // Save init
+              SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
+              SharedPreferences.Editor editor = prefs.edit();
+              if (mCloudProps.has("init")) {
+                try {
+                  editor.putString("init", mCloudProps.getString("init"));
+                  editor.commit();
+                } catch (JSONException e) {
+                  e.printStackTrace();
+                }
+              }
+
+              if(null != cb){
+                cb.success(null);
+              }
             }
-          }
-          
-          @Override
-          public void fail(FHResponse pResponse) {
-            mReady = false;
-            FHLog.e(LOG_TAG, "FH init failed with error = " + pResponse.getErrorMessage(), pResponse.getError());
-            if(null != cb){
-              cb.fail(pResponse);
+            
+            @Override
+            public void fail(FHResponse pResponse) {
+              mReady = false;
+              FHLog.e(LOG_TAG, "FH init failed with error = " + pResponse.getErrorMessage(), pResponse.getError());
+              if(null != cb){
+                cb.fail(pResponse);
+              }
             }
-          }
-        });
-      }catch(Exception e){
-        FHLog.e(LOG_TAG, "FH init exception = " + e.getMessage(), e); 
-      } 
+          });
+        }catch(Exception e){
+          FHLog.e(LOG_TAG, "FH init exception = " + e.getMessage(), e); 
+        }
     } else {
       pCallback.success(null);
     }
@@ -170,9 +188,9 @@ public class FH {
     }
     FHAct action = null;
     if(FH_API_ACT.equalsIgnoreCase(pAction)){
-      action = new FHActRequest(mProperties, mCloudProps);
+      action = new FHActRequest(mContext, mProperties, mCloudProps);
     } else if(FH_API_AUTH.equalsIgnoreCase(pAction)){
-      action = new FHAuthRequest(mProperties);
+      action = new FHAuthRequest(mContext, mProperties);
     } else {
       FHLog.w(LOG_TAG, "Invalid action : " + pAction);
     }
