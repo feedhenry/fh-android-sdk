@@ -20,10 +20,6 @@ cd ..
 rm -rf "FHStarterProject/libs/*.jar"
 cp  "sdk/dist/fh-$FH_SDK_VERSION.jar" "FHStarterProject/libs/"
 
-#do the same thing for the example app
-rm -rf "example/libs/fh-*.jar"
-cp "sdk/dist/fh-$FH_SDK_VERSION.jar" "example/libs/"
-
 #zip the starter project
 rm -rf "sdk/dist/fh-starter-project-*.zip"
 

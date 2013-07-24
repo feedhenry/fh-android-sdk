@@ -7,6 +7,7 @@
         android:minSdkVersion="3"
     />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <instrumentation android:targetPackage="com.feedhenry" android:name="android.test.InstrumentationTestRunner"></instrumentation>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -26,6 +27,7 @@
         <activity android:name=".FHAuthActivity"></activity>
         <activity android:name=".FHLoginActivity"></activity>
         <activity android:name="com.feedhenry.sdk.oauth.FHOAuthIntent"></activity>
+        <uses-library android:name="android.test.runner"/>
     </application>
 
 </manifest>
