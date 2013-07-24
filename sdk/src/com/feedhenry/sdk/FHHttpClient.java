@@ -28,6 +28,20 @@ public class FHHttpClient {
     }
   }
   
+  public static void post(String pScheme, String pHost, int pPort, String pPath, JSONObject pParams, FHActCallback pCallback) throws Exception {
+    if(FH.isOnline()){
+      mClient.setUserAgent(FH.getUserAgent());
+      StringEntity entity = new StringEntity(new JSONObject().toString());
+      if(null != pParams){
+        entity = new StringEntity(pParams.toString(), "UTF-8");
+      }
+      mClient.post(null, pScheme, pHost, pPort, pPath, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+    } else {
+      FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
+      pCallback.fail(res);
+    }
+  }
+  
   static class FHJsonHttpResponseHandler extends JsonHttpResponseHandler {
     
     private FHActCallback callback = null;

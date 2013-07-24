@@ -34,6 +34,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
@@ -401,6 +402,12 @@ public class AsyncHttpClient {
     public void post(Context context, String url, HttpEntity entity, String contentType, AsyncHttpResponseHandler responseHandler) {
         sendRequest(httpClient, httpContext, addEntityToRequestBase(new HttpPost(url), entity), contentType, responseHandler, context);
     }
+    
+    public void post(Context context, String pScheme, String pHost, int pPort, String pPath, HttpEntity entity, String contentType, AsyncHttpResponseHandler responseHandler){
+        HttpHost target = new HttpHost(pHost, pPort, pScheme);
+        HttpPost post = new HttpPost(pPath);
+        sendRequest(httpClient, httpContext, null, target, post, contentType, responseHandler, context);
+    }
 
     /**
      * Perform a HTTP POST request and track the Android Context which initiated
@@ -529,25 +536,37 @@ public class AsyncHttpClient {
 
     // Private stuff
     private void sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest, String contentType, AsyncHttpResponseHandler responseHandler, Context context) {
-        if(contentType != null) {
-            uriRequest.addHeader("Content-Type", contentType);
-        }
-
-        Future<?> request = threadPool.submit(new AsyncHttpRequest(client, httpContext, uriRequest, responseHandler));
-
-        if(context != null) {
-            // Add request to request map
-            List<WeakReference<Future<?>>> requestList = requestMap.get(context);
-            if(requestList == null) {
-                requestList = new LinkedList<WeakReference<Future<?>>>();
-                requestMap.put(context, requestList);
-            }
-
-            requestList.add(new WeakReference<Future<?>>(request));
-
-            // TODO: Remove dead weakrefs from requestLists?
-        }
+        sendRequest(client, httpContext, uriRequest, null, null, contentType, responseHandler, context);
     }
+    
+    private void sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest, HttpHost target, HttpRequest httpRequest, String contentType, AsyncHttpResponseHandler responseHandler, Context context) {
+      AsyncHttpRequest asyncRequest = null;
+      if(null != uriRequest){
+        if(contentType != null) {
+          uriRequest.addHeader("Content-Type", contentType);
+        }
+        asyncRequest = new AsyncHttpRequest(client, httpContext, uriRequest, responseHandler);
+      } else {
+        if(null != contentType){
+          httpRequest.addHeader("Content-Type", contentType);
+        }
+        asyncRequest = new AsyncHttpRequest(client, httpContext, target, httpRequest, responseHandler);
+      }
+      Future<?> request = threadPool.submit(asyncRequest);
+
+      if(context != null) {
+          // Add request to request map
+          List<WeakReference<Future<?>>> requestList = requestMap.get(context);
+          if(requestList == null) {
+              requestList = new LinkedList<WeakReference<Future<?>>>();
+              requestMap.put(context, requestList);
+          }
+
+          requestList.add(new WeakReference<Future<?>>(request));
+
+          // TODO: Remove dead weakrefs from requestLists?
+      }
+  }
 
     private String getUrlWithQueryString(String url, RequestParams params) {
         if(params != null) {
