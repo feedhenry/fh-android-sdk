@@ -17,9 +17,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.fh.JSONArray;
+import org.json.fh.JSONException;
+import org.json.fh.JSONObject;
 
 import android.content.Context;
 import android.os.Message;

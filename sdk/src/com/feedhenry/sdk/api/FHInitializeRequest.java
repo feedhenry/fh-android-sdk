@@ -2,8 +2,8 @@ package com.feedhenry.sdk.api;
 
 import java.util.Properties;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.fh.JSONException;
+import org.json.fh.JSONObject;
 
 import android.content.Context;
 import android.util.Log;

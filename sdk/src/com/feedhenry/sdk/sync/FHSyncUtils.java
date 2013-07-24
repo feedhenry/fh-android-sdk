@@ -6,9 +6,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.fh.JSONArray;
+import org.json.fh.JSONException;
+import org.json.fh.JSONObject;
 
 public class FHSyncUtils {
 
@@ -56,6 +56,7 @@ public class FHSyncUtils {
     String hashValue = "";
     try {
       JSONArray sorted = sortObj(pObject);
+      System.out.println("sorted obj = " + sorted);
       hashValue = generateHash(sorted.toString());
     } catch (Exception e) {
       e.printStackTrace();

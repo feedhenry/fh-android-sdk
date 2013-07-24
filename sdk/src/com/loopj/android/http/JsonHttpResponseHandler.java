@@ -18,10 +18,10 @@
 
 package com.loopj.android.http;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import org.json.fh.JSONArray;
+import org.json.fh.JSONException;
+import org.json.fh.JSONObject;
+import org.json.fh.JSONTokener;
 
 /**
  * Used to intercept and handle the responses from requests made using

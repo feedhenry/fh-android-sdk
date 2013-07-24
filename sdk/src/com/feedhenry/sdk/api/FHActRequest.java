@@ -2,7 +2,7 @@ package com.feedhenry.sdk.api;
 
 import java.util.Properties;
 
-import org.json.JSONObject;
+import org.json.fh.JSONObject;
 
 import android.content.Context;
 

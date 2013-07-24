@@ -1,8 +1,8 @@
 package com.feedhenry.sdk;
 
 import org.apache.http.entity.StringEntity;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.fh.JSONArray;
+import org.json.fh.JSONObject;
 
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.AsyncHttpClient;

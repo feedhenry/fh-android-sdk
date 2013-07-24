@@ -1,4 +1,4 @@
-package org.json;
+package org.json.fh;
 
 /**
  * The JSONException is thrown by the JSON.org classes then things are amiss.

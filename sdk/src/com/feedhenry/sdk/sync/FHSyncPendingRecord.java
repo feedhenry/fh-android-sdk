@@ -2,7 +2,7 @@ package com.feedhenry.sdk.sync;
 
 import java.util.Date;
 
-import org.json.JSONObject;
+import org.json.fh.JSONObject;
 
 public class FHSyncPendingRecord {
 
