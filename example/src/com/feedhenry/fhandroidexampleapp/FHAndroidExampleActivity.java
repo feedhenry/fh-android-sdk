@@ -24,7 +24,13 @@ public class FHAndroidExampleActivity extends TabActivity {
     Intent authIntent = new Intent(this, FHAuthActivity.class);
     authSpec.setContent(authIntent);
     
+    TabSpec syncSpec = tabHost.newTabSpec("FHSync");
+    syncSpec.setIndicator("FHSync");
+    Intent syncIntent = new Intent(this, FHSyncActivity.class);
+    syncSpec.setContent(syncIntent);
+    
     tabHost.addTab(actSpec);
     tabHost.addTab(authSpec);
+    tabHost.addTab(syncSpec);
   }
 }

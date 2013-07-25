@@ -406,6 +406,7 @@ public class AsyncHttpClient {
     public void post(Context context, String pScheme, String pHost, int pPort, String pPath, HttpEntity entity, String contentType, AsyncHttpResponseHandler responseHandler){
         HttpHost target = new HttpHost(pHost, pPort, pScheme);
         HttpPost post = new HttpPost(pPath);
+        addEntityToRequestBase(post, entity);
         sendRequest(httpClient, httpContext, null, target, post, contentType, responseHandler, context);
     }
 

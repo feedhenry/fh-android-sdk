@@ -76,6 +76,9 @@ public class FHSyncDataset {
   
   public JSONObject getJSON(){
     JSONObject ret = new JSONObject();
+    if(null != mHashvalue){
+      ret.put(KEY_HASHVALUE, mHashvalue);
+    }
     ret.put(KEY_DATESETID, mDatasetId);
     ret.put(KEY_SYNC_CONFIG, mSyncConfig.getJSON());
     JSONObject pendingJson = new JSONObject();
@@ -186,9 +189,9 @@ public class FHSyncDataset {
       }
       
       syncLoopParams.put("pending", pendings);
-      if(pendings.length() > 0){
+      //if(pendings.length() > 0){
         FHLog.d(LOG_TAG, "Starting sync loop -global hash = " + mHashvalue + " :: params = " + syncLoopParams);
-      }
+      //}
       
       try{
         FHActRequest actRequest = FH.buildActRequest(mDatasetId, syncLoopParams);
@@ -365,7 +368,7 @@ public class FHSyncDataset {
     while(it.hasNext()){
       String key = it.next();
       JSONObject data = records.getJSONObject(key);
-      FHSyncDataRecord record = new FHSyncDataRecord(data);
+      FHSyncDataRecord record = new FHSyncDataRecord(data.getJSONObject("data"));
       allrecords.put(key, record);
     }
     
@@ -683,7 +686,7 @@ public class FHSyncDataset {
     FHSyncPendingRecord previousPendingObj = null;
     String uid = pPendingObj.getUid();
     FHLog.d(LOG_TAG, "updating local dataset for uid " + uid + " - action = " + pPendingObj.getAction());
-    JSONObject metadata = mMetaData.getJSONObject(uid);
+    JSONObject metadata = mMetaData.optJSONObject(uid);
     if(null == metadata){
       metadata = new JSONObject();
       mMetaData.put(uid,metadata);
@@ -764,7 +767,7 @@ public class FHSyncDataset {
     JSONObject syncConfigJson = pObj.getJSONObject(KEY_SYNC_CONFIG);
     FHSyncConfig syncConfig = FHSyncConfig.fromJSON(syncConfigJson);
     this.mSyncConfig = syncConfig;
-    this.mHashvalue = pObj.getString(KEY_HASHVALUE);
+    this.mHashvalue = pObj.optString(KEY_HASHVALUE, null);
     JSONObject pendingJSON = pObj.getJSONObject(KEY_PENDING_RECORDS);
     Iterator<String> it = pendingJSON.keys();
     while(it.hasNext()){
@@ -810,7 +813,7 @@ public class FHSyncDataset {
       fromJSON(json);
       doNotify(null, NotificationMessage.LOCAL_UPDATE_APPLIED_CODE, "load");
     } catch(FileNotFoundException ex){
-      FHLog.e(LOG_TAG, "File not found for reading: " + filePath, ex);
+      FHLog.w(LOG_TAG, "File not found for reading: " + filePath);
     } catch(IOException e){
       FHLog.e(LOG_TAG, "Error reading file : " + filePath, e);
     } catch(JSONException je){
@@ -956,6 +959,14 @@ public class FHSyncDataset {
   
   public Date getSyncEnd(){
     return mSyncEnd;
+  }
+  
+  public void setContext(Context pContext){
+    mContext = pContext;
+  }
+  
+  public void setNotificationHandler(FHSyncNotificationHandler pHandler){
+    mNotificationHandler = pHandler;
   }
   
 }

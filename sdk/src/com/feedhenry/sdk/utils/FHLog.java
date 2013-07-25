@@ -8,10 +8,20 @@ public class FHLog {
 
   private static void log(int pLogLevel, String pTag, String pMessage, Throwable pThrowable){
     if(pLogLevel >= FH.getLogLevel()){
-      if(null == pThrowable){
-        Log.println(FH.getLogLevel(), pTag, pMessage);
-      } else {
-        Log.println(FH.getLogLevel(), pTag, pMessage + "\n" + Log.getStackTraceString(pThrowable));
+      if(pLogLevel == FH.LOG_LEVEL_VERBOSE){
+        Log.v(pTag, pMessage);
+      } else if(pLogLevel == FH.LOG_LEVEL_DEBUG){
+        Log.d(pTag, pMessage);
+      } else if(pLogLevel == FH.LOG_LEVEL_INFO){
+        Log.i(pTag, pMessage);
+      } else if(pLogLevel == FH.LOG_LEVEL_WARNING){
+        Log.w(pTag, pMessage);
+      } else if(pLogLevel == FH.LOG_LEVEL_ERROR){
+        if(null == pThrowable){
+          Log.e(pTag, pMessage);
+        } else {
+          Log.e(pTag, pMessage, pThrowable);
+        }
       }
     }
   }

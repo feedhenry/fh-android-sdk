@@ -28,6 +28,7 @@ public class FHActActivity extends ListActivity {
     setTitle("Tweets About FeedHenry");
     final Context that = this;
     mDialog = ProgressDialog.show(this, "Loading", "Please wait...");
+    FH.setLogLevel(FH.LOG_LEVEL_VERBOSE);
     FH.init(this, new FHActCallback() {
       
       @Override

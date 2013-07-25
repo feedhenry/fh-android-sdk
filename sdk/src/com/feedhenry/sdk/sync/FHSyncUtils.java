@@ -56,7 +56,6 @@ public class FHSyncUtils {
     String hashValue = "";
     try {
       JSONArray sorted = sortObj(pObject);
-      System.out.println("sorted obj = " + sorted);
       hashValue = generateHash(sorted.toString());
     } catch (Exception e) {
       e.printStackTrace();

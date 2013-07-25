@@ -11,7 +11,12 @@ import org.json.fh.JSONObject;
 import android.content.Context;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.util.Log;
 
+import com.feedhenry.sdk.FH;
+import com.feedhenry.sdk.FHActCallback;
+import com.feedhenry.sdk.api.FHActRequest;
+import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
 
 public class FHSyncClient {
@@ -45,19 +50,19 @@ public class FHSyncClient {
     mSyncListener = pListener;
     initHanlders();
     mInitialised = true;
-    mMonitorTask = new MonitorTask();
-    mMonitorTask.start();
+    if(null == mMonitorTask){
+      mMonitorTask = new MonitorTask();
+      mMonitorTask.start();
+    }
   }
   
   private void initHanlders(){
-    if(null == mNotificationHandler){
-      if(null != Looper.myLooper()){
-        mNotificationHandler = new FHSyncNotificationHandler(this.mSyncListener);
-      } else {
-        HandlerThread ht = new HandlerThread("FHSyncClientNotificationHanlder");
-        mNotificationHandler = new FHSyncNotificationHandler(ht.getLooper(), this.mSyncListener);
-        ht.start();
-      }
+    if(null != Looper.myLooper()){
+      mNotificationHandler = new FHSyncNotificationHandler(this.mSyncListener);
+    } else {
+      HandlerThread ht = new HandlerThread("FHSyncClientNotificationHanlder");
+      mNotificationHandler = new FHSyncNotificationHandler(ht.getLooper(), this.mSyncListener);
+      ht.start();
     }
   }
   
@@ -77,14 +82,18 @@ public class FHSyncClient {
     if(null != pConfig){
       syncConfig = pConfig;
     }
-    if(null == dataset){
+    if(null != dataset){
+      dataset.setContext(mContext);
+      dataset.setNotificationHandler(mNotificationHandler);
+    } else {
       dataset = new FHSyncDataset(mContext, mNotificationHandler, pDataId, syncConfig, pQueryParams);
       mDataSets.put(pDataId, dataset);
+      dataset.setSyncRunning(false);
+      dataset.setInitialised(true);
     }
+    
     dataset.setSyncConfig(syncConfig);
-    dataset.setSyncRunning(false);
     dataset.setSyncPending(true);
-    dataset.setInitialised(true);
     
     dataset.writeToFile();
   }
@@ -135,7 +144,19 @@ public class FHSyncClient {
     
   }
   
+  public void listCollisions(String pDataId, FHActCallback pCallback) throws Exception {
+    JSONObject params = new JSONObject();
+    params.put("fn", "listCollisions");
+    FHActRequest request = FH.buildActRequest(pDataId, params);
+    request.executeAsync(pCallback);
+  }
   
+  public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback) throws Exception {
+    JSONObject params = new JSONObject();
+    params.put("fn", "removeCollision");
+    FHActRequest request = FH.buildActRequest(pDataId, params);
+    request.executeAsync(pCallback);
+  }
   
   public void stop(String pDataId) throws Exception {
     FHSyncDataset dataset = mDataSets.get(pDataId);
@@ -180,8 +201,9 @@ public class FHSyncClient {
             if(null == lastSyncStart){
               dataset.setSyncPending(true);
             } else if(null != lastSyncEnd){
-              long interval = lastSyncEnd.getTime() - lastSyncStart.getTime();
+              long interval = new Date().getTime() - lastSyncEnd.getTime();
               if(interval > dataset.getSyncConfig().getSyncFrequency()*1000){
+                Log.d(LOG_TAG, "Should start sync!!");
                 dataset.setSyncPending(true);
               }
             }
