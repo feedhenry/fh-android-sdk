@@ -29,6 +29,8 @@
         <activity android:name=".FHLoginActivity"></activity>
         <activity android:name=".FHSyncActivity"></activity>
         <activity android:name=".ItemDetailsActivity"></activity>
+        <activity android:name=".SyncCollisionsListActivity"></activity>
+        <activity android:name=".SyncCollisionResolveActivity"></activity>
         <activity android:name="com.feedhenry.sdk.oauth.FHOAuthIntent"></activity>
         <uses-library android:name="android.test.runner"/>
     </application>

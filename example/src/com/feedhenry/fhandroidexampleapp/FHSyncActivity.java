@@ -5,6 +5,8 @@ import java.util.Iterator;
 
 import org.json.fh.JSONObject;
 
+import com.feedhenry.sdk.FHActCallback;
+import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.sync.FHSyncClient;
 import com.feedhenry.sdk.sync.FHSyncConfig;
 import com.feedhenry.sdk.sync.FHSyncListener;
@@ -28,7 +30,7 @@ import android.widget.ListView;
 public class FHSyncActivity extends ListActivity {
 
   private static final String TAG = "FHSyncActivity";
-  private static final String DATAID = "myShoppingList";
+  public static final String DATAID = "myShoppingList";
   ArrayAdapter<ShoppingItem> adapter = null;
   FHSyncClient syncClient = null;
   
@@ -127,7 +129,7 @@ public class FHSyncActivity extends ListActivity {
   }
   
   public boolean onCreateOptionsMenu(Menu menu){
-    MenuItem mi = menu.add("Create");
+    MenuItem mi = menu.add("Create Item");
     final Context that = this;
     mi.setOnMenuItemClickListener(new OnMenuItemClickListener() {
       
@@ -137,6 +139,17 @@ public class FHSyncActivity extends ListActivity {
         Intent i = new Intent(that, ItemDetailsActivity.class);
         i.putExtra("item", b);
         startActivityForResult(i, 2);
+        return true;
+      }
+    });
+    
+    MenuItem ci = menu.add("List Collisions");
+    ci.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      
+      @Override
+      public boolean onMenuItemClick(MenuItem item) {
+        Intent i = new Intent(that, SyncCollisionsListActivity.class);
+        startActivityForResult(i, 3);
         return true;
       }
     });
