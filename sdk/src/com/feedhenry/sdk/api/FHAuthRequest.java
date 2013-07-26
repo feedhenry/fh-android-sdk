@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.fh.JSONException;
+import org.json.fh.JSONObject;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -60,8 +60,8 @@ public class FHAuthRequest extends FHRemote {
    * Constructor
    * @param pProps the app configurations
    */
-  public FHAuthRequest(Properties pProps){
-    super(pProps);
+  public FHAuthRequest(Context context, Properties pProps){
+    super(context, pProps);
   }
   
   /**

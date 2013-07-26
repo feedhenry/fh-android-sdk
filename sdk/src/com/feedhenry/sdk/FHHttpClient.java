@@ -1,8 +1,8 @@
 package com.feedhenry.sdk;
 
 import org.apache.http.entity.StringEntity;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import org.json.fh.JSONArray;
+import org.json.fh.JSONObject;
 
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.AsyncHttpClient;
@@ -15,12 +15,31 @@ public class FHHttpClient {
   private static final String LOG_TAG = "com.feedhenry.sdk.FHHttpClient";
   
   public static void post(String pUrl, JSONObject pParams, FHActCallback pCallback) throws Exception {
-    mClient.setUserAgent(FH.getUserAgent());
-    StringEntity entity = new StringEntity(new JSONObject().toString());
-    if(null != pParams){
-      entity = new StringEntity(pParams.toString(), "UTF-8");
+    if(FH.isOnline()){
+      mClient.setUserAgent(FH.getUserAgent());
+      StringEntity entity = new StringEntity(new JSONObject().toString());
+      if(null != pParams){
+        entity = new StringEntity(pParams.toString(), "UTF-8");
+      }
+      mClient.post(null, pUrl, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+    } else {
+      FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
+      pCallback.fail(res);
     }
-    mClient.post(null, pUrl, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+  }
+  
+  public static void post(String pScheme, String pHost, int pPort, String pPath, JSONObject pParams, FHActCallback pCallback) throws Exception {
+    if(FH.isOnline()){
+      mClient.setUserAgent(FH.getUserAgent());
+      StringEntity entity = new StringEntity(new JSONObject().toString());
+      if(null != pParams){
+        entity = new StringEntity(pParams.toString(), "UTF-8");
+      }
+      mClient.post(null, pScheme, pHost, pPort, pPath, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+    } else {
+      FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
+      pCallback.fail(res);
+    }
   }
   
   static class FHJsonHttpResponseHandler extends JsonHttpResponseHandler {

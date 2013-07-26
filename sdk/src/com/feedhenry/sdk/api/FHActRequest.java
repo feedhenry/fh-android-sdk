@@ -2,8 +2,12 @@ package com.feedhenry.sdk.api;
 
 import java.util.Properties;
 
-import org.json.JSONObject;
+import org.json.fh.JSONObject;
 
+import android.content.Context;
+
+import com.feedhenry.sdk.FHActCallback;
+import com.feedhenry.sdk.FHHttpClient;
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.utils.FHLog;
 
@@ -42,9 +46,29 @@ public class FHActRequest extends FHRemote {
    * @param pProps the app configuration
    * @param pCloudProps the properties returned from the cloud
    */
-  public FHActRequest(Properties pProps, JSONObject pCloudProps){
-    super(pProps);
+  public FHActRequest(Context context, Properties pProps, JSONObject pCloudProps){
+    super(context, pProps);
     mCloudProps = pCloudProps;
+  }
+  
+  @Override
+  public void executeAsync(FHActCallback pCallback) throws Exception {
+    try{
+      String hostUrl = getHost();
+      String scheme = "http";
+      int port = 80;
+      if(hostUrl.startsWith("https")){
+        scheme = "https";
+        port = 443;
+        hostUrl = hostUrl.replace("https://", "");
+      } else {
+        hostUrl = hostUrl.replace("http://", "");
+      }
+      FHHttpClient.post(scheme, hostUrl, port, "/" + getPath(), getRequestArgs(), pCallback);
+    }catch(Exception e){
+      FHLog.e(LOG_TAG, e.getMessage(), e);
+      throw e;
+    }
   }
   
   protected String getApiURl(){
@@ -94,6 +118,25 @@ public class FHActRequest extends FHRemote {
   protected JSONObject getRequestArgs(){
     addDefaultParams(mArgs);
     return mArgs;
+  }
+  
+  protected String getHost(){
+    String hostUrl = null;
+    String appMode = mProperties.getProperty(APP_MODE_KEY);
+    try{
+      JSONObject hosts = mCloudProps.getJSONObject("hosts");
+      if("dev".equalsIgnoreCase(appMode)){
+        hostUrl = hosts.getString("debugCloudUrl");
+      } else {
+        hostUrl = hosts.getString("releaseCloudUrl");
+      }
+      hostUrl = hostUrl.endsWith("/") ? hostUrl.substring(0, hostUrl.length() -1) : hostUrl;
+      
+      FHLog.v(LOG_TAG, "host url = " + hostUrl);
+    } catch (Exception e){
+      FHLog.e(LOG_TAG, e.getMessage(), e);
+    }
+    return hostUrl;
   }
 
   @Override
