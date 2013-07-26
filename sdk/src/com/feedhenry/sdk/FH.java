@@ -4,11 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.fh.JSONException;
+import org.json.fh.JSONObject;
 
-import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.webkit.WebView;
@@ -26,7 +31,6 @@ public class FH {
   private static boolean mReady = false;
   private static Properties mProperties = null;
   private static JSONObject mCloudProps = null;
-  private static Context mContext = null;
   private static final String PROPERTY_FILE = "fh.properties";
   private static final String LOG_TAG = "com.feedhenry.sdk.FH";
   
@@ -44,8 +48,14 @@ public class FH {
   
   private static int mLogLevel = LOG_LEVEL_ERROR;
   
-  public static final String VERSION = "1.0.0"; //TODO: need to find a better way to automatically update this version value
+  public static final String VERSION = "1.2.0"; //TODO: need to find a better way to automatically update this version value
   private static String USER_AGENT = null;
+  
+  private static boolean mInitCalled = false;
+  private static boolean mIsOnline = false;
+  
+  private static Context mContext;
+  private static NetworkReceiver mReceiver;
   
   private FH() throws Exception {
     throw new Exception("Not Supported");
@@ -79,20 +89,39 @@ public class FH {
    *  });
    * }
    *</pre>
-   * @param pActivity an instance of your application's activity
+   * @param pContext your application's context
    * @param pCallback the callback function to be executed after the initialization is finished
    */
-  public static void init(Activity pActivity, FHActCallback pCallback){
-    mContext = pActivity;
-    if(!mReady){
-      getDeviceId(pActivity);
-      setUserAgent(pActivity);
+  public static void init(Context pContext, FHActCallback pCallback){
+	mContext = pContext;
+	if(!mInitCalled){
+      getDeviceId(pContext);
+      setUserAgent(pContext);
+      checkNetworkStatus();
+      IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+      mReceiver = new NetworkReceiver();
+      mContext.registerReceiver(mReceiver, filter);
       InputStream in = null;
       try{
-        in = pActivity.getAssets().open(PROPERTY_FILE);
+        in = pContext.getAssets().open(PROPERTY_FILE);
         mProperties = new Properties();
         mProperties.load(in);
-        FHInitializeRequest initRequest = new FHInitializeRequest(mContext, mProperties);
+      } catch(IOException e){
+        mReady = false;
+        FHLog.e(LOG_TAG, "Can not load property file : " + PROPERTY_FILE, e);
+      } finally{
+        if(null != in){
+          try {
+            in.close();
+          } catch (IOException ex) {
+            FHLog.e(LOG_TAG, "Failed to close stream", ex);
+          }
+        }
+      }
+      mInitCalled = true;
+    }
+    if(!mReady){
+    	FHInitializeRequest initRequest = new FHInitializeRequest(mContext, mProperties);
         initRequest.setUDID(mUDID);
         final FHActCallback cb = pCallback;
         try{
@@ -132,25 +161,29 @@ public class FH {
         }catch(Exception e){
           FHLog.e(LOG_TAG, "FH init exception = " + e.getMessage(), e); 
         }
-      } catch(IOException e){
-        mReady = false;
-        FHLog.e(LOG_TAG, "Can not load property file : " + PROPERTY_FILE, e);
-      } finally{
-        if(null != in){
-          try {
-            in.close();
-          } catch (IOException ex) {
-            FHLog.e(LOG_TAG, "Failed to close stream", ex);
-          }
-        }
-      }
     } else {
       pCallback.success(null);
     }
   }
   
+  private static void checkNetworkStatus() {
+    ConnectivityManager connMgr = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+    if(null != networkInfo && networkInfo.isConnected()){
+      String type = networkInfo.getTypeName();
+      FHLog.i(LOG_TAG, "Device is online. Connection type : " + type);
+      mIsOnline = true;
+    } else {
+      FHLog.i(LOG_TAG, "Device is offline.");
+      mIsOnline = false;
+    }
+    if(mIsOnline && !mReady && mInitCalled){
+      init(mContext, null);
+    }
+  }
+  
   private static FHAct buildAction(String pAction) throws FHNotReadyException {
-    if(!mReady){
+    if(!mInitCalled){
       throw new FHNotReadyException();
     }
     FHAct action = null;
@@ -162,6 +195,16 @@ public class FH {
       FHLog.w(LOG_TAG, "Invalid action : " + pAction);
     }
     return action;
+  }
+  
+  public static boolean isOnline(){
+    return mIsOnline;
+  }
+  
+  public static void stop(){
+    if(null != mReceiver){
+      mContext.unregisterReceiver(mReceiver);
+    }
   }
   
   /**
@@ -258,13 +301,21 @@ public class FH {
     return USER_AGENT;
   }
   
-  private static void getDeviceId(Activity pActivity){
-    mUDID = android.provider.Settings.System.getString(pActivity.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+  private static void getDeviceId(Context pContext){
+    mUDID = android.provider.Settings.System.getString(pContext.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
   }
   
-  private static void setUserAgent(Activity pActivity){
+  private static void setUserAgent(Context pContext){
     if(null == USER_AGENT){
-      USER_AGENT = new WebView(pActivity).getSettings().getUserAgentString();
+      USER_AGENT = new WebView(pContext).getSettings().getUserAgentString();
     }
+  }
+  
+  private static class NetworkReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      checkNetworkStatus();
+    }
+    
   }
 }

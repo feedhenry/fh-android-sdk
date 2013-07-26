@@ -53,6 +53,12 @@
         	<exclude name="com/feedhenry/sdk/api/FHInitializeRequest.java" />
         	<exclude name="com/feedhenry/sdk/utils/*.java" />
         	<exclude name="com/loopj/android/http/*.java" />
+        	<exclude name="com/feedhenry/sdk/sync/FHSyncDataRecord.java" />
+        	<exclude name="com/feedhenry/sdk/sync/FHSyncDataset.java" />
+        	<exclude name="com/feedhenry/sdk/sync/FHSyncNotificationHandler.java" />
+        	<exclude name="com/feedhenry/sdk/sync/FHSyncPendingRecord.java" />
+        	<exclude name="com/feedhenry/sdk/sync/FHSyncUtils.java" />
+        	<exclude name="org/json/fh/*.java" />
         </fileset>
        </javadoc>
     </target>

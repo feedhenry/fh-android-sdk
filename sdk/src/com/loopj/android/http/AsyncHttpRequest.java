@@ -21,16 +21,22 @@ package com.loopj.android.http;
 import java.io.IOException;
 import java.net.ConnectException;
 
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.protocol.HttpContext;
 
+import android.util.Log;
+
 class AsyncHttpRequest implements Runnable {
     private final AbstractHttpClient client;
     private final HttpContext context;
     private final HttpUriRequest request;
+    private final HttpHost target;
+    private final HttpRequest httpRequest;
     private final AsyncHttpResponseHandler responseHandler;
     private boolean isBinaryRequest;
     private int executionCount;
@@ -40,9 +46,23 @@ class AsyncHttpRequest implements Runnable {
         this.context = context;
         this.request = request;
         this.responseHandler = responseHandler;
+        this.target = null;
+        this.httpRequest = null;
         if(responseHandler instanceof BinaryHttpResponseHandler) {
             this.isBinaryRequest = true;
         }
+    }
+    
+    public AsyncHttpRequest(AbstractHttpClient client, HttpContext context, HttpHost pTarget, HttpRequest httpRequest, AsyncHttpResponseHandler responseHandler) {
+      this.client = client;
+      this.context = context;
+      this.target = pTarget;
+      this.httpRequest = httpRequest;
+      this.request = null;
+      this.responseHandler = responseHandler;
+      if(responseHandler instanceof BinaryHttpResponseHandler) {
+          this.isBinaryRequest = true;
+      }
     }
 
     public void run() {
@@ -70,7 +90,13 @@ class AsyncHttpRequest implements Runnable {
 
     private void makeRequest() throws IOException {
         if(!Thread.currentThread().isInterrupted()) {
-            HttpResponse response = client.execute(request, context);
+            HttpResponse response = null;
+            if(null != request){
+              response = client.execute(request, context);
+            } else {
+              Log.d("com.feedhenry.AsyncHttpRequest", "uri = " + target.getSchemeName() + "://" + target.getHostName() + ":" + target.getPort() );
+              response = client.execute(target, httpRequest, context);
+            }
             if(!Thread.currentThread().isInterrupted()) {
                 if(responseHandler != null) {
                     responseHandler.sendResponseMessage(response);
@@ -99,6 +125,10 @@ class AsyncHttpRequest implements Runnable {
                 // DefaultRequestExecutor to throw an NPE, see
                 // http://code.google.com/p/android/issues/detail?id=5255
                 cause = new IOException("NPE in HttpClient" + e.getMessage());
+                retry = retryHandler.retryRequest(cause, ++executionCount, context);
+            } catch (Exception ee){
+                Log.e("AsyncHttpRequest", ee.getMessage(), ee);
+                cause = new IOException(ee.getMessage());
                 retry = retryHandler.retryRequest(cause, ++executionCount, context);
             }
         }
