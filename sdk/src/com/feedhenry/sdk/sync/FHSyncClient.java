@@ -229,6 +229,7 @@ public class FHSyncClient {
   public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback) throws Exception {
     JSONObject params = new JSONObject();
     params.put("fn", "removeCollision");
+    params.put("hash", pCollisionHash);
     FHActRequest request = FH.buildActRequest(pDataId, params);
     request.executeAsync(pCallback);
   }
