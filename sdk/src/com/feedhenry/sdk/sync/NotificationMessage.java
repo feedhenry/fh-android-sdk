@@ -3,6 +3,9 @@ package com.feedhenry.sdk.sync;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The message object sent to the listener when an event happened.
+ */
 public class NotificationMessage {
   
   public static final int SYNC_STARTED_CODE = 0;
@@ -55,18 +58,34 @@ public class NotificationMessage {
     this.mExtraMessage = pExtraMessage;
   }
   
+  /**
+   * The id of the dataset associated with the event
+   * @return
+   */
   public String getDataId(){
     return mDataId;
   }
   
+  /**
+   * The id of the data record associated with the event
+   * @return
+   */
   public String getUID(){
     return mUID;
   }
   
+  /**
+   * The code message associated with the event
+   * @return
+   */
   public String getCode(){
     return mCodeMessage;
   }
   
+  /**
+   * Extra message associated with the event
+   * @return
+   */
   public String getMessage(){
     return mExtraMessage;
   }

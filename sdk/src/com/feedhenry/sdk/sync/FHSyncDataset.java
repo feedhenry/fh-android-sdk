@@ -108,7 +108,8 @@ public class FHSyncDataset {
     for(String key: this.mDataRecords.keySet()){
       FHSyncDataRecord dataRecord = this.mDataRecords.get(key);
       JSONObject datajson = new JSONObject();
-      datajson.put("data", dataRecord.getData());
+      //return a copy of the data so that any changes made to the data will not affect the original data
+      datajson.put("data", new JSONObject(dataRecord.getData().toString()));
       datajson.put("uid", key);
       ret.put(key, datajson);
     }
@@ -119,7 +120,8 @@ public class FHSyncDataset {
     FHSyncDataRecord dataRecord = mDataRecords.get(pUid);
     if(null != dataRecord){
       JSONObject ret = new JSONObject();
-      ret.put("data", dataRecord.getData());
+      //return a copy of the data so that any changes made to the data will not affect the original data
+      ret.put("data", new JSONObject( dataRecord.getData().toString()));
       ret.put("uid", pUid);
       return ret;
     } else {
@@ -132,7 +134,7 @@ public class FHSyncDataset {
     FHSyncDataRecord dataRecord = mDataRecords.get(pendingRecord.getUid());
     JSONObject ret = new JSONObject();
     if(null != dataRecord){
-      ret.put("data", dataRecord.getData());
+      ret.put("data", new JSONObject( dataRecord.getData().toString()));
       ret.put("uid", pendingRecord.getUid());
     }
     return ret;
@@ -143,7 +145,7 @@ public class FHSyncDataset {
     FHSyncDataRecord dataRecord = mDataRecords.get(pUid);
     JSONObject ret = new JSONObject();
     if(null != dataRecord){
-      ret.put("data", dataRecord.getData());
+      ret.put("data", new JSONObject( dataRecord.getData().toString()));
       ret.put("uid", pUid);
     }
     return ret;
@@ -154,7 +156,7 @@ public class FHSyncDataset {
     FHSyncDataRecord deleted = pendingRecord.getPreData();
     JSONObject ret = new JSONObject();
     if(null != deleted){
-      ret.put("data", deleted.getData());
+      ret.put("data", new JSONObject( deleted.getData().toString()));
       ret.put("uid", pUid);
     }
     return ret;

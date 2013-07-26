@@ -41,11 +41,15 @@ public class FHSyncActivity extends ListActivity {
     getListView().setAdapter(adapter);
     final Context that = this;
     syncClient = FHSyncClient.getInstance();
+    
+    //create a new instance of sync config
     FHSyncConfig config = new FHSyncConfig();
     config.setNotifySyncStarted(true);
     config.setAutoSyncLocalUpdates(true);
     config.setNotifyDeltaReceived(true);
     config.setNotifySyncComplete(true);
+    
+    //initialize the sync client
     syncClient.init(that, config, new FHSyncListener() {
       
       @Override
@@ -67,6 +71,7 @@ public class FHSyncActivity extends ListActivity {
       }
       
       @Override
+      //On sync complete, list all the data and update the adapter
       public void onSyncCompleted(NotificationMessage pMessage) {
         Log.d(TAG, "Sync complete: " + pMessage.getMessage());
         JSONObject alldata = syncClient.list(DATAID);
@@ -121,6 +126,7 @@ public class FHSyncActivity extends ListActivity {
       
     });
     
+    //start the sync process
     try {
       syncClient.manage(DATAID, null, new JSONObject());
     } catch (Exception e) {
