@@ -48,7 +48,7 @@ public class FH {
   
   private static int mLogLevel = LOG_LEVEL_ERROR;
   
-  public static final String VERSION = "1.1.1"; //TODO: need to find a better way to automatically update this version value
+  public static final String VERSION = "1.2.0"; //TODO: need to find a better way to automatically update this version value
   private static String USER_AGENT = null;
   
   private static boolean mInitCalled = false;

@@ -218,6 +218,7 @@ public class FHSyncDataset {
         });
       } catch (Exception e){
         FHLog.e(LOG_TAG, "Error performing sync", e);
+        doNotify(null, NotificationMessage.SYNC_FAILED_CODE, e.getMessage());
         syncCompleteWithCode(e.getMessage());
       }
       
@@ -290,10 +291,14 @@ public class FHSyncDataset {
         @Override
         public void fail(FHResponse pResponse) {
           FHLog.e(LOG_TAG, "syncRecords failed: " + pResponse.getRawResponse(), pResponse.getError());
+          doNotify(null, NotificationMessage.SYNC_FAILED_CODE, pResponse.getRawResponse());
+          syncCompleteWithCode(pResponse.getRawResponse());
         }
       });
     } catch(Exception e){
       FHLog.e(LOG_TAG, "error when running syncRecords", e);
+      doNotify(null, NotificationMessage.SYNC_FAILED_CODE, e.getMessage());
+      syncCompleteWithCode(e.getMessage());
     }
     
   }
