@@ -7,6 +7,8 @@
         android:minSdkVersion="3"
     />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <instrumentation android:targetPackage="com.feedhenry.fhandroidexampleapp" android:name="android.test.InstrumentationTestRunner"></instrumentation>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -25,7 +27,12 @@
         <activity android:name=".FHActActivity"></activity>
         <activity android:name=".FHAuthActivity"></activity>
         <activity android:name=".FHLoginActivity"></activity>
+        <activity android:name=".FHSyncActivity"></activity>
+        <activity android:name=".ItemDetailsActivity"></activity>
+        <activity android:name=".SyncCollisionsListActivity"></activity>
+        <activity android:name=".SyncCollisionResolveActivity"></activity>
         <activity android:name="com.feedhenry.sdk.oauth.FHOAuthIntent"></activity>
+        <uses-library android:name="android.test.runner"/>
     </application>
 
 </manifest>
