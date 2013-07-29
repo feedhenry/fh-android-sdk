@@ -88,7 +88,7 @@
             <attribute name="Implementation-Version" value="${package.versionname}"/> 
         </manifest>
 
-        <jar destfile="${dist.dir}/fh-${sdk.version}.jar" basedir="build/classes" includes="com/feedhenry/sdk/**/*.class,com/loopj/android/http/**/*.class" manifest="${dist.dir}/MANIFEST.MF" />
+        <jar destfile="${dist.dir}/fh-${sdk.version}.jar" basedir="build/classes" includes="com/feedhenry/sdk/**/*.class,com/loopj/android/http/**/*.class,org/json/fh/**/*.class" excludes="com/feedhenry/sdk/**/*Test*.class" manifest="${dist.dir}/MANIFEST.MF" />
     </target>
 
     <!-- Clean out the build files -->
