@@ -16,6 +16,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.json.fh.JSONArray;
 import org.json.fh.JSONException;
@@ -39,8 +41,8 @@ public class FHSyncDataset {
   private Date mSyncEnd;
   private boolean mSyncPending;
   private FHSyncConfig mSyncConfig = new FHSyncConfig();
-  private Map<String, FHSyncPendingRecord> mPendingRecords = new HashMap<String, FHSyncPendingRecord>();
-  private Map<String, FHSyncDataRecord> mDataRecords = new HashMap<String, FHSyncDataRecord>();
+  private ConcurrentMap<String, FHSyncPendingRecord> mPendingRecords = new ConcurrentHashMap<String, FHSyncPendingRecord>();
+  private ConcurrentMap<String, FHSyncDataRecord> mDataRecords = new ConcurrentHashMap<String, FHSyncDataRecord>();
   private JSONObject mQueryParams = new JSONObject();
   private JSONObject mMetaData = new JSONObject();
   private String mHashvalue;
@@ -369,7 +371,7 @@ public class FHSyncDataset {
   
   private void resetDataRecords(JSONObject pData){
     JSONObject records = pData.getJSONObject("records");
-    Map<String, FHSyncDataRecord> allrecords = new HashMap<String, FHSyncDataRecord>();
+    ConcurrentMap<String, FHSyncDataRecord> allrecords = new ConcurrentHashMap<String, FHSyncDataRecord>();
     
     Iterator<String> it = records.keys();
     while(it.hasNext()){
