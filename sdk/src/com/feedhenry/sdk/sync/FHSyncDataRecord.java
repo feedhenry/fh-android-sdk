@@ -42,8 +42,8 @@ public class FHSyncDataRecord {
   }
 
   public void setData(JSONObject pData) {
-    data = pData;
-    hashValue = FHSyncUtils.generateObjectHash(pData);
+    data = new JSONObject(pData.toString());
+    hashValue = FHSyncUtils.generateObjectHash(data);
   }
 
   public void setUid(String pUid) {
