@@ -2,6 +2,7 @@ package com.feedhenry.sdk;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Properties;
 
 import org.json.fh.JSONException;
@@ -13,10 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.app.Activity;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.webkit.WebView;
 
 import com.feedhenry.sdk.api.FHActRequest;
 import com.feedhenry.sdk.api.FHAuthRequest;
@@ -48,7 +46,9 @@ public class FH {
   
   private static int mLogLevel = LOG_LEVEL_ERROR;
   
-  public static final String VERSION = "1.2.0"; //TODO: need to find a better way to automatically update this version value
+  public static final String USER_AGENT_TEMP = "Android %s; %s";
+  
+  public static final String VERSION = "1.2.1"; //TODO: need to find a better way to automatically update this version value
   private static String USER_AGENT = null;
   
   private static boolean mInitCalled = false;
@@ -96,7 +96,7 @@ public class FH {
 	mContext = pContext;
 	if(!mInitCalled){
       getDeviceId(pContext);
-      setUserAgent(pContext);
+      setUserAgent();
       checkNetworkStatus();
       IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
       mReceiver = new NetworkReceiver();
@@ -305,10 +305,27 @@ public class FH {
     mUDID = android.provider.Settings.System.getString(pContext.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
   }
   
-  private static void setUserAgent(Context pContext){
+  private static void setUserAgent(){
     if(null == USER_AGENT){
-      USER_AGENT = new WebView(pContext).getSettings().getUserAgentString();
+      USER_AGENT = String.format(USER_AGENT_TEMP, android.os.Build.VERSION.RELEASE, getDeviceName());
+      FHLog.d(LOG_TAG, "UA = " + USER_AGENT);
     }
+  }
+  
+  private static String getDeviceName(){
+    String manufacurer = "";
+    String model = android.os.Build.MODEL;
+    String deviceName = model;
+    try {
+      Field field = android.os.Build.class.getField("MANUFACTURER");
+      if(null != field){
+        manufacurer = (String) field.get(null);
+        deviceName = manufacurer + " " + model;
+      }
+    }catch(Exception e){
+      
+    }
+    return deviceName;
   }
   
   private static class NetworkReceiver extends BroadcastReceiver {
