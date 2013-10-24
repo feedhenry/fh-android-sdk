@@ -65,12 +65,17 @@ public class JsonHttpResponseHandler extends AsyncHttpResponseHandler {
 
         try {
             Object jsonResponse = parseResponse(responseBody);
-            if(jsonResponse instanceof JSONObject) {
-                onSuccess((JSONObject)jsonResponse);
-            } else if(jsonResponse instanceof JSONArray) {
-                onSuccess((JSONArray)jsonResponse);
+            if(null != jsonResponse){
+                if(jsonResponse instanceof JSONObject) {
+                  onSuccess((JSONObject)jsonResponse);
+                } else if(jsonResponse instanceof JSONArray) {
+                  onSuccess((JSONArray)jsonResponse);
+                } else {
+                  onFailure(new Exception("Invalid JSON response"), responseBody);
+                }
             } else {
-                throw new JSONException("Unexpected type " + jsonResponse.getClass().getName());
+                //response is null. Possibly due to lost network connection when the request is executed
+                onFailure(new Exception("No response"), "");
             }
         } catch(JSONException e) {
             onFailure(e, responseBody);
@@ -78,7 +83,18 @@ public class JsonHttpResponseHandler extends AsyncHttpResponseHandler {
     }
 
     protected Object parseResponse(String responseBody) throws JSONException {
-        return new JSONTokener(responseBody).nextValue();
+      if (null == responseBody)
+        return null;
+        Object result = null;
+        //trim the string to prevent start with blank, and test if the string is valid JSON, because the parser don't do this :(. If Json is not valid this will return null
+        String jsonString = responseBody.trim();
+        if (jsonString.startsWith("{") || jsonString.startsWith("[")) {
+            result = new JSONTokener(jsonString).nextValue();
+        }
+        if (result == null) {
+            result = jsonString;
+        }
+        return result;
     }
 
     /**
@@ -90,16 +106,20 @@ public class JsonHttpResponseHandler extends AsyncHttpResponseHandler {
     @Override
     protected void handleFailureMessage(Throwable e, String responseBody) {
         super.handleFailureMessage(e, responseBody);
-        if (responseBody != null) try {
+        if (responseBody != null){
+          try {
             Object jsonResponse = parseResponse(responseBody);
             if(jsonResponse instanceof JSONObject) {
                 onFailure(e, (JSONObject)jsonResponse);
             } else if(jsonResponse instanceof JSONArray) {
                 onFailure(e, (JSONArray)jsonResponse);
+            } else {
+                onFailure(e, responseBody);
             }
-        }
-        catch(JSONException ex) {
-            onFailure(e, responseBody);
+          }
+          catch(JSONException ex) {
+              onFailure(e, responseBody);
+          }
         }
         else {
             onFailure(e, "");
