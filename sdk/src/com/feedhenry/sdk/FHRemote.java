@@ -16,6 +16,7 @@ import com.feedhenry.sdk.utils.FHLog;
 public abstract class FHRemote implements FHAct{
   
   protected static final String APP_HOST_KEY = "host";
+  protected static final String APP_PROJECT_KEY = "projectid";
   protected static final String APP_ID_KEY = "appid";
   protected static final String APP_APIKEY_KEY = "appkey";
   protected static final String APP_MODE_KEY = "mode";
@@ -82,6 +83,12 @@ public abstract class FHRemote implements FHAct{
     defaultParams.put("cuid", mUDID);
     defaultParams.put("destination", "android");
     defaultParams.put("sdk_version", "FH_ANDROID_SDK/" + FH.VERSION);
+    if(mProperties.contains(APP_PROJECT_KEY)){
+      String projectId =  mProperties.getProperty(APP_PROJECT_KEY);
+      if(projectId.length() > 0){
+        defaultParams.put("projectid", projectId); 
+      }
+    }
     
     // Load init
     SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
