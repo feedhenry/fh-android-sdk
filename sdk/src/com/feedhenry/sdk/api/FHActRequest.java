@@ -12,8 +12,8 @@ import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.utils.FHLog;
 
 /**
- * The request for calling the cloud side function of the app.
- * Example:
+ * The request for calling the cloud side function of the app. Example:
+ * 
  * <pre>
  * {@code
  *   //calling a cloud side function called "getTweets" and pass in the keywords
@@ -38,102 +38,122 @@ public class FHActRequest extends FHRemote {
   private static final String METHOD = "cloud";
   private JSONObject mCloudProps;
   protected JSONObject mArgs = new JSONObject();
-  
+
   protected static String LOG_TAG = "com.feedhenry.sdk.api.FHActRequest";
-  
+
   /**
    * Constructor
-   * @param pProps the app configuration
-   * @param pCloudProps the properties returned from the cloud
+   * 
+   * @param pProps
+   *          the app configuration
+   * @param pCloudProps
+   *          the properties returned from the cloud
    */
-  public FHActRequest(Context context, Properties pProps, JSONObject pCloudProps){
+  public FHActRequest(Context context, Properties pProps, JSONObject pCloudProps) {
     super(context, pProps);
     mCloudProps = pCloudProps;
   }
-  
+
   @Override
   public void executeAsync(FHActCallback pCallback) throws Exception {
-    try{
+    try {
       String hostUrl = getHost();
       String scheme = "http";
       int port = 80;
-      if(hostUrl.startsWith("https")){
+      if (hostUrl.startsWith("https")) {
         scheme = "https";
         port = 443;
         hostUrl = hostUrl.replace("https://", "");
       } else {
         hostUrl = hostUrl.replace("http://", "");
       }
-      FHHttpClient.post(scheme, hostUrl, port, "/" + getPath(), getRequestArgs(), pCallback);
-    }catch(Exception e){
+      FHHttpClient.post(scheme, hostUrl, port, "/" + getPath(),
+          getRequestArgs(), pCallback);
+    } catch (Exception e) {
       FHLog.e(LOG_TAG, e.getMessage(), e);
       throw e;
     }
   }
-  
-  protected String getApiURl(){
+
+  /**
+   * @deprecated
+   */
+  protected String getApiURl() {
     String hostUrl = null;
     String appType = null;
     String appMode = mProperties.getProperty(APP_MODE_KEY);
-    try{
-      JSONObject hosts = mCloudProps.getJSONObject("hosts");
-      if("dev".equalsIgnoreCase(appMode)){
-        hostUrl = hosts.getString("debugCloudUrl");
-        appType = hosts.getString("debugCloudType");
+    try {
+      if(mCloudProps.has("url")){
+        hostUrl = mCloudProps.getString("url");
+        appType = "node";
       } else {
-        hostUrl = hosts.getString("releaseCloudUrl");
-        appType = hosts.getString("releaseCloudType");
+        JSONObject hosts = mCloudProps.getJSONObject("hosts");
+        if ("dev".equalsIgnoreCase(appMode)) {
+          hostUrl = hosts.getString("debugCloudUrl");
+          appType = hosts.getString("debugCloudType");
+        } else {
+          hostUrl = hosts.getString("releaseCloudUrl");
+          appType = hosts.getString("releaseCloudType");
+        }
       }
       hostUrl = hostUrl.endsWith("/") ? hostUrl : hostUrl + "/";
-      if("node".equalsIgnoreCase(appType)){
+      if ("node".equalsIgnoreCase(appType)) {
         hostUrl = hostUrl + getPath();
       } else {
         String domain = mCloudProps.getString("domain");
         String appId = mProperties.getProperty(APP_ID_KEY);
-        hostUrl = hostUrl + "box/srv/1.1/act/" + domain + "/" + appId + "/" + mRemoteAct + "/" + appId;
+        hostUrl = hostUrl + "box/srv/1.1/act/" + domain + "/" + appId + "/"
+            + mRemoteAct + "/" + appId;
       }
       FHLog.v(LOG_TAG, "act url = " + hostUrl);
-    } catch (Exception e){
+    } catch (Exception e) {
       FHLog.e(LOG_TAG, e.getMessage(), e);
     }
     return hostUrl;
   }
-  
+
   /**
    * The name of the cloud side function
-   * @param pAction cloud side function name
+   * 
+   * @param pAction
+   *          cloud side function name
    */
-  public void setRemoteAction(String pAction){
+  public void setRemoteAction(String pAction) {
     mRemoteAct = pAction;
   }
-  
+
   /**
    * Set the parameters for the cloud side function
-   * @param pArgs the parameters that will be passed to the cloud side function
+   * 
+   * @param pArgs
+   *          the parameters that will be passed to the cloud side function
    */
   public void setArgs(JSONObject pArgs) {
     mArgs = pArgs;
   }
-  
-  protected JSONObject getRequestArgs(){
+
+  protected JSONObject getRequestArgs() {
     addDefaultParams(mArgs);
     return mArgs;
   }
-  
-  protected String getHost(){
+
+  protected String getHost() {
     String hostUrl = null;
     String appMode = mProperties.getProperty(APP_MODE_KEY);
-    try{
-      JSONObject hosts = mCloudProps.getJSONObject("hosts");
-      if("dev".equalsIgnoreCase(appMode)){
-        hostUrl = hosts.getString("debugCloudUrl");
+    try {
+      if (mCloudProps.has("url")) {
+        hostUrl = mCloudProps.getString("url");
       } else {
-        hostUrl = hosts.getString("releaseCloudUrl");
+        JSONObject hosts = mCloudProps.getJSONObject("hosts");
+        if ("dev".equalsIgnoreCase(appMode)) {
+          hostUrl = hosts.getString("debugCloudUrl");
+        } else {
+          hostUrl = hosts.getString("releaseCloudUrl");
+        }
       }
-      hostUrl = hostUrl.endsWith("/") ? hostUrl.substring(0, hostUrl.length() -1) : hostUrl;
-      
+      hostUrl = hostUrl.endsWith("/") ? hostUrl.substring(0,hostUrl.length() - 1) : hostUrl;
       FHLog.v(LOG_TAG, "host url = " + hostUrl);
-    } catch (Exception e){
+    } catch (Exception e) {
       FHLog.e(LOG_TAG, e.getMessage(), e);
     }
     return hostUrl;

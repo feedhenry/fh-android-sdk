@@ -48,7 +48,7 @@ public class FH {
   
   public static final String USER_AGENT_TEMP = "Android %s; %s";
   
-  public static final String VERSION = "1.2.1"; //TODO: need to find a better way to automatically update this version value
+  public static final String VERSION = "1.2.2"; //TODO: need to find a better way to automatically update this version value
   private static String USER_AGENT = null;
   
   private static boolean mInitCalled = false;
