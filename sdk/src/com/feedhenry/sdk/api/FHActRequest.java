@@ -85,6 +85,7 @@ public class FHActRequest extends FHRemote {
     try {
       if(mCloudProps.has("url")){
         hostUrl = mCloudProps.getString("url");
+        appType = "node";
       } else {
         JSONObject hosts = mCloudProps.getJSONObject("hosts");
         if ("dev".equalsIgnoreCase(appMode)) {
@@ -94,15 +95,15 @@ public class FHActRequest extends FHRemote {
           hostUrl = hosts.getString("releaseCloudUrl");
           appType = hosts.getString("releaseCloudType");
         }
-        hostUrl = hostUrl.endsWith("/") ? hostUrl : hostUrl + "/";
-        if ("node".equalsIgnoreCase(appType)) {
-          hostUrl = hostUrl + getPath();
-        } else {
-          String domain = mCloudProps.getString("domain");
-          String appId = mProperties.getProperty(APP_ID_KEY);
-          hostUrl = hostUrl + "box/srv/1.1/act/" + domain + "/" + appId + "/"
-              + mRemoteAct + "/" + appId;
-        }
+      }
+      hostUrl = hostUrl.endsWith("/") ? hostUrl : hostUrl + "/";
+      if ("node".equalsIgnoreCase(appType)) {
+        hostUrl = hostUrl + getPath();
+      } else {
+        String domain = mCloudProps.getString("domain");
+        String appId = mProperties.getProperty(APP_ID_KEY);
+        hostUrl = hostUrl + "box/srv/1.1/act/" + domain + "/" + appId + "/"
+            + mRemoteAct + "/" + appId;
       }
       FHLog.v(LOG_TAG, "act url = " + hostUrl);
     } catch (Exception e) {
