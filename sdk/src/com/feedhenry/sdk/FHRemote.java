@@ -17,6 +17,7 @@ public abstract class FHRemote implements FHAct{
   
   protected static final String APP_HOST_KEY = "host";
   protected static final String APP_PROJECT_KEY = "projectid";
+  protected static final String APP_CONNECTION_TAG_KEY = "connectiontag";
   protected static final String APP_ID_KEY = "appid";
   protected static final String APP_APIKEY_KEY = "appkey";
   protected static final String APP_MODE_KEY = "mode";
@@ -87,6 +88,12 @@ public abstract class FHRemote implements FHAct{
       String projectId =  mProperties.getProperty(APP_PROJECT_KEY);
       if(projectId.length() > 0){
         defaultParams.put("projectid", projectId); 
+      }
+    }
+    if(mProperties.contains(APP_CONNECTION_TAG_KEY)){
+      String connectionTag =  mProperties.getProperty(APP_CONNECTION_TAG_KEY);
+      if(connectionTag.length() > 0){
+        defaultParams.put("connectiontag", connectionTag); 
       }
     }
     
