@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
+import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
@@ -95,7 +96,7 @@ public class FHAuthRequest extends FHRemote {
     try{
       reqData.put("policyId", mPolicyId);
       reqData.put("device", mUDID);
-      reqData.put("clientToken", mProperties.getProperty(APP_ID_KEY));
+      reqData.put("clientToken", mProperties.getProperty(FH.APP_ID_KEY));
       JSONObject params = new JSONObject();
       if(null != mUserName && null != mPassword){
         params.put("userId", mUserName);

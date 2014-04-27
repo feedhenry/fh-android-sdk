@@ -26,4 +26,10 @@ public interface FHAct {
     */
    public void executeAsync(FHActCallback pCallback) throws Exception;
    
+   /**
+    * Set the client unique id (device id) for the request
+    * @param pUDID the unique device id
+    */
+   public void setUDID(String pUDID);
+   
 }
