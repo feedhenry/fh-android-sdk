@@ -33,10 +33,14 @@ public class CloudProps {
           hostUrl = mCloudProps.getString("url");
         } else {
           JSONObject hosts = mCloudProps.getJSONObject("hosts");
-          if ("dev".equalsIgnoreCase(appMode)) {
-            hostUrl = hosts.getString("debugCloudUrl");
+          if(hosts.has("url")){
+            hostUrl = hosts.getString("url");
           } else {
-            hostUrl = hosts.getString("releaseCloudUrl");
+            if ("dev".equalsIgnoreCase(appMode)) {
+              hostUrl = hosts.getString("debugCloudUrl");
+            } else {
+              hostUrl = hosts.getString("releaseCloudUrl");
+            }
           }
         }
         hostUrl = hostUrl.endsWith("/") ? hostUrl.substring(0,hostUrl.length() - 1) : hostUrl;

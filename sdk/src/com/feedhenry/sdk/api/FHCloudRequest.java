@@ -73,7 +73,6 @@ public class FHCloudRequest  extends FHRemote {
 
 	@Override
 	protected JSONObject getRequestArgs() {
-	  addDefaultParams(mArgs);
 		return mArgs;
 	}
 
@@ -82,16 +81,16 @@ public class FHCloudRequest  extends FHRemote {
     try {
       switch (mMethod) {
       case GET:
-        FHHttpClient.get(getURL(), mHeaders, mArgs, pCallback);
+        FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
         break;
       case PUT:
-        FHHttpClient.put(getURL(), mHeaders, mArgs, pCallback);
+        FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
         break;
       case POST:
-        FHHttpClient.post(getURL(), mHeaders, mArgs, pCallback);
+        FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
         break;
       case DELETE:
-        FHHttpClient.delete(getURL(), mHeaders, mArgs, pCallback);
+        FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
         break;
       default:
         break;

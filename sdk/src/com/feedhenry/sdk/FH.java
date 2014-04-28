@@ -3,9 +3,13 @@ package com.feedhenry.sdk;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Properties;
 
 import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -356,6 +360,26 @@ public class FH {
     }
     
     return defaultParams;
+  }
+  
+  public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders) throws Exception {
+    ArrayList<Header> headers = new ArrayList<Header>();
+    JSONObject defaultParams = FH.getDefaultParams(); 
+    Iterator<String> it = defaultParams.keys();
+    while(it.hasNext()){
+      String key = it.next();
+      String value = defaultParams.getString(key);
+      String headerName = "X-FH-" + key;
+      Header h = new BasicHeader(headerName, value);
+      headers.add(h);
+    }
+    if(null != pHeaders){
+      for(Header he: pHeaders){
+        headers.add(he);
+      }
+    }
+    Header[] retheaders = new Header[headers.size()];
+    return headers.toArray(retheaders);
   }
   
   /**

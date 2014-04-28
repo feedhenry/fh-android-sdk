@@ -1,7 +1,12 @@
 package com.feedhenry.sdk;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -42,7 +47,7 @@ public abstract class FHRemote implements FHAct{
   @Override
   public void executeAsync(FHActCallback pCallback) throws Exception {
     try{
-      FHHttpClient.post(getApiURl(), null, getRequestArgs(), pCallback);
+      FHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback);
     }catch(Exception e){
       FHLog.e(LOG_TAG, e.getMessage(), e);
       throw e;
@@ -59,20 +64,11 @@ public abstract class FHRemote implements FHAct{
     return url;
   }
   
-  protected void addDefaultParams(JSONObject pParams){
-    try{
-      if(null != pParams){
-        JSONObject defaultParams = FH.getDefaultParams();
-        if(!pParams.has("__fh")){
-          pParams.put("__fh", defaultParams);
-        }
-      }
-    } catch (Exception e){
-      FHLog.e(LOG_TAG, e.getMessage(), e);
-    }
-  }
-  
   protected abstract String getPath();
   protected abstract JSONObject getRequestArgs();
+  
+  protected Header[] buildHeaders(Header[] pHeaders) throws Exception{
+    return FH.getDefaultParamsAsHeaders(pHeaders);
+  }
 
 }

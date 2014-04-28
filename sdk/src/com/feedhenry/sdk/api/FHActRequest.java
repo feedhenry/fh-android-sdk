@@ -78,7 +78,6 @@ public class FHActRequest extends FHRemote {
   }
 
   protected JSONObject getRequestArgs() {
-    addDefaultParams(mArgs);
     return mArgs;
   }
 
