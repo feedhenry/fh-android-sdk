@@ -92,23 +92,27 @@ public class FHHttpClient {
       super();
       callback = pCallback;
     }
+    
 
-    public void onSuccess(int pStatusCode, Header[] pHeaders, JSONObject pRes) {
+    @Override
+    public void onSuccess(int pStatusCode, Header[] pHeaders, org.json.JSONObject pRes) {
       FHLog.v(LOG_TAG, "Got response : " + pRes.toString());
       if (null != callback) {
-        FHResponse fhres = new FHResponse(pRes, null, null, null);
+        FHResponse fhres = new FHResponse(new JSONObject(pRes.toString()), null, null, null);
+        callback.success(fhres);
+      }
+    }
+    
+    @Override
+    public void onSuccess(int pStatusCode, Header[] pHeaders, org.json.JSONArray pRes) {
+      FHLog.v(LOG_TAG, "Got response : " + pRes.toString());
+      if (null != callback) {
+        FHResponse fhres = new FHResponse(null, new JSONArray(pRes.toString()), null, null);
         callback.success(fhres);
       }
     }
 
-    public void onSuccess(int pStatusCode, Header[] pHeaders, JSONArray pRes) {
-      FHLog.v(LOG_TAG, "Got response : " + pRes.toString());
-      if (null != callback) {
-        FHResponse fhres = new FHResponse(null, pRes, null, null);
-        callback.success(fhres);
-      }
-    }
-
+    @Override
     public void onFailure(int pStatusCode, Header[] pHeaders, String pContent, Throwable pError) {
       FHLog.e(LOG_TAG, pError.getMessage(), pError);
       if (null != callback) {

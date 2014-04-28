@@ -61,7 +61,7 @@ public class FH {
   
   public static final String USER_AGENT_TEMP = "Android %s; %s";
   
-  public static final String VERSION = "1.2.2"; //TODO: need to find a better way to automatically update this version value
+  public static final String VERSION = "2.0.0"; //DO NOT CHANGE, the ant build task will automatically update this value. Update it in VERSION.txt
   private static String USER_AGENT = null;
   
   private static boolean mInitCalled = false;
@@ -116,11 +116,11 @@ public class FH {
       mContext.registerReceiver(mReceiver, filter);
       InputStream in = null;
       try{
-    	try{
-    		in = pContext.getAssets().open(NEW_PROPERTY_FILE);
-    	}catch(IOException ioe){
-    		in = pContext.getAssets().open(OLD_PROPERTY_FILE);
-    	}
+    	  try{
+    		  in = pContext.getAssets().open(NEW_PROPERTY_FILE);
+    	  }catch(IOException ioe){
+    		  in = pContext.getAssets().open(OLD_PROPERTY_FILE);
+    	  }
         mProperties = new Properties();
         mProperties.load(in);
       } catch(IOException e){
@@ -363,7 +363,7 @@ public class FH {
    * @param pPath the path to the cloud API
    * @param pMethod currently supports GET, POST, PUT and DELETE
    * @param pHeaders headers need to be set, can be null
-   * @param pParams the request params, can be null. Will be converted to query params depending on the HTTP method
+   * @param pParams the request params, can be null. Will be converted to query strings depending on the HTTP method
    * @param pCallback the callback to be executed when the cloud call is finished
    * @throws Exception
    */
@@ -406,7 +406,7 @@ public class FH {
   }
   
   private static void getDeviceId(Context pContext){
-    mUDID = android.provider.Settings.System.getString(pContext.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+    mUDID = android.provider.Settings.Secure.getString(pContext.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
   }
   
   private static void setUserAgent(){
