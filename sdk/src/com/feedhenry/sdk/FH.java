@@ -3,8 +3,13 @@ package com.feedhenry.sdk;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.Properties;
 
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -18,7 +23,9 @@ import android.content.SharedPreferences;
 
 import com.feedhenry.sdk.api.FHActRequest;
 import com.feedhenry.sdk.api.FHAuthRequest;
+import com.feedhenry.sdk.api.FHCloudRequest;
 import com.feedhenry.sdk.api.FHInitializeRequest;
+import com.feedhenry.sdk.api.FHCloudRequest.Methods;
 import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
 /**
@@ -28,12 +35,22 @@ public class FH {
 
   private static boolean mReady = false;
   private static Properties mProperties = null;
-  private static JSONObject mCloudProps = null;
-  private static final String PROPERTY_FILE = "fh.properties";
+  private static CloudProps mCloudProps = null;
+  private static final String OLD_PROPERTY_FILE = "fh.properties";
+  private static final String NEW_PROPERTY_FILE = "fhconfig.properties";
   private static final String LOG_TAG = "com.feedhenry.sdk.FH";
   
-  private static final String FH_API_ACT = "cloud";
+  public static final String APP_HOST_KEY = "host";
+  public static final String APP_PROJECT_KEY = "projectid";
+  public static final String APP_CONNECTION_TAG_KEY = "connectiontag";
+  public static final String APP_ID_KEY = "appid";
+  public static final String APP_APIKEY_KEY = "appkey";
+  public static final String APP_MODE_KEY = "mode";
+  
+  private static final String FH_API_ACT = "act";
   private static final String FH_API_AUTH = "auth";
+  private static final String FH_API_CLOUD = "cloud";
+  
   private static String mUDID;
   
   
@@ -48,7 +65,7 @@ public class FH {
   
   public static final String USER_AGENT_TEMP = "Android %s; %s";
   
-  public static final String VERSION = "1.2.2"; //TODO: need to find a better way to automatically update this version value
+  public static final String VERSION = "2.0.0"; //DO NOT CHANGE, the ant build task will automatically update this value. Update it in VERSION.txt
   private static String USER_AGENT = null;
   
   private static boolean mInitCalled = false;
@@ -103,12 +120,16 @@ public class FH {
       mContext.registerReceiver(mReceiver, filter);
       InputStream in = null;
       try{
-        in = pContext.getAssets().open(PROPERTY_FILE);
+    	  try{
+    		  in = pContext.getAssets().open(NEW_PROPERTY_FILE);
+    	  }catch(IOException ioe){
+    		  in = pContext.getAssets().open(OLD_PROPERTY_FILE);
+    	  }
         mProperties = new Properties();
         mProperties.load(in);
       } catch(IOException e){
         mReady = false;
-        FHLog.e(LOG_TAG, "Can not load property file : " + PROPERTY_FILE, e);
+        FHLog.e(LOG_TAG, "Can not load property file.", e);
       } finally{
         if(null != in){
           try {
@@ -130,14 +151,15 @@ public class FH {
             public void success(FHResponse pResponse) {            
               mReady = true;
               FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
-              mCloudProps = pResponse.getJson();
+              JSONObject cloudProps = pResponse.getJson();
+              mCloudProps = new CloudProps(mProperties, cloudProps);
               
               // Save init
               SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
               SharedPreferences.Editor editor = prefs.edit();
-              if (mCloudProps.has("init")) {
+              if (cloudProps.has("init")) {
                 try {
-                  editor.putString("init", mCloudProps.getString("init"));
+                  editor.putString("init", cloudProps.getString("init"));
                   editor.commit();
                 } catch (JSONException e) {
                   e.printStackTrace();
@@ -188,12 +210,15 @@ public class FH {
     }
     FHAct action = null;
     if(FH_API_ACT.equalsIgnoreCase(pAction)){
-      action = new FHActRequest(mContext, mProperties, mCloudProps);
+      action = new FHActRequest(mContext,mCloudProps);
     } else if(FH_API_AUTH.equalsIgnoreCase(pAction)){
       action = new FHAuthRequest(mContext, mProperties);
+    } else if(FH_API_CLOUD.equalsIgnoreCase(pAction)){
+      action = new FHCloudRequest(mContext, mCloudProps);
     } else {
       FHLog.w(LOG_TAG, "Invalid action : " + pAction);
     }
+    action.setUDID(mUDID);
     return action;
   }
   
@@ -215,6 +240,7 @@ public class FH {
     return mReady;
   }
   
+  @Deprecated
   /**
    * Build an instance of {@link FHActRequest} object to perform act request. 
    * @param pRemoteAction the name of the cloud side function
@@ -236,7 +262,6 @@ public class FH {
    */
   public static FHAuthRequest buildAuthRequest() throws FHNotReadyException{
     FHAuthRequest request = (FHAuthRequest) buildAction(FH_API_AUTH);
-    request.setUDID(mUDID);
     return request;
   }
   
@@ -248,7 +273,6 @@ public class FH {
    */
   public static FHAuthRequest buildAuthRequest(String pPolicyId) throws FHNotReadyException{
     FHAuthRequest request = (FHAuthRequest) buildAction(FH_API_AUTH);
-    request.setUDID(mUDID);
     request.setAuthPolicyId(pPolicyId);
     return request;
   }
@@ -263,9 +287,122 @@ public class FH {
    */
   public static FHAuthRequest buildAuthRequest(String pPolicyId, String pUserName, String pPassword) throws FHNotReadyException {
     FHAuthRequest request = (FHAuthRequest) buildAction(FH_API_AUTH);
-    request.setUDID(mUDID);
     request.setAuthUser(pPolicyId, pUserName, pPassword);
     return request;
+  }
+  
+  /**
+   * Build an instance of FHCloudRequest object to call cloud APIs
+   * @param pPath the path of the cloud API
+   * @param pMethod currently supports GET, POST, PUT and DELETE
+   * @param pHeaders headers need to be set, can be null
+   * @param pParams the request params, can be null
+   * @return an instance of FHCloudRequest
+   * @throws Exception
+   */
+  public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams) throws Exception {
+    FHCloudRequest request = (FHCloudRequest) buildAction(FH_API_CLOUD);
+    request.setPath(pPath);
+    request.setHeaders(pHeaders);
+    request.setMethod(Methods.parse(pMethod));
+    request.setRequestArgs(pParams);
+    return request;
+  }
+  
+  /**
+   * Get the cloud host after app finish initialising
+   * @return the cloud host of the app
+   * @throws FHNotReadyException
+   */
+  public static String getCloudHost() throws FHNotReadyException{
+    if(null == mCloudProps){
+      throw new FHNotReadyException();
+    }
+    return mCloudProps.getCloudHost();
+  }
+  
+  /**
+   * Get the default params for customised HTTP Requests.
+   * Those params will be required to enable app analytics on the FH platform.
+   * You can either add the params to your request body as a JSONObject with the key "__fh",
+   * or use the {@link #getDefaultParamsAsHeaders(Header[]) getDefaultParamsAsHeaders} method to add them as HTTP request headers.
+   * @return a JSONObject contains the default params
+   * @throws Exception
+   */
+  public static JSONObject getDefaultParams() throws Exception {
+    if(null == mProperties){
+      throw new Exception("app property file is not loaded");
+    }
+    JSONObject defaultParams = new JSONObject();
+    defaultParams.put("appid", mProperties.getProperty(APP_ID_KEY));
+    defaultParams.put("appkey", mProperties.getProperty(APP_APIKEY_KEY));
+    defaultParams.put("cuid", mUDID);
+    defaultParams.put("destination", "android");
+    defaultParams.put("sdk_version", "FH_ANDROID_SDK/" + FH.VERSION);
+    if(mProperties.contains(APP_PROJECT_KEY)){
+      String projectId =  mProperties.getProperty(APP_PROJECT_KEY);
+      if(projectId.length() > 0){
+        defaultParams.put("projectid", projectId); 
+      }
+    }
+    if(mProperties.contains(APP_CONNECTION_TAG_KEY)){
+      String connectionTag =  mProperties.getProperty(APP_CONNECTION_TAG_KEY);
+      if(connectionTag.length() > 0){
+        defaultParams.put("connectiontag", connectionTag); 
+      }
+    }
+    
+    // Load init
+    SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
+    if (prefs != null) {
+      String init = prefs.getString("init", null);
+      if (init != null) {
+        JSONObject initObj = new JSONObject(init);
+        defaultParams.put("init", initObj);
+      }
+    }
+    
+    return defaultParams;
+  }
+  
+  /**
+   * Similar to {@link getDefaultParams() getDefaultParams}, but return HTTP headers instead
+   * @param pHeaders existing headers
+   * @return new headers by combining existing headers and default headers
+   * @throws Exception
+   */
+  public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders) throws Exception {
+    ArrayList<Header> headers = new ArrayList<Header>();
+    JSONObject defaultParams = FH.getDefaultParams(); 
+    Iterator<String> it = defaultParams.keys();
+    while(it.hasNext()){
+      String key = it.next();
+      String value = defaultParams.getString(key);
+      String headerName = "X-FH-" + key;
+      Header h = new BasicHeader(headerName, value);
+      headers.add(h);
+    }
+    if(null != pHeaders){
+      for(Header he: pHeaders){
+        headers.add(he);
+      }
+    }
+    Header[] retheaders = new Header[headers.size()];
+    return headers.toArray(retheaders);
+  }
+  
+  /**
+   * Call cloud APIs asynchronously.
+   * @param pPath the path to the cloud API
+   * @param pMethod currently supports GET, POST, PUT and DELETE
+   * @param pHeaders headers need to be set, can be null
+   * @param pParams the request params, can be null. Will be converted to query strings depending on the HTTP method
+   * @param pCallback the callback to be executed when the cloud call is finished
+   * @throws Exception
+   */
+  public static void cloud(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback) throws Exception {
+    FHCloudRequest cloudRequest = buildCloudRequest(pPath, pMethod, pHeaders, pParams);
+    cloudRequest.executeAsync(pCallback);
   }
   
   /**
@@ -302,7 +439,7 @@ public class FH {
   }
   
   private static void getDeviceId(Context pContext){
-    mUDID = android.provider.Settings.System.getString(pContext.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+    mUDID = android.provider.Settings.Secure.getString(pContext.getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
   }
   
   private static void setUserAgent(){

@@ -7,6 +7,7 @@ import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.api.FHActRequest;
+import com.feedhenry.sdk.api.FHCloudRequest;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -52,7 +53,7 @@ public class FHActActivity extends ListActivity {
     try{
       //build the request object. The first parameter is the name of the cloud side function to be called,
       //the second parameter is the data parameter for the function
-      FHActRequest request = FH.buildActRequest("getTweets", new JSONObject());
+      FHCloudRequest request = FH.buildCloudRequest("getTweets", "GET", null, null);
       //the request will be executed asynchronously
       request.executeAsync(new FHActCallback() {
         @Override

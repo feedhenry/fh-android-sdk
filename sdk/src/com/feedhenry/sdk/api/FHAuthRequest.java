@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.http.Header;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -14,6 +15,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
+import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
@@ -93,18 +95,18 @@ public class FHAuthRequest extends FHRemote {
   protected JSONObject getRequestArgs() {
     JSONObject reqData = new JSONObject();
     try{
+      reqData.put("__fh", FH.getDefaultParams()); //keep backward compatible
       reqData.put("policyId", mPolicyId);
       reqData.put("device", mUDID);
-      reqData.put("clientToken", mProperties.getProperty(APP_ID_KEY));
+      reqData.put("clientToken", mProperties.getProperty(FH.APP_ID_KEY));
       JSONObject params = new JSONObject();
       if(null != mUserName && null != mPassword){
         params.put("userId", mUserName);
         params.put("password", mPassword);
       }
       reqData.put("params", params);
-      addDefaultParams(reqData);
       FHLog.v(LOG_TAG, "auth params = " + reqData.toString());
-    }catch(JSONException e){
+    }catch(Exception e){
       FHLog.e(LOG_TAG, e.getMessage(), e);
     }
     return reqData;
@@ -214,5 +216,10 @@ public class FHAuthRequest extends FHRemote {
       }
     }
     
+  }
+
+  @Override
+  protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    return null;
   }
 }

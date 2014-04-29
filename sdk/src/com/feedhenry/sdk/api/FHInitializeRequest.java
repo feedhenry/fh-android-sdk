@@ -2,6 +2,7 @@ package com.feedhenry.sdk.api;
 
 import java.util.Properties;
 
+import org.apache.http.Header;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -35,13 +36,18 @@ public class FHInitializeRequest extends FHRemote {
   protected JSONObject getRequestArgs() {
     JSONObject reqData = new JSONObject();
     try{
-      reqData = getFHParams();
+      reqData = FH.getDefaultParams();
       FHLog.v(LOG_TAG, "FH init request data : " + reqData.toString());
-    }catch(JSONException e){
+    }catch(Exception e){
       FHLog.w(LOG_TAG, "Failed to add data to initialise request");
       FHLog.e(LOG_TAG, e.getMessage(), e);
     }
     return reqData;
+  }
+
+  @Override
+  protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    return null;
   }
 
 }

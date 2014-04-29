@@ -62,9 +62,13 @@
         </fileset>
        </javadoc>
     </target>
+    
+    <target name="update_build_version">
+        <replaceregexp file="src/com/feedhenry/sdk/FH.java" match="VERSION = (.*);" replace="VERSION = &quot;${sdk.version}&quot;;" />
+    </target>
 
     <!-- Compile java files into classes -->
-    <target name="compile">
+    <target name="compile" depends="update_build_version">
         <mkdir dir="${build.dir}" />
         <mkdir dir="${classes.dir}" />
 

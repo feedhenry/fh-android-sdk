@@ -2,11 +2,10 @@ package com.feedhenry.sdk;
 
 import java.util.Properties;
 
-import org.json.fh.JSONException;
+import org.apache.http.Header;
 import org.json.fh.JSONObject;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.feedhenry.sdk.utils.FHLog;
 
@@ -15,11 +14,7 @@ import com.feedhenry.sdk.utils.FHLog;
  */
 public abstract class FHRemote implements FHAct{
   
-  protected static final String APP_HOST_KEY = "host";
-  protected static final String APP_PROJECT_KEY = "projectid";
-  protected static final String APP_ID_KEY = "appid";
-  protected static final String APP_APIKEY_KEY = "appkey";
-  protected static final String APP_MODE_KEY = "mode";
+ 
   protected static final String PATH_PREFIX = "/box/srv/1.1/";
   
   protected static String LOG_TAG = "com.feedhenry.sdk.FHRemote";
@@ -46,7 +41,7 @@ public abstract class FHRemote implements FHAct{
   @Override
   public void executeAsync(FHActCallback pCallback) throws Exception {
     try{
-      FHHttpClient.post(getApiURl(), getRequestArgs(), pCallback);
+      FHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback);
     }catch(Exception e){
       FHLog.e(LOG_TAG, e.getMessage(), e);
       throw e;
@@ -58,52 +53,14 @@ public abstract class FHRemote implements FHAct{
   }
   
   protected String getApiURl(){
-    String apiUrl = mProperties.getProperty(APP_HOST_KEY);
+    String apiUrl = mProperties.getProperty(FH.APP_HOST_KEY);
     String url = (apiUrl.endsWith("/") ? apiUrl.substring(0, apiUrl.length() - 1) : apiUrl) + PATH_PREFIX + getPath();
     return url;
   }
   
-  protected void addDefaultParams(JSONObject pParams){
-    try{
-      if(null != pParams){
-        JSONObject defaultParams = getFHParams();
-        if(!pParams.has("__fh")){
-          pParams.put("__fh", defaultParams);
-        }
-      }
-    } catch (Exception e){
-      FHLog.e(LOG_TAG, e.getMessage(), e);
-    }
-  }
-  
-  protected JSONObject getFHParams() throws JSONException {
-    JSONObject defaultParams = new JSONObject();
-    defaultParams.put("appid", mProperties.getProperty(APP_ID_KEY));
-    defaultParams.put("appkey", mProperties.getProperty(APP_APIKEY_KEY));
-    defaultParams.put("cuid", mUDID);
-    defaultParams.put("destination", "android");
-    defaultParams.put("sdk_version", "FH_ANDROID_SDK/" + FH.VERSION);
-    if(mProperties.contains(APP_PROJECT_KEY)){
-      String projectId =  mProperties.getProperty(APP_PROJECT_KEY);
-      if(projectId.length() > 0){
-        defaultParams.put("projectid", projectId); 
-      }
-    }
-    
-    // Load init
-    SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
-    if (prefs != null) {
-      String init = prefs.getString("init", null);
-      if (init != null) {
-        JSONObject initObj = new JSONObject(init);
-        defaultParams.put("init", initObj);
-      }
-    }
-    
-    return defaultParams;
-  }
-  
   protected abstract String getPath();
   protected abstract JSONObject getRequestArgs();
+  
+  protected abstract Header[] buildHeaders(Header[] pHeaders) throws Exception; 
 
 }

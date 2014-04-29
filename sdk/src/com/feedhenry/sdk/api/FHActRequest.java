@@ -1,15 +1,14 @@
 package com.feedhenry.sdk.api;
 
-import java.util.Properties;
-
+import org.apache.http.Header;
+import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
 import android.content.Context;
 
-import com.feedhenry.sdk.FHActCallback;
-import com.feedhenry.sdk.FHHttpClient;
+import com.feedhenry.sdk.CloudProps;
+import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHRemote;
-import com.feedhenry.sdk.utils.FHLog;
 
 /**
  * The request for calling the cloud side function of the app. Example:
@@ -35,8 +34,7 @@ import com.feedhenry.sdk.utils.FHLog;
 public class FHActRequest extends FHRemote {
 
   private String mRemoteAct;
-  private static final String METHOD = "cloud";
-  private JSONObject mCloudProps;
+  private CloudProps mCloudProps;
   protected JSONObject mArgs = new JSONObject();
 
   protected static String LOG_TAG = "com.feedhenry.sdk.api.FHActRequest";
@@ -49,66 +47,16 @@ public class FHActRequest extends FHRemote {
    * @param pCloudProps
    *          the properties returned from the cloud
    */
-  public FHActRequest(Context context, Properties pProps, JSONObject pCloudProps) {
-    super(context, pProps);
+  public FHActRequest(Context context, CloudProps pCloudProps) {
+    super(context, pCloudProps.getAppProperties());
     mCloudProps = pCloudProps;
   }
-
-  @Override
-  public void executeAsync(FHActCallback pCallback) throws Exception {
-    try {
-      String hostUrl = getHost();
-      String scheme = "http";
-      int port = 80;
-      if (hostUrl.startsWith("https")) {
-        scheme = "https";
-        port = 443;
-        hostUrl = hostUrl.replace("https://", "");
-      } else {
-        hostUrl = hostUrl.replace("http://", "");
-      }
-      FHHttpClient.post(scheme, hostUrl, port, "/" + getPath(),
-          getRequestArgs(), pCallback);
-    } catch (Exception e) {
-      FHLog.e(LOG_TAG, e.getMessage(), e);
-      throw e;
-    }
-  }
-
-  /**
-   * @deprecated
-   */
+  
+  
   protected String getApiURl() {
-    String hostUrl = null;
-    String appType = null;
-    String appMode = mProperties.getProperty(APP_MODE_KEY);
-    try {
-      if(mCloudProps.has("url")){
-        hostUrl = mCloudProps.getString("url");
-        appType = "node";
-      } else {
-        JSONObject hosts = mCloudProps.getJSONObject("hosts");
-        if ("dev".equalsIgnoreCase(appMode)) {
-          hostUrl = hosts.getString("debugCloudUrl");
-          appType = hosts.getString("debugCloudType");
-        } else {
-          hostUrl = hosts.getString("releaseCloudUrl");
-          appType = hosts.getString("releaseCloudType");
-        }
-      }
-      hostUrl = hostUrl.endsWith("/") ? hostUrl : hostUrl + "/";
-      if ("node".equalsIgnoreCase(appType)) {
-        hostUrl = hostUrl + getPath();
-      } else {
-        String domain = mCloudProps.getString("domain");
-        String appId = mProperties.getProperty(APP_ID_KEY);
-        hostUrl = hostUrl + "box/srv/1.1/act/" + domain + "/" + appId + "/"
-            + mRemoteAct + "/" + appId;
-      }
-      FHLog.v(LOG_TAG, "act url = " + hostUrl);
-    } catch (Exception e) {
-      FHLog.e(LOG_TAG, e.getMessage(), e);
-    }
+    String host = mCloudProps.getCloudHost();
+    String path = getPath();
+    String hostUrl = host + (path.startsWith("/")? path: ("/" + path));
     return hostUrl;
   }
 
@@ -127,40 +75,33 @@ public class FHActRequest extends FHRemote {
    * 
    * @param pArgs
    *          the parameters that will be passed to the cloud side function
+   * @throws Exception 
+   * @throws JSONException 
    */
-  public void setArgs(JSONObject pArgs) {
+  public void setArgs(JSONObject pArgs){
+    //keep backward compatibility
+    if(!mArgs.has("__fh")){
+      try{
+        mArgs.put("__fh", FH.getDefaultParams());
+      } catch(Exception e){
+        
+      }
+    }
     mArgs = pArgs;
   }
 
   protected JSONObject getRequestArgs() {
-    addDefaultParams(mArgs);
     return mArgs;
-  }
-
-  protected String getHost() {
-    String hostUrl = null;
-    String appMode = mProperties.getProperty(APP_MODE_KEY);
-    try {
-      if (mCloudProps.has("url")) {
-        hostUrl = mCloudProps.getString("url");
-      } else {
-        JSONObject hosts = mCloudProps.getJSONObject("hosts");
-        if ("dev".equalsIgnoreCase(appMode)) {
-          hostUrl = hosts.getString("debugCloudUrl");
-        } else {
-          hostUrl = hosts.getString("releaseCloudUrl");
-        }
-      }
-      hostUrl = hostUrl.endsWith("/") ? hostUrl.substring(0,hostUrl.length() - 1) : hostUrl;
-      FHLog.v(LOG_TAG, "host url = " + hostUrl);
-    } catch (Exception e) {
-      FHLog.e(LOG_TAG, e.getMessage(), e);
-    }
-    return hostUrl;
   }
 
   @Override
   protected String getPath() {
     return "cloud/" + mRemoteAct;
+  }
+
+
+  @Override
+  protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    return null;
   }
 }
