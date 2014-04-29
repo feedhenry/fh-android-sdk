@@ -8,6 +8,7 @@ import org.json.fh.JSONObject;
 import android.content.Context;
 
 import com.feedhenry.sdk.CloudProps;
+import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHHttpClient;
 import com.feedhenry.sdk.FHRemote;
@@ -104,6 +105,10 @@ public class FHCloudRequest  extends FHRemote {
   private String getURL(){
     String host = mCloudProps.getCloudHost();
     return host + (getPath().startsWith("/")? getPath(): ("/" + getPath()));
+  }
+  
+  protected Header[] buildHeaders(Header[] pHeaders) throws Exception{
+    return FH.getDefaultParamsAsHeaders(pHeaders);
   }
 
 }

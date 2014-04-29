@@ -1,10 +1,13 @@
 package com.feedhenry.sdk.api;
 
+import org.apache.http.Header;
+import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
 import android.content.Context;
 
 import com.feedhenry.sdk.CloudProps;
+import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHRemote;
 
 /**
@@ -72,8 +75,18 @@ public class FHActRequest extends FHRemote {
    * 
    * @param pArgs
    *          the parameters that will be passed to the cloud side function
+   * @throws Exception 
+   * @throws JSONException 
    */
-  public void setArgs(JSONObject pArgs) {
+  public void setArgs(JSONObject pArgs){
+    //keep backward compatibility
+    if(!mArgs.has("__fh")){
+      try{
+        mArgs.put("__fh", FH.getDefaultParams());
+      } catch(Exception e){
+        
+      }
+    }
     mArgs = pArgs;
   }
 
@@ -84,5 +97,11 @@ public class FHActRequest extends FHRemote {
   @Override
   protected String getPath() {
     return "cloud/" + mRemoteAct;
+  }
+
+
+  @Override
+  protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    return null;
   }
 }

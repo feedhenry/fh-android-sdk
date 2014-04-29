@@ -2,6 +2,7 @@ package com.feedhenry.sdk.api;
 
 import java.util.Properties;
 
+import org.apache.http.Header;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -42,6 +43,11 @@ public class FHInitializeRequest extends FHRemote {
       FHLog.e(LOG_TAG, e.getMessage(), e);
     }
     return reqData;
+  }
+
+  @Override
+  protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    return null;
   }
 
 }

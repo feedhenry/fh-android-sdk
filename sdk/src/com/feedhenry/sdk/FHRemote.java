@@ -61,8 +61,6 @@ public abstract class FHRemote implements FHAct{
   protected abstract String getPath();
   protected abstract JSONObject getRequestArgs();
   
-  protected Header[] buildHeaders(Header[] pHeaders) throws Exception{
-    return FH.getDefaultParamsAsHeaders(pHeaders);
-  }
+  protected abstract Header[] buildHeaders(Header[] pHeaders) throws Exception; 
 
 }

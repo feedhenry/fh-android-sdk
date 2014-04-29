@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.http.Header;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -94,6 +95,7 @@ public class FHAuthRequest extends FHRemote {
   protected JSONObject getRequestArgs() {
     JSONObject reqData = new JSONObject();
     try{
+      reqData.put("__fh", FH.getDefaultParams()); //keep backward compatible
       reqData.put("policyId", mPolicyId);
       reqData.put("device", mUDID);
       reqData.put("clientToken", mProperties.getProperty(FH.APP_ID_KEY));
@@ -104,7 +106,7 @@ public class FHAuthRequest extends FHRemote {
       }
       reqData.put("params", params);
       FHLog.v(LOG_TAG, "auth params = " + reqData.toString());
-    }catch(JSONException e){
+    }catch(Exception e){
       FHLog.e(LOG_TAG, e.getMessage(), e);
     }
     return reqData;
@@ -214,5 +216,10 @@ public class FHAuthRequest extends FHRemote {
       }
     }
     
+  }
+
+  @Override
+  protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    return null;
   }
 }
