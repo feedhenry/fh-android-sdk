@@ -1,17 +1,11 @@
 package com.feedhenry.sdk;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
-import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import com.feedhenry.sdk.utils.FHLog;
 

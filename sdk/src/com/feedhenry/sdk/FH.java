@@ -322,7 +322,10 @@ public class FH {
   }
   
   /**
-   * Get the default params for customised HTTP Requests
+   * Get the default params for customised HTTP Requests.
+   * Those params will be required to enable app analytics on the FH platform.
+   * You can either add the params to your request body as a JSONObject with the key "__fh",
+   * or use the {@link #getDefaultParamsAsHeaders(Header[]) getDefaultParamsAsHeaders} method to add them as HTTP request headers.
    * @return a JSONObject contains the default params
    * @throws Exception
    */
@@ -362,6 +365,12 @@ public class FH {
     return defaultParams;
   }
   
+  /**
+   * Similar to {@link getDefaultParams() getDefaultParams}, but return HTTP headers instead
+   * @param pHeaders existing headers
+   * @return new headers by combining existing headers and default headers
+   * @throws Exception
+   */
   public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders) throws Exception {
     ArrayList<Header> headers = new ArrayList<Header>();
     JSONObject defaultParams = FH.getDefaultParams(); 
