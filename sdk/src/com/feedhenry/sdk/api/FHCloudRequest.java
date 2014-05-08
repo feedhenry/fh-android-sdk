@@ -1,7 +1,5 @@
 package com.feedhenry.sdk.api;
 
-import java.util.Locale;
-
 import org.apache.http.Header;
 import org.json.fh.JSONObject;
 
@@ -24,16 +22,16 @@ public class FHCloudRequest  extends FHRemote {
     }
     
     public static Methods parse(String pMethod) throws Exception{
-      if(pMethod.toUpperCase(Locale.ENGLISH).equals(GET.toString())){
+      if(pMethod.equalsIgnoreCase("GET")){
         return GET;
-      } else if(pMethod.toUpperCase(Locale.ENGLISH).equals(POST)) {
+      } else if(pMethod.equalsIgnoreCase("POST")) {
         return POST;
-      } else if(pMethod.toUpperCase(Locale.ENGLISH).equals(PUT)){
+      } else if(pMethod.equalsIgnoreCase("PUT")){
         return PUT;
-      } else if(pMethod.toUpperCase(Locale.ENGLISH).equals(DELETE)){
+      } else if(pMethod.equalsIgnoreCase("DELETE")){
         return DELETE;
       } else {
-        throw new Exception("Unsupported HTTP method:" + pMethod.toUpperCase(Locale.ENGLISH));
+        throw new Exception("Unsupported HTTP method:" + pMethod);
       }
     }
   };

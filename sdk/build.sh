@@ -6,7 +6,6 @@ rm -rf "$DIST_DIR/*.jar"
 #First, run the ant task to generate the jar file
 ant clean
 ant jar
-ant doc
 
 # For some environments, you may need to specify an sdk.dir
 # e.g.

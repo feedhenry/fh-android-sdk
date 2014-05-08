@@ -39,6 +39,7 @@
 
     <!-- Build javadoc -->
     <target name="doc">
+        <delete dir="doc" />
         <javadoc 
             classpathref="classpath"
             destdir="doc"
@@ -98,7 +99,6 @@
     <!-- Clean out the build files -->
     <target name="clean">
         <delete dir="build" />
-        <delete dir="doc" />
         <delete dir="${dist.dir}" />
     </target>
 
