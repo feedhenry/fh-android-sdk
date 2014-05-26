@@ -65,7 +65,7 @@ public class FH {
   
   public static final String USER_AGENT_TEMP = "Android %s; %s";
   
-  public static final String VERSION = "2.0.0"; //DO NOT CHANGE, the ant build task will automatically update this value. Update it in VERSION.txt
+  public static final String VERSION = "2.0.1"; //DO NOT CHANGE, the ant build task will automatically update this value. Update it in VERSION.txt
   private static String USER_AGENT = null;
   
   private static boolean mInitCalled = false;
@@ -228,7 +228,11 @@ public class FH {
   
   public static void stop(){
     if(null != mReceiver){
-      mContext.unregisterReceiver(mReceiver);
+      try{
+        mContext.unregisterReceiver(mReceiver);
+      } catch (Exception e){
+        FHLog.w(LOG_TAG, "Failed to unregister receiver"); 
+      }
     }
   }
   
