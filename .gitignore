@@ -1,5 +1,4 @@
 sdk/bin/*
-sdk/gen/*
 example/bin/*
 example/gen/*
 sdk/local.properties
@@ -10,3 +9,4 @@ sdk/.settings/*
 FHStarterProject/bin/*
 FHStarterProject/gen/*
 *android-support-*.jar
+FHStarterProject/.settings/
