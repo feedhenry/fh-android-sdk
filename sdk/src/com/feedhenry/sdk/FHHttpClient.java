@@ -7,6 +7,8 @@ import org.apache.http.entity.StringEntity;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONObject;
 
+import android.os.Looper;
+
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -18,6 +20,12 @@ public class FHHttpClient {
 
   private static final String LOG_TAG = "com.feedhenry.sdk.FHHttpClient";
   
+  private static void ensureThreadLooperExist() {
+	if(null == Looper.myLooper()){
+	  Looper.prepare();
+	}
+  }
+  
   public static void put(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback) throws Exception {
     if (FH.isOnline()) {
       mClient.setUserAgent(FH.getUserAgent());
@@ -25,6 +33,7 @@ public class FHHttpClient {
       if (null != pParams) {
         entity = new StringEntity(pParams.toString(), "UTF-8");
       }
+      ensureThreadLooperExist();
       mClient.put(null, pUrl, pHeaders, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
     } else {
       FHResponse res = new FHResponse(null, null, new Exception("offline"),
@@ -36,6 +45,7 @@ public class FHHttpClient {
   public static void get(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback) throws Exception {
     if (FH.isOnline()) {
       mClient.setUserAgent(FH.getUserAgent());
+      ensureThreadLooperExist();
       mClient.get(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
     } else {
       FHResponse res = new FHResponse(null, null, new Exception("offline"),
@@ -51,6 +61,7 @@ public class FHHttpClient {
       if (null != pParams) {
         entity = new StringEntity(pParams.toString(), "UTF-8");
       }
+      ensureThreadLooperExist();
       mClient.post(null, pUrl, pHeaders, entity, "application/json",
           new FHJsonHttpResponseHandler(pCallback));
     } else {
@@ -63,6 +74,7 @@ public class FHHttpClient {
   public static void delete(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback) throws Exception {
     if (FH.isOnline()) {
       mClient.setUserAgent(FH.getUserAgent());
+      ensureThreadLooperExist();
       mClient.delete(null, pUrl, null, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
     } else {
       FHResponse res = new FHResponse(null, null, new Exception("offline"),
