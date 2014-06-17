@@ -132,22 +132,12 @@ public class FHAuthRequest extends FHRemote {
       FHActCallback tmpCallback = new FHActCallback() {
         @Override
         public void success(FHResponse pResponse) {
-          JSONObject jsonRes = pResponse.getJson();
+          final JSONObject jsonRes = pResponse.getJson();
           try{
             String status = jsonRes.getString("status");
             if("ok".equalsIgnoreCase(status)){
               if(jsonRes.has("url")){
-                String url = jsonRes.getString("url");
-                FHLog.v(LOG_TAG, "Got oAuth url back, url = " + url + ". Open it in new intent.");
-                Bundle data = new Bundle();
-                data.putString("url", url);
-                data.putString("title", "Login");
-                Intent i = new Intent(mPresentingActivity, FHOAuthIntent.class);
-                mReceiver = new OAuthURLRedirectReceiver(callback);
-                IntentFilter filter = new IntentFilter(FHOAuthWebView.BROADCAST_ACTION_FILTER);
-                mPresentingActivity.registerReceiver(mReceiver, filter);
-                i.putExtra("settings", data);
-                mPresentingActivity.startActivity(i);
+            	startAuthIntent(jsonRes, callback);
               } else {
                 callback.success(pResponse);
               }
@@ -166,6 +156,55 @@ public class FHAuthRequest extends FHRemote {
       };
       super.executeAsync(tmpCallback);
     }
+  }
+  
+  @Override
+  public void execute(FHActCallback pCallback) throws Exception {
+	if(null == mPresentingActivity){
+	  super.execute(pCallback);
+	} else {
+	  final FHActCallback callback = pCallback;
+	  FHActCallback tmpCallback = new FHActCallback() {
+	    @Override
+	    public void success(FHResponse pResponse) {
+	      final JSONObject jsonRes = pResponse.getJson();
+	      try{
+	        String status = jsonRes.getString("status");
+	        if("ok".equalsIgnoreCase(status)){
+	          if(jsonRes.has("url")){
+	            startAuthIntent(jsonRes, callback);
+	          } else {
+	            callback.success(pResponse);
+	          }
+	        } else {
+	          callback.fail(pResponse);
+	        }
+	      } catch (Exception e){
+	            
+	      }
+	    }
+	        
+	    @Override
+	    public void fail(FHResponse pResponse) {
+	      callback.fail(pResponse);
+	    }
+	  };
+	  super.execute(tmpCallback);
+	}
+  }
+  
+  private void startAuthIntent(final JSONObject pJsonRes, final FHActCallback pCallback) throws Exception {
+	String url = pJsonRes.getString("url");
+    FHLog.v(LOG_TAG, "Got oAuth url back, url = " + url + ". Open it in new intent.");
+    Bundle data = new Bundle();
+    data.putString("url", url);
+    data.putString("title", "Login");
+    Intent i = new Intent(mPresentingActivity, FHOAuthIntent.class);
+    mReceiver = new OAuthURLRedirectReceiver(pCallback);
+    IntentFilter filter = new IntentFilter(FHOAuthWebView.BROADCAST_ACTION_FILTER);
+    mPresentingActivity.registerReceiver(mReceiver, filter);
+    i.putExtra("settings", data);
+    mPresentingActivity.startActivity(i);
   }
   
   private class OAuthURLRedirectReceiver extends BroadcastReceiver {

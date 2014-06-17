@@ -11,21 +11,28 @@ import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 
 public class FHHttpClient {
 
   private static AsyncHttpClient mClient = new AsyncHttpClient();
+  private static SyncHttpClient mSyncClient = new SyncHttpClient();
 
   private static final String LOG_TAG = "com.feedhenry.sdk.FHHttpClient";
   
-  public static void put(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback) throws Exception {
+  public static void put(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback, boolean pUseSync) throws Exception {
     if (FH.isOnline()) {
-      mClient.setUserAgent(FH.getUserAgent());
       StringEntity entity = new StringEntity(new JSONObject().toString());
       if (null != pParams) {
         entity = new StringEntity(pParams.toString(), "UTF-8");
       }
-      mClient.put(null, pUrl, pHeaders, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+      if(pUseSync){
+    	mSyncClient.setUserAgent(FH.getUserAgent());
+    	mSyncClient.put(null, pUrl, pHeaders, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+      } else {
+    	mClient.setUserAgent(FH.getUserAgent());
+        mClient.put(null, pUrl, pHeaders, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+      }
     } else {
       FHResponse res = new FHResponse(null, null, new Exception("offline"),
           "offline");
@@ -33,10 +40,15 @@ public class FHHttpClient {
     }
   }
   
-  public static void get(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback) throws Exception {
+  public static void get(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback, boolean pUseSync) throws Exception {
     if (FH.isOnline()) {
-      mClient.setUserAgent(FH.getUserAgent());
-      mClient.get(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
+      if(pUseSync){
+        mSyncClient.setUserAgent(FH.getUserAgent());
+        mSyncClient.get(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
+      } else {
+    	mClient.setUserAgent(FH.getUserAgent());
+        mClient.get(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
+      }
     } else {
       FHResponse res = new FHResponse(null, null, new Exception("offline"),
           "offline");
@@ -44,15 +56,22 @@ public class FHHttpClient {
     }
   }
 
-  public static void post(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback) throws Exception {
+  public static void post(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback, boolean pUseSync) throws Exception {
     if (FH.isOnline()) {
-      mClient.setUserAgent(FH.getUserAgent());
+      
       StringEntity entity = new StringEntity(new JSONObject().toString());
       if (null != pParams) {
         entity = new StringEntity(pParams.toString(), "UTF-8");
       }
-      mClient.post(null, pUrl, pHeaders, entity, "application/json",
-          new FHJsonHttpResponseHandler(pCallback));
+      if(pUseSync){
+    	mSyncClient.setUserAgent(FH.getUserAgent());
+    	mSyncClient.post(null, pUrl, pHeaders, entity, "application/json",
+              new FHJsonHttpResponseHandler(pCallback));
+      } else {
+    	mClient.setUserAgent(FH.getUserAgent());
+        mClient.post(null, pUrl, pHeaders, entity, "application/json",
+              new FHJsonHttpResponseHandler(pCallback));
+      }
     } else {
       FHResponse res = new FHResponse(null, null, new Exception("offline"),
           "offline");
@@ -60,10 +79,15 @@ public class FHHttpClient {
     }
   }
   
-  public static void delete(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback) throws Exception {
+  public static void delete(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback, boolean pUseSync) throws Exception {
     if (FH.isOnline()) {
-      mClient.setUserAgent(FH.getUserAgent());
-      mClient.delete(null, pUrl, null, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
+      if(pUseSync){
+    	mSyncClient.setUserAgent(FH.getUserAgent());
+    	mSyncClient.delete(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));  
+      } else {
+    	mClient.setUserAgent(FH.getUserAgent());
+        mClient.delete(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));  
+      }
     } else {
       FHResponse res = new FHResponse(null, null, new Exception("offline"),
           "offline");

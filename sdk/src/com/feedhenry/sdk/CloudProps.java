@@ -21,17 +21,28 @@ public class CloudProps {
   }
   
   /**
+   * Construct a cloudProps instance for local development. The cloud url will be the value of "host" specified in 
+   * assets/fhconfig.local.properties file.
+   * @param pAppPropsForDev needs to contain at least a "host" key
+   */
+  public CloudProps(Properties pAppPropsForDev){
+	mProperties = pAppPropsForDev;
+	mCloudProps = new JSONObject();
+	mCloudProps.put("url", mProperties.get(FH.APP_HOST_KEY));
+  }
+  
+  /**
    * Return the cloud host of the app
    * @return the cloud host (no trailing "/")
    */
   public String getCloudHost(){
     if(null == mHostUrl){
       String hostUrl = null;
-      String appMode = mProperties.getProperty(FH.APP_MODE_KEY);
       try {
         if (mCloudProps.has("url")) {
           hostUrl = mCloudProps.getString("url");
         } else {
+          String appMode = mProperties.getProperty(FH.APP_MODE_KEY);
           JSONObject hosts = mCloudProps.getJSONObject("hosts");
           if(hosts.has("url")){
             hostUrl = hosts.getString("url");

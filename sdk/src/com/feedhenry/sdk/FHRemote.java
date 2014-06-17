@@ -41,7 +41,17 @@ public abstract class FHRemote implements FHAct{
   @Override
   public void executeAsync(FHActCallback pCallback) throws Exception {
     try{
-      FHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback);
+      FHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
+    }catch(Exception e){
+      FHLog.e(LOG_TAG, e.getMessage(), e);
+      throw e;
+    }
+  }
+  
+  @Override
+  public void execute(FHActCallback pCallback) throws Exception {
+    try{
+      FHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
     }catch(Exception e){
       FHLog.e(LOG_TAG, e.getMessage(), e);
       throw e;

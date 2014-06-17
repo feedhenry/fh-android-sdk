@@ -38,6 +38,7 @@ public class FH {
   private static CloudProps mCloudProps = null;
   private static final String OLD_PROPERTY_FILE = "fh.properties";
   private static final String NEW_PROPERTY_FILE = "fhconfig.properties";
+  private static final String DEBUG_PROPERTY_FILE = "fhconfig.local.properties";
   private static final String LOG_TAG = "com.feedhenry.sdk.FH";
   
   public static final String APP_HOST_KEY = "host";
@@ -65,11 +66,13 @@ public class FH {
   
   public static final String USER_AGENT_TEMP = "Android %s; %s";
   
-  public static final String VERSION = "2.0.1"; //DO NOT CHANGE, the ant build task will automatically update this value. Update it in VERSION.txt
+  public static final String VERSION = "2.1.0"; //DO NOT CHANGE, the ant build task will automatically update this value. Update it in VERSION.txt
   private static String USER_AGENT = null;
   
   private static boolean mInitCalled = false;
   private static boolean mIsOnline = false;
+  
+  private static boolean mIsLocalDevelopment = false;
   
   private static Context mContext;
   private static NetworkReceiver mReceiver;
@@ -120,11 +123,23 @@ public class FH {
       mContext.registerReceiver(mReceiver, filter);
       InputStream in = null;
       try{
-    	  try{
-    		  in = pContext.getAssets().open(NEW_PROPERTY_FILE);
-    	  }catch(IOException ioe){
-    		  in = pContext.getAssets().open(OLD_PROPERTY_FILE);
-    	  }
+    	//support local development
+        try{
+          in = pContext.getAssets().open(DEBUG_PROPERTY_FILE);
+          mIsLocalDevelopment = true;
+        }catch(IOException dioe){
+          in = null;
+          mIsLocalDevelopment = false;
+        }
+        
+        if(!mIsLocalDevelopment && null == in){
+          try{
+          	in = pContext.getAssets().open(NEW_PROPERTY_FILE);
+          }catch(IOException ioe){
+            in = pContext.getAssets().open(OLD_PROPERTY_FILE);
+          }
+        }
+    	
         mProperties = new Properties();
         mProperties.load(in);
       } catch(IOException e){
@@ -142,49 +157,61 @@ public class FH {
       mInitCalled = true;
     }
     if(!mReady){
-    	FHInitializeRequest initRequest = new FHInitializeRequest(mContext, mProperties);
-        initRequest.setUDID(mUDID);
-        final FHActCallback cb = pCallback;
-        try{
-          initRequest.executeAsync(new FHActCallback() {
-            @Override
-            public void success(FHResponse pResponse) {            
-              mReady = true;
-              FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
-              JSONObject cloudProps = pResponse.getJson();
-              mCloudProps = new CloudProps(mProperties, cloudProps);
-              
-              // Save init
-              SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
-              SharedPreferences.Editor editor = prefs.edit();
-              if (cloudProps.has("init")) {
-                try {
-                  editor.putString("init", cloudProps.getString("init"));
-                  editor.commit();
-                } catch (JSONException e) {
-                  e.printStackTrace();
+    	final FHActCallback cb = pCallback;
+    	if(mIsLocalDevelopment){
+    	  FHLog.i(LOG_TAG, "Local development mode enabled, loading properties from assets/fhconfig.local.properties file");
+    	  mCloudProps = new CloudProps(mProperties);
+    	  mReady = true;
+    	  if(null != cb){
+    		cb.success(null);
+    	  }
+    	} else {
+    	  FHInitializeRequest initRequest = new FHInitializeRequest(mContext, mProperties);
+          initRequest.setUDID(mUDID);
+          try{
+            initRequest.executeAsync(new FHActCallback() {
+              @Override
+              public void success(FHResponse pResponse) {            
+                mReady = true;
+                FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
+                JSONObject cloudProps = pResponse.getJson();
+                mCloudProps = new CloudProps(mProperties, cloudProps);
+                  
+                // Save init
+                SharedPreferences prefs = mContext.getSharedPreferences("init", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                if (cloudProps.has("init")) {
+                  try {
+                    editor.putString("init", cloudProps.getString("init"));
+                    editor.commit();
+                  } catch (JSONException e) {
+                    e.printStackTrace();
+                  }
+                }
+
+                if(null != cb){
+                  cb.success(null);
                 }
               }
-
-              if(null != cb){
-                cb.success(null);
+                
+              @Override
+              public void fail(FHResponse pResponse) {
+                mReady = false;
+                FHLog.e(LOG_TAG, "FH init failed with error = " + pResponse.getErrorMessage(), pResponse.getError());
+                if(null != cb){
+                  cb.fail(pResponse);
+                }
               }
-            }
-            
-            @Override
-            public void fail(FHResponse pResponse) {
-              mReady = false;
-              FHLog.e(LOG_TAG, "FH init failed with error = " + pResponse.getErrorMessage(), pResponse.getError());
-              if(null != cb){
-                cb.fail(pResponse);
-              }
-            }
-          });
-        }catch(Exception e){
-          FHLog.e(LOG_TAG, "FH init exception = " + e.getMessage(), e); 
-        }
+            });
+          }catch(Exception e){
+            FHLog.e(LOG_TAG, "FH init exception = " + e.getMessage(), e); 
+          } 
+    	}
     } else {
-      pCallback.success(null);
+      if(null != pCallback){
+        pCallback.success(null);
+      }
+      
     }
   }
   
