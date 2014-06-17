@@ -1,6 +1,7 @@
 sdk/bin/*
 example/bin/*
 example/gen/*
+example/assets/fhconfig.local.properties
 sdk/local.properties
 sdk/dist/*.MF
 sdk/build/*

@@ -80,18 +80,41 @@ public class FHCloudRequest  extends FHRemote {
     try {
       switch (mMethod) {
       case GET:
-        FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
+        FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
         break;
       case PUT:
-        FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
+        FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
         break;
       case POST:
-        FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
+        FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
         break;
       case DELETE:
-        FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
+        FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
         break;
       default:
+        break;
+      }
+    } catch (Exception e) {
+      FHLog.e(LOG_TAG, e.getMessage(), e);
+      throw e;
+    }
+  }
+  
+  @Override
+  public void execute(FHActCallback pCallback) throws Exception {
+    try {
+      switch (mMethod) {
+      case GET:
+        FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
+        break;
+      case PUT:
+        FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
+        break;
+      case POST:
+        FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
+        break;
+      case DELETE:
+        FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
         break;
       }
     } catch (Exception e) {

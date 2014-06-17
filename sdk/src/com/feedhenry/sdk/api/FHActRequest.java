@@ -79,7 +79,8 @@ public class FHActRequest extends FHRemote {
    * @throws JSONException 
    */
   public void setArgs(JSONObject pArgs){
-    //keep backward compatibility
+    mArgs = pArgs;
+  //keep backward compatibility
     if(!mArgs.has("__fh")){
       try{
         mArgs.put("__fh", FH.getDefaultParams());
@@ -87,7 +88,6 @@ public class FHActRequest extends FHRemote {
         
       }
     }
-    mArgs = pArgs;
   }
 
   protected JSONObject getRequestArgs() {
