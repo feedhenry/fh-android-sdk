@@ -1,0 +1,32 @@
+language: android
+
+jdk:
+  - oraclejdk7
+  - openjdk6
+
+notifications:
+  irc: "irc.freenode.org#feedhenry"
+
+android:
+  components:
+    - build-tools-21.1.1
+    - android-21
+
+env:
+    matrix:
+      - ANDROID_TARGET=android-21
+
+before_install:
+
+  #################################################
+  ########## maven-android-sdk-deployer ###########
+  #################################################
+
+  # Checkout maven-android-sdk-deployer
+  - git clone git://github.com/mosabua/maven-android-sdk-deployer.git
+
+  # Install android maven repository
+  - cd $PWD/maven-android-sdk-deployer/platforms/$ANDROID_TARGET
+  - mvn  install -N --quiet
+  - cd -
+
