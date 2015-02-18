@@ -33,6 +33,7 @@
         <maven.javadoc.plugin.version>2.9.1</maven.javadoc.plugin.version>
         <maven.android.plugin.version>4.0.0</maven.android.plugin.version>
         <builder.helper.plugin.version>1.7</builder.helper.plugin.version>
+        <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
 
         <!-- Android configs -->
         <android.platform>19</android.platform>
