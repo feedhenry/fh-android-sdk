@@ -10,6 +10,7 @@ This SDK should provide you with all you'll need to start developing cloud-conne
 * [Maven 3.1.1](http://maven.apache.org/)
 * Latest [Android SDK](https://developer.android.com/sdk/index.html) and [Platform version](http://developer.android.com/tools/revisions/platforms.html)
 * Latest [Maven Android SDK Deployer](https://github.com/mosabua/maven-android-sdk-deployer)
+* Set ```ANDROID_HOME``` environment variable
 
 ### Building
 
