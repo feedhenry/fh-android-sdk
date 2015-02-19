@@ -2,39 +2,41 @@
 
 This SDK should provide you with all you'll need to start developing cloud-connected apps with the FeedHenry platform. The SDK provides access to cloud action calls, app authentication and authorization. 
 
-### Build
+## Build
 
-To build the SDK, you first need to install the Android SDK from http://developer.android.com/sdk/installing/index.html.
+### Prereqs
 
-Then you can clone the repo, go to the *sdk* directory, create a new file called local.properties file based on the local.properties.dist file, change the value of *sdk.dir* property to be the path to your local Android SDK directory.
+* [Java 6](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+* [Maven 3.1.1](http://maven.apache.org/)
+* Latest [Android SDK](https://developer.android.com/sdk/index.html) and [Platform version](http://developer.android.com/tools/revisions/platforms.html)
+* Latest [Maven Android SDK Deployer](https://github.com/mosabua/maven-android-sdk-deployer)
 
-Then run the ant task:
+### Building
+
+This library is built as aar project using Maven, but Google does not ship all the required libraries to Maven Central. You must locally deploy them using the [maven-android-sdk-deployer](https://github.com/mosabua/maven-android-sdk-deployer).
 
 ```
-ant
-
+git clone git://github.com/mosabua/maven-android-sdk-deployer.git
+cd $PWD/maven-android-sdk-deployer/platforms/android-21
+mvn install -N --quiet
 ```
 
-This will compile the source code and genrate a jar file in the *dist* directory
+Now let's build the library
 
-### Update Java Docs
+```
+mvn clean package
+```
 
-We use Github Pages to serve Java Docs. To update the docs, you should do the following:
+This will compile the source code and genrate an aar and a jar  file in the _target_ directory
 
-* Clone the repo
-* Checkout master branch, update Java Docs comments in the code
-* Go to *sdk* directory, run *ant doc* command to re-generate all the docs
-* Commit the changes
-* Checkout *gh-pages* branch, rebase it to master branch
-* Push the chagnes for both branches
-
-### Usage
+## Usage
 
 See [FH Android SDK Guide](http://docs.feedhenry.com/v2/sdk_android.html)
 
-### Example
+## Example
 
-The *example* directory contains an example to demostrate how to use all the android native APIs. You can import it into Eclipse and run it on the emulator or device.
+The _example_ directory contains an example to demostrate how to use all the android native APIs. You can import it into Eclipse and run it on the emulator or device.
 	
-### Links
+## Links
+
 * [FeedHenry Documentation](http://docs.feedhenry.com)
