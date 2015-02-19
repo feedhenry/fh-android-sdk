@@ -1,4 +1,5 @@
-# FeedHenry Android SDK
+# FeedHenry Android SDK [![Build Status](https://travis-ci.org/feedhenry/fh-android-sdk.png)](https://travis-ci.org/feedhenry/fh-android-sdk)
+
 
 This SDK should provide you with all you'll need to start developing cloud-connected apps with the FeedHenry platform. The SDK provides access to cloud action calls, app authentication and authorization. 
 
