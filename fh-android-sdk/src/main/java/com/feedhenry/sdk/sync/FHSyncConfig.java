@@ -207,7 +207,7 @@ public class FHSyncConfig {
   
   /**
    * Does the sync client notify client storage failed event
-   * @return
+   * @return true or false
    */
   public boolean isNotifyClientStorageFailed(){
     return this.mNotifyClientStorageFailed;
