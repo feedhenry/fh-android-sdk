@@ -11,3 +11,4 @@ FHStarterProject/bin/*
 FHStarterProject/gen/*
 *android-support-*.jar
 FHStarterProject/.settings/
+*/target/*
