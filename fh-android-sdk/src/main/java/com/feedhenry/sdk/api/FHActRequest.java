@@ -42,10 +42,8 @@ public class FHActRequest extends FHRemote {
   /**
    * Constructor
    * 
-   * @param pProps
-   *          the app configuration
-   * @param pCloudProps
-   *          the properties returned from the cloud
+   * @param context the applicaiton context
+   * @param pCloudProps the properties returned from the cloud
    */
   public FHActRequest(Context context, CloudProps pCloudProps) {
     super(context, pCloudProps.getAppProperties());
@@ -75,8 +73,6 @@ public class FHActRequest extends FHRemote {
    * 
    * @param pArgs
    *          the parameters that will be passed to the cloud side function
-   * @throws Exception 
-   * @throws JSONException 
    */
   public void setArgs(JSONObject pArgs){
     mArgs = pArgs;

@@ -21,6 +21,7 @@ public class FHInitializeRequest extends FHRemote {
   protected static String LOG_TAG = "com.feedhenry.sdk.FHInitializeRequest";
   /**
    * Constructor
+   * @param context Android's applicaiton context
    * @param pProps the app configuration
    */
   public FHInitializeRequest(Context context, Properties pProps) {

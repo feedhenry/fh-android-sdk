@@ -21,21 +21,21 @@ public interface FHAct {
    
    /**
     * Execute the request asynchronously. Execute the callback function set by {@link #setCallback(FHActCallback pCallback)} when the request finishes.
-    * @throws Exception
+    * @throws Exception this method is allowed to throw an exception
     */
    public void executeAsync() throws Exception;
    
    /**
     * Execute the request asynchronously. Execute the pCallback function when it finishes.
     * @param pCallback the callback function
-    * @throws Exception
+    * @throws Exception this method is allowed to throw an exception
     */
    public void executeAsync(FHActCallback pCallback) throws Exception;
    
    /**
     * Execute the request synchronously.
-    * @param pCallback
-    * @throws Exception
+    * @param pCallback the callback function
+    * @throws Exception this method is allowed to throw an exception
     */
    public void execute(FHActCallback pCallback) throws Exception;
    
