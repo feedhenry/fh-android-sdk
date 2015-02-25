@@ -60,7 +60,7 @@ public class NotificationMessage {
   
   /**
    * The id of the dataset associated with the event
-   * @return
+   * @return the id of the dataset associated with the event
    */
   public String getDataId(){
     return mDataId;
@@ -68,7 +68,7 @@ public class NotificationMessage {
   
   /**
    * The id of the data record associated with the event
-   * @return
+   * @return the id of the data record associated with the event
    */
   public String getUID(){
     return mUID;
@@ -76,7 +76,7 @@ public class NotificationMessage {
   
   /**
    * The code message associated with the event
-   * @return
+   * @return the code message associated with the event
    */
   public String getCode(){
     return mCodeMessage;
@@ -84,7 +84,7 @@ public class NotificationMessage {
   
   /**
    * Extra message associated with the event
-   * @return
+   * @return the extra message associated with the event
    */
   public String getMessage(){
     return mExtraMessage;

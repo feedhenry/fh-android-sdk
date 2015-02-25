@@ -92,7 +92,7 @@ public class Base64 {
 
     /**
      * Decode the Base64-encoded data in input and return the data in a new byte array.
-     * <p/>
+     * <br>
      * <p>The padding '=' characters at the end are considered optional, but if any are present,
      * there must be the correct number of them.
      *
@@ -100,6 +100,9 @@ public class Base64 {
      *              charset
      * @param flags controls certain features of the decoded output. Pass {@code DEFAULT} to decode
      *              standard Base64.
+     * 
+     * @return the raw bytes of the input string
+     * 
      * @throws IllegalArgumentException if the input contains incorrect padding
      */
     public static byte[] decode(String str, int flags) {
@@ -108,13 +111,14 @@ public class Base64 {
 
     /**
      * Decode the Base64-encoded data in input and return the data in a new byte array.
-     * <p/>
+     * <br>
      * <p>The padding '=' characters at the end are considered optional, but if any are present,
      * there must be the correct number of them.
      *
      * @param input the input array to decode
      * @param flags controls certain features of the decoded output. Pass {@code DEFAULT} to decode
      *              standard Base64.
+     * @return the raw bytes of the input string
      * @throws IllegalArgumentException if the input contains incorrect padding
      */
     public static byte[] decode(byte[] input, int flags) {
@@ -123,7 +127,7 @@ public class Base64 {
 
     /**
      * Decode the Base64-encoded data in input and return the data in a new byte array.
-     * <p/>
+     * <br>
      * <p>The padding '=' characters at the end are considered optional, but if any are present,
      * there must be the correct number of them.
      *
@@ -132,6 +136,7 @@ public class Base64 {
      * @param len    the number of bytes of input to decode
      * @param flags  controls certain features of the decoded output. Pass {@code DEFAULT} to decode
      *               standard Base64.
+     * @return the raw bytes of the input string
      * @throws IllegalArgumentException if the input contains incorrect padding
      */
     public static byte[] decode(byte[] input, int offset, int len, int flags) {
@@ -427,6 +432,7 @@ public class Base64 {
      * @param input the data to encode
      * @param flags controls certain features of the encoded output. Passing {@code DEFAULT} results
      *              in output that adheres to RFC 2045.
+     * @return the Base64 encoded string of the input
      */
     public static String encodeToString(byte[] input, int flags) {
         try {
@@ -445,6 +451,7 @@ public class Base64 {
      * @param len    the number of bytes of input to encode
      * @param flags  controls certain features of the encoded output. Passing {@code DEFAULT}
      *               results in output that adheres to RFC 2045.
+     * @return the Base64 encoded string of the input
      */
     public static String encodeToString(byte[] input, int offset, int len, int flags) {
         try {
@@ -461,6 +468,7 @@ public class Base64 {
      * @param input the data to encode
      * @param flags controls certain features of the encoded output. Passing {@code DEFAULT} results
      *              in output that adheres to RFC 2045.
+     * @return the encoded bytes of the input array
      */
     public static byte[] encode(byte[] input, int flags) {
         return encode(input, 0, input.length, flags);
@@ -474,6 +482,7 @@ public class Base64 {
      * @param len    the number of bytes of input to encode
      * @param flags  controls certain features of the encoded output. Passing {@code DEFAULT}
      *               results in output that adheres to RFC 2045.
+     * @return the encoded bytes of the input array
      */
     public static byte[] encode(byte[] input, int offset, int len, int flags) {
         Encoder encoder = new Encoder(flags, null);

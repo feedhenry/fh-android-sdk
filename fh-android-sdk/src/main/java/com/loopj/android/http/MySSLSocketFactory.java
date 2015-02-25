@@ -44,6 +44,10 @@ public class MySSLSocketFactory extends SSLSocketFactory {
      * Creates a new SSL Socket Factory with the given KeyStore.
      *
      * @param truststore A KeyStore to create the SSL Socket Factory in context of
+     * @throws java.security.NoSuchAlgorithmException This will not happen on a stock dalvik/Android system
+     * @throws java.security.KeyManagementException This will not happen on a stock dalvik/Android system
+     * @throws java.security.KeyStoreException This will not happen on a stock dalvik/Android system
+     * @throws java.security.UnrecoverableKeyException This will not happen on a stock dalvik/Android system
      */
     public MySSLSocketFactory(KeyStore truststore) throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException, UnrecoverableKeyException {
         super(truststore);

@@ -100,7 +100,7 @@ public class FHSyncClient {
    * @param pDataId The id of the dataset.
    * @param pConfig The sync configuration for the dataset. If not specified, the sync configuration passed in the init method will be used 
    * @param pQueryParams Query parameters for the dataset
-   * @throws Exception
+   * @throws Exception thrown if FHSyncClient isn't initialised.
    */
   public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams) throws Exception {
     if(!mInitialised){
@@ -161,14 +161,14 @@ public class FHSyncClient {
    * @param pDataId the id of the dataset
    * @param pData the actual data
    * @return the created data record. Each record contains a key "uid" with the id value and a key "data" with the JSON data.
-   * @throws Exception
+   * @throws Exception if the dataId is not known
    */
   public JSONObject create(String pDataId, JSONObject pData) throws Exception {
     FHSyncDataset dataset = mDataSets.get(pDataId);
     if(null != dataset){
       return dataset.createData(pData);
     } else {
-      throw new Exception("Unkonw dataId : " + pDataId);
+      throw new Exception("Unknown dataId : " + pDataId);
     }
   }
   
@@ -178,14 +178,14 @@ public class FHSyncClient {
    * @param pUID the id of the data record
    * @param pData the new content of the data record
    * @return the updated data record. Each record contains a key "uid" with the id value and a key "data" with the JSON data.
-   * @throws Exception
+   * @throws Exception if the dataId is not known
    */
   public JSONObject update(String pDataId, String pUID, JSONObject pData) throws Exception {
     FHSyncDataset dataset = mDataSets.get(pDataId);
     if(null != dataset){
       return dataset.updateData(pUID, pData);
     } else {
-      throw new Exception("Unkonw dataId : " + pDataId);
+      throw new Exception("Unknown dataId : " + pDataId);
     }
   }
   
@@ -194,14 +194,14 @@ public class FHSyncClient {
    * @param pDataId the id of the dataset
    * @param pUID the id of the data record
    * @return the deleted data record. Each record contains a key "uid" with the id value and a key "data" with the JSON data.
-   * @throws Exception
+   * @throws Exception if the dataId is not known
    */
   public JSONObject delete(String pDataId, String pUID) throws Exception {
     FHSyncDataset dataset = mDataSets.get(pDataId);
     if(null != dataset){
       return dataset.deleteData(pUID);
     } else {
-      throw new Exception("Unkonw dataId : " + pDataId);
+      throw new Exception("Unknown dataId : " + pDataId);
     }
     
   }
@@ -210,7 +210,7 @@ public class FHSyncClient {
    * List sync collisions in dataset with id pDataId
    * @param pDataId the id of the dataset
    * @param pCallback the callback function
-   * @throws Exception
+   * @throws Exception thrown if building the list request or executing the list request fails
    */
   public void listCollisions(String pDataId, FHActCallback pCallback) throws Exception {
     JSONObject params = new JSONObject();
@@ -224,7 +224,7 @@ public class FHSyncClient {
    * @param pDataId the id of the dataset
    * @param pCollisionHash the hash value of the collision record
    * @param pCallback the callback function
-   * @throws Exception
+   * @throws Exception thrown if building the remove request or executing the remove request fails
    */
   public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback) throws Exception {
     JSONObject params = new JSONObject();
@@ -237,9 +237,8 @@ public class FHSyncClient {
   /**
    * Stop the sync process for dataset with id pDataId
    * @param pDataId the id of the dataset
-   * @throws Exception
    */
-  public void stop(String pDataId) throws Exception {
+  public void stop(String pDataId) {
     FHSyncDataset dataset = mDataSets.get(pDataId);
     if(null != dataset){
       dataset.stopSync(true);
@@ -248,9 +247,8 @@ public class FHSyncClient {
   
   /**
    * Stop all sync processes for all the datasets managed by the sync client.
-   * @throws Exception
    */
-  public void destroy() throws Exception {
+  public void destroy() {
     if(mInitialised){
       if(null != mMonitorTask){
         mMonitorTask.stopRunning();

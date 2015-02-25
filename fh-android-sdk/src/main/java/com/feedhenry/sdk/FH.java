@@ -289,7 +289,7 @@ public class FH {
   /**
    * Build an instance of FHAuthRequest object to perform authentication request.
    * @return an instance of FHAuthRequest
-   * @throws FHNotReadyException
+   * @throws FHNotReadyException if init has not been called
    */
   public static FHAuthRequest buildAuthRequest() throws FHNotReadyException{
     FHAuthRequest request = (FHAuthRequest) buildAction(FH_API_AUTH);
@@ -300,7 +300,7 @@ public class FH {
    * Build an instance of FHAuthRequest object to perform authentication request and set the auth policy id
    * @param pPolicyId the auth policy id used by this auth request
    * @return an instance of FHAuthRequest
-   * @throws FHNotReadyException
+   * @throws FHNotReadyException if init has not been called
    */
   public static FHAuthRequest buildAuthRequest(String pPolicyId) throws FHNotReadyException{
     FHAuthRequest request = (FHAuthRequest) buildAction(FH_API_AUTH);
@@ -314,7 +314,7 @@ public class FH {
    * @param pUserName the required user name for the auth request
    * @param pPassword the required password for the auth request
    * @return an instance of FHAuthRequest
-   * @throws FHNotReadyException
+   * @throws FHNotReadyException if init has not been called
    */
   public static FHAuthRequest buildAuthRequest(String pPolicyId, String pUserName, String pPassword) throws FHNotReadyException {
     FHAuthRequest request = (FHAuthRequest) buildAction(FH_API_AUTH);
@@ -329,9 +329,10 @@ public class FH {
    * @param pHeaders headers need to be set, can be null
    * @param pParams the request params, can be null
    * @return an instance of FHCloudRequest
-   * @throws Exception
+   * @throws FHNotReadyException if init has not been called
+   * @throws Exception if pMethod is not one of GET, POST, PUT and DELETE
    */
-  public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams) throws Exception {
+  public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams) throws FHNotReadyException, Exception {
     FHCloudRequest request = (FHCloudRequest) buildAction(FH_API_CLOUD);
     request.setPath(pPath);
     request.setHeaders(pHeaders);
@@ -343,7 +344,7 @@ public class FH {
   /**
    * Get the cloud host after app finish initialising
    * @return the cloud host of the app
-   * @throws FHNotReadyException
+   * @throws FHNotReadyException if init has not been called
    */
   public static String getCloudHost() throws FHNotReadyException{
     if(null == mCloudProps){
@@ -358,7 +359,7 @@ public class FH {
    * You can either add the params to your request body as a JSONObject with the key "__fh",
    * or use the {@link #getDefaultParamsAsHeaders(Header[]) getDefaultParamsAsHeaders} method to add them as HTTP request headers.
    * @return a JSONObject contains the default params
-   * @throws Exception
+   * @throws Exception if the app property file is not loaded
    */
   public static JSONObject getDefaultParams() throws Exception {
     if(null == mProperties){
@@ -397,10 +398,10 @@ public class FH {
   }
   
   /**
-   * Similar to {@link getDefaultParams() getDefaultParams}, but return HTTP headers instead
+   * Similar to {@link #getDefaultParams() getDefaultParams}, but return HTTP headers instead
    * @param pHeaders existing headers
    * @return new headers by combining existing headers and default headers
-   * @throws Exception
+   * @throws Exception if the app property file is not loaded
    */
   public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders) throws Exception {
     ArrayList<Header> headers = new ArrayList<Header>();
@@ -429,7 +430,8 @@ public class FH {
    * @param pHeaders headers need to be set, can be null
    * @param pParams the request params, can be null. Will be converted to query strings depending on the HTTP method
    * @param pCallback the callback to be executed when the cloud call is finished
-   * @throws Exception
+   * @throws FHNotReadyException if init has not been called
+   * @throws Exception if pMethod is not one of GET, POST, PUT and DELETE OR if the cloud request fails
    */
   public static void cloud(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback) throws Exception {
     FHCloudRequest cloudRequest = buildCloudRequest(pPath, pMethod, pHeaders, pParams);

@@ -75,7 +75,7 @@ import java.util.TreeSet;
  *     <code>{ } [ ] / \ : , = ; #</code> and if they do not look like numbers
  *     and if they are not the reserved words <code>true</code>,
  *     <code>false</code>, or <code>null</code>.</li>
- * <li>Keys can be followed by <code>=</code> or <code>=></code> as well as
+ * <li>Keys can be followed by <code>=</code> or <code>=&gt;</code> as well as
  *     by <code>:</code>.</li>
  * <li>Values can be followed by <code>;</code> <small>(semicolon)</small> as
  *     well as by <code>,</code> <small>(comma)</small>.</li>
@@ -169,7 +169,7 @@ public class JSONObject implements Serializable {
     /**
      * Construct a JSONObject from a JSONTokener.
      * @param x A JSONTokener object containing the source string.
-     * @throws JSONException If there is a syntax error in the source string.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If there is a syntax error in the source string.
      */
     public JSONObject(JSONTokener x) throws JSONException {
         this();
@@ -287,7 +287,7 @@ public class JSONObject implements Serializable {
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
      * @return this.
-     * @throws JSONException If the value is an invalid number
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the value is an invalid number
      *  or if the key is null.
      */
     public JSONObject accumulate(String key, Object value)
@@ -313,7 +313,7 @@ public class JSONObject implements Serializable {
      * @param key   A key string.
      * @param value An object to be accumulated under the key.
      * @return this.
-     * @throws JSONException If the key is null or if the current value 
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the key is null or if the current value 
      * 	associated with the key is not a JSONArray.
      */
     
@@ -406,7 +406,7 @@ public class JSONObject implements Serializable {
      * Get the double value associated with a key.
      * @param key   A key string.
      * @return      The numeric value.
-     * @throws JSONException if the key is not found or
+     * @throws JSONException this will be thrown if there is an error parsing the JSON if the key is not found or
      *  if the value is not a Number object and cannot be converted to a number.
      */
     public double getDouble(String key) throws JSONException {
@@ -569,7 +569,7 @@ public class JSONObject implements Serializable {
      * Produce a string from a Number.
      * @param  n A Number
      * @return A String.
-     * @throws JSONException If n is a non-finite number.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If n is a non-finite number.
      */
     static public String numberToString(Number n)
             throws JSONException {
@@ -640,7 +640,7 @@ public class JSONObject implements Serializable {
      * @param key 	A key string.
      * @param value	A Collection value.
      * @return		this.
-     * @throws JSONException
+     * @throws JSONException this will be thrown if there is an error parsing the JSON
      */
     public JSONObject put(String key, Collection value) throws JSONException {
         put(key, new JSONArray(value));
@@ -810,7 +810,7 @@ public class JSONObject implements Serializable {
      * @param key   A key string.
      * @param value A boolean which is the value.
      * @return this.
-     * @throws JSONException If the key is null.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the key is null.
      */
     public JSONObject put(String key, boolean value) throws JSONException {
         put(key, value ? Boolean.TRUE : Boolean.FALSE);
@@ -824,7 +824,7 @@ public class JSONObject implements Serializable {
      * @param key   A key string.
      * @param value A double which is the value.
      * @return this.
-     * @throws JSONException If the key is null or if the number is invalid.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the key is null or if the number is invalid.
      */
     public JSONObject put(String key, double value) throws JSONException {
         put(key, new Double(value));
@@ -838,7 +838,7 @@ public class JSONObject implements Serializable {
      * @param key   A key string.
      * @param value An int which is the value.
      * @return this.
-     * @throws JSONException If the key is null.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the key is null.
      */
     public JSONObject put(String key, int value) throws JSONException {
         put(key, new Integer(value));
@@ -852,7 +852,7 @@ public class JSONObject implements Serializable {
      * @param key   A key string.
      * @param value A long which is the value.
      * @return this.
-     * @throws JSONException If the key is null.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the key is null.
      */
     public JSONObject put(String key, long value) throws JSONException {
         put(key, new Long(value));
@@ -866,7 +866,7 @@ public class JSONObject implements Serializable {
      * @param key 	A key string.
      * @param value	A Map value.
      * @return		this.
-     * @throws JSONException
+     * @throws JSONException this will be thrown if there is an error parsing the JSON
      */
     public JSONObject put(String key, Map value) throws JSONException {
         put(key, new JSONObject(value));
@@ -882,7 +882,7 @@ public class JSONObject implements Serializable {
      *  types: Boolean, Double, Integer, JSONArray, JSONObject, Long, String,
      *  or the JSONObject.NULL object.
      * @return this.
-     * @throws JSONException If the value is non-finite number
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the value is non-finite number
      *  or if the key is null.
      */
     public JSONObject put(String key, Object value) throws JSONException {
@@ -907,7 +907,7 @@ public class JSONObject implements Serializable {
      *  types: Boolean, Double, Integer, JSONArray, JSONObject, Long, String,
      *  or the JSONObject.NULL object.
      * @return this.
-     * @throws JSONException If the value is a non-finite number.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the value is a non-finite number.
      */
     public JSONObject putOpt(String key, Object value) throws JSONException {
         if (key != null && value != null) {
@@ -919,7 +919,7 @@ public class JSONObject implements Serializable {
 
     /**
      * Produce a string in double quotes with backslash sequences in all the
-     * right places. A backslash will be inserted within </, allowing JSON
+     * right places. A backslash will be inserted within &lt;/, allowing JSON
      * text to be delivered in HTML. In JSON text, a string cannot contain a
      * control character or an unescaped quote or backslash.
      * @param string A String
@@ -995,7 +995,7 @@ public class JSONObject implements Serializable {
     /**
      * Throw an exception if the object is an NaN or infinite number.
      * @param o The object to test.
-     * @throws JSONException If o is a non-finite number.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If o is a non-finite number.
      */
     static void testValidity(Object o) throws JSONException {
         if (o != null) {
@@ -1020,7 +1020,7 @@ public class JSONObject implements Serializable {
      * @param names A JSONArray containing a list of key strings. This
      * determines the sequence of the values in the result.
      * @return A JSONArray of values.
-     * @throws JSONException If any of the values are non-finite numbers.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If any of the values are non-finite numbers.
      */
     public JSONArray toJSONArray(JSONArray names) throws JSONException {
         if (names == null || names.length() == 0) {
@@ -1077,7 +1077,7 @@ public class JSONObject implements Serializable {
      *  representation of the object, beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @throws JSONException If the object contains an invalid number.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the object contains an invalid number.
      */
     public String toString(int indentFactor) throws JSONException {
         return toString(indentFactor, 0);
@@ -1095,7 +1095,7 @@ public class JSONObject implements Serializable {
      *  representation of the object, beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @throws JSONException If the object contains an invalid number.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the object contains an invalid number.
      */
     String toString(int indentFactor, int indent) throws JSONException {
         int          i;
@@ -1155,7 +1155,7 @@ public class JSONObject implements Serializable {
      *  representation of the object, beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @throws JSONException If the value is or contains an invalid number.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the value is or contains an invalid number.
      */
     static String valueToString(Object value) throws JSONException {
         if (value == null || value.equals(null)) {
@@ -1196,7 +1196,7 @@ public class JSONObject implements Serializable {
      *  representation of the object, beginning
      *  with <code>{</code>&nbsp;<small>(left brace)</small> and ending
      *  with <code>}</code>&nbsp;<small>(right brace)</small>.
-     * @throws JSONException If the object contains an invalid number.
+     * @throws JSONException this will be thrown if there is an error parsing the JSON If the object contains an invalid number.
      */
      static String valueToString(Object value, int indentFactor, int indent)
             throws JSONException {
@@ -1235,8 +1235,9 @@ public class JSONObject implements Serializable {
       * <p>
       * Warning: This method assumes that the data structure is acyclical.
       *
+      * @param writer the writer
       * @return The writer.
-      * @throws JSONException
+      * @throws JSONException this will be thrown if there is an error parsing the JSON
       */
      public Writer write(Writer writer) throws JSONException {
         try {

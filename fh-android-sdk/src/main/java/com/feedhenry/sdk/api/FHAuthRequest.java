@@ -60,6 +60,7 @@ public class FHAuthRequest extends FHRemote {
   protected static String LOG_TAG = "com.feedhenry.sdk.FHAuthRequest";
   /**
    * Constructor
+   * @param context Android's applicaiton Context
    * @param pProps the app configurations
    */
   public FHAuthRequest(Context context, Properties pProps){
