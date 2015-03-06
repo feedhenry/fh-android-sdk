@@ -6,7 +6,7 @@ jdk:
   - openjdk6
 
 notifications:
-  irc: "irc.freenode.org#feedhenry"
+  irc: "irc.freenode.net#feedhenry"
 
 android:
   components:
@@ -30,7 +30,7 @@ before_install:
   - git clone git://github.com/mosabua/maven-android-sdk-deployer.git
 
   # Install android maven repository
-  - cd $PWD/maven-android-sdk-deployer/platforms/$ANDROID_TARGET
+  - cd $PWD/maven-android-sdk-deployer/platforms/$ANDROID_SDK
   - mvn  install -N --quiet
   - cd -
 
@@ -40,6 +40,7 @@ before_script:
   - echo no | android create avd --force -n test -t $ANDROID_EMULATOR --abi $ANDROID_ABI
 
 script:
+  - set -ev
   - mvn install -Drelease
   - cd fh-android-sdk-test
   - mvn package -DskipTests=true;
