@@ -6,7 +6,7 @@ jdk:
   - openjdk6
 
 notifications:
-  irc: "irc.freenode.net#feedhenry"
+  irc: "irc.freenode.org#feedhenry"
 
 android:
   components:
