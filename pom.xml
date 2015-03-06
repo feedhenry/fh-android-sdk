@@ -49,7 +49,6 @@
             <groupId>android</groupId>
             <artifactId>android</artifactId>
             <scope>provided</scope>
-            <version>${android.version}</version>
         </dependency>
    </dependencies>
    
