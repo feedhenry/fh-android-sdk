@@ -35,7 +35,6 @@
     </dependencies>
 
     <build>
-        <finalName>fh-android-sdk-test</finalName>
         <plugins>
             <plugin>
                 <groupId>com.simpligility.maven.plugins</groupId>
