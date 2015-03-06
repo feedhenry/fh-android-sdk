@@ -1,4 +1,4 @@
-package com.feedhenry.sdk.api.test;
+package com.feedhenry.sdk.tests.api;
 
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;

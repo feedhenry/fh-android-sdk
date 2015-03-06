@@ -8,6 +8,7 @@ sdk/local.properties
 sdk/dist/*.MF
 sdk/build/*
 sdk/build.num
+**/gen/*
 sdk/.settings/*
 FHStarterProject/bin/*
 FHStarterProject/gen/*
@@ -20,3 +21,6 @@ FHStarterProject/.settings/
 
 ## NetBeans
 nb-configuration.xml
+
+## IntelliJ
+*.iml

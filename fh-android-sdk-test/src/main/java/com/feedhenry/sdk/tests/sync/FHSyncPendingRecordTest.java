@@ -1,4 +1,4 @@
-package com.feedhenry.sdk.sync.test;
+package com.feedhenry.sdk.tests.sync;
 
 import org.json.fh.JSONObject;
 
