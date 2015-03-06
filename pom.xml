@@ -11,6 +11,7 @@
 
     <modules>
         <module>fh-android-sdk</module>
+        <module>fh-android-sdk-test</module>
     </modules>
 
     <scm>
@@ -74,7 +75,7 @@
                 </property>
             </activation>
             <modules>
-                <module>fh-android-sdk</module>
+                <module>fh-android-sdk-test</module>
             </modules>
         </profile>
     </profiles>
