@@ -17,10 +17,10 @@ android:
   - android-19
 addons:
   artifacts: true
-  paths:
-  - $(ls ./fh-android-sdk/target/*-SNAPSHOT.aar)
-  - $(ls ./fh-android-sdk/target/*-SNAPSHOT.jar)
-  debug: true
+    paths:
+    - $(ls ./fh-android-sdk/target/*-SNAPSHOT.aar)
+    - $(ls ./fh-android-sdk/target/*-SNAPSHOT.jar)
+    debug: true
 env:
   global:
   - ARTIFACTS_BUCKET=fh-sdks-artifacts
