@@ -15,14 +15,9 @@ android:
   - build-tools-21.1.1
   - android-21
   - android-19
-addons:
-  artifacts:
-    paths:
-    - $(ls ./fh-android-sdk/target/*-SNAPSHOT.aar)
-    - $(ls ./fh-android-sdk/target/*-SNAPSHOT.jar)
-    debug: true
 env:
   global:
+  - RELEASE_VERSION=$(grep "<version>" fh-android-sdk/pom.xml | tr "\n" ":" | cut -d ':' -f1 | sed s/\<version\>//g| sed s/\"//g| sed s/\<\\/version\>//g | tr -d ' ')
   - ARTIFACTS_BUCKET=fh-sdks-artifacts
   - ARTIFACTS_PERMISSIONS=public-read
   - ARTIFACTS_S3_REGION=eu-west-1
@@ -30,6 +25,12 @@ env:
   - secure: jyJcl+oYkIYLA59VXRVVPfVLGehTYJKpNLqQdGCtyxB1KLCBMneQp1FhYO9pqTxzvpsUnqf3Rx+z0T4lVccPmp+GXKeMNnuiGkCJ+5WWnjLvQZeWHvhYnDXyn2P+Vpe5odHF+1Qhoi1xh6RSg2Fy0Uo2tMSHB11mSUnjf4J8jwM=
   matrix:
   - ANDROID_SDK=android-21 ANDROID_EMULATOR=android-19 ANDROID_ABI=armeabi-v7a
+addons:
+  artifacts:
+    paths:
+    - fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.jar
+    - fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.aar
+    debug: true
 before_install:
 - git clone git://github.com/mosabua/maven-android-sdk-deployer.git
 - cd $PWD/maven-android-sdk-deployer/platforms/$ANDROID_SDK
@@ -48,5 +49,5 @@ script:
 - "./android-wait-for-emulator"
 - adb shell input keyevent 82
 - adb shell df
-- adb install target/fh-android-sdk-test-2.1.0-SNAPSHOT.apk
+- adb install target/fh-android-sdk-test-$RELEASE_VERSION.apk
 - mvn android:instrument
