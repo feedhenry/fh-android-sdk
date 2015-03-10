@@ -16,7 +16,7 @@ android:
   - android-21
   - android-19
 addons:
-  artifacts: true
+  artifacts:
     paths:
     - $(ls ./fh-android-sdk/target/*-SNAPSHOT.aar)
     - $(ls ./fh-android-sdk/target/*-SNAPSHOT.jar)
