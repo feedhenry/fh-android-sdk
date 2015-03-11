@@ -43,7 +43,7 @@ script:
 deploy:
   provider: releases
   api_key:
-    secure: UY7gN/3pBTNjyAp7C/Bi8iiWHqmNqiIzdv5I18MS2Hig02PTxOwEgMxZ0r0UN59eflL0gC7IvbDM7EETPBqHBTYq41fnN9Vz9C24yPBMSUwvEJLdMrHQzDF9Ob6zW/P2jT7Ih8XjvodlsHsigq0RLa7k0weMUaVPcVlc401aSWU=
+    secure: "B2onmjShKQDX2a2aqkLDbZYISvlXpS44f5Xet9MMZD7qFM+UbHYdM4El2seh6mvKLpB8WRv/ss45oEMBw4uXEKD0Rm3Ruk9tFkT35e17bEdYkuGupBr7DK5q6fvi9EVMSqlUDd3OTgQ8iqVN4OnYHsc2bwSxJuQopTpcljsoipg="
   file:
     - fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.jar
     - fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.aar
