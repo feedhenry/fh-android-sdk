@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.http.Header;
-import org.json.fh.JSONException;
-import org.json.fh.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

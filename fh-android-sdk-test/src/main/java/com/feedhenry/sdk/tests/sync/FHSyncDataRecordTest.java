@@ -2,7 +2,7 @@ package com.feedhenry.sdk.tests.sync;
 
 import junit.framework.TestCase;
 
-import org.json.fh.JSONObject;
+import org.json.JSONObject;
 
 import com.feedhenry.sdk.sync.FHSyncDataRecord;
 

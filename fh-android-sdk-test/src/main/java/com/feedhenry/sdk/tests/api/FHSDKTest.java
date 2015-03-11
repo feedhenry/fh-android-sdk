@@ -2,8 +2,8 @@ package com.feedhenry.sdk.tests.api;
 
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
-import org.json.fh.JSONException;
-import org.json.fh.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.os.Looper;
 import android.test.AndroidTestCase;
