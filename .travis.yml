@@ -1,7 +1,7 @@
 language: android
 branches:
-  only:
-    - master
+  except:
+    - /^FHMOBSDK-.*$/
 jdk:
 - oraclejdk8
 - oraclejdk7
