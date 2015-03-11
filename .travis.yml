@@ -21,6 +21,7 @@ env:
   - ARTIFACTS_BUCKET=fh-sdks-artifacts
   - ARTIFACTS_PERMISSIONS=public-read
   - ARTIFACTS_S3_REGION=eu-west-1
+  - ARTIFACTS_WORKING_DIR=./fh-android-sdk/target
   - secure: P0zmL99pJd/edf7AXnUCcKiH1qZ/4tBx2D0S0PcPKXoWqC1AkwwjkkW+gazryOV55VbWOYmwMp/LPOWcafINTZuv+9tUKsWrqrHUSG4uatL2PKCj3ZgoBiO9IJ51fB2yIFR88fyAvi2FodcvKyMk8nb+nj4iLO1948sepS6U5Sg=
   - secure: jyJcl+oYkIYLA59VXRVVPfVLGehTYJKpNLqQdGCtyxB1KLCBMneQp1FhYO9pqTxzvpsUnqf3Rx+z0T4lVccPmp+GXKeMNnuiGkCJ+5WWnjLvQZeWHvhYnDXyn2P+Vpe5odHF+1Qhoi1xh6RSg2Fy0Uo2tMSHB11mSUnjf4J8jwM=
   matrix:
@@ -28,8 +29,8 @@ env:
 addons:
   artifacts:
     paths:
-    - fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.jar
-    - fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.aar
+    - fh-android-sdk-$RELEASE_VERSION.jar
+    - fh-android-sdk-$RELEASE_VERSION.aar
     debug: true
 before_install:
 - git clone git://github.com/mosabua/maven-android-sdk-deployer.git
