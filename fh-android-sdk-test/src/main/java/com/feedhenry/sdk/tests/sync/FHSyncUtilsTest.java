@@ -1,7 +1,7 @@
 package com.feedhenry.sdk.tests.sync;
 
-import org.json.fh.JSONArray;
-import org.json.fh.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.feedhenry.sdk.sync.FHSyncUtils;
 

@@ -1,7 +1,7 @@
 package com.feedhenry.sdk;
 
-import org.json.fh.JSONArray;
-import org.json.fh.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Representing the response data from FeedHenry when an API call is finished

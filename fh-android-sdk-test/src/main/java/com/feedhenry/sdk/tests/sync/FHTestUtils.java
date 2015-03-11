@@ -3,9 +3,9 @@ package com.feedhenry.sdk.tests.sync;
 import java.util.Date;
 import java.util.Random;
 
-import org.json.fh.JSONArray;
-import org.json.fh.JSONException;
-import org.json.fh.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.feedhenry.sdk.sync.FHSyncDataRecord;
 import com.feedhenry.sdk.sync.FHSyncPendingRecord;

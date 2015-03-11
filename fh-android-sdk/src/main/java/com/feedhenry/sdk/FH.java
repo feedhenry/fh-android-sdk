@@ -10,8 +10,8 @@ import java.util.Properties;
 
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
-import org.json.fh.JSONException;
-import org.json.fh.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

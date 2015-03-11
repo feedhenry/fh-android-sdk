@@ -1,6 +1,6 @@
 package com.feedhenry.sdk.sync;
 
-import org.json.fh.JSONObject;
+import org.json.JSONObject;
 
 /**
  * The configuration options for the sync framework.

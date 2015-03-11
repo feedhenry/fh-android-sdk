@@ -1,6 +1,6 @@
 package com.feedhenry.fhandroidexampleapp;
 
-import org.json.fh.JSONObject;
+import org.json.JSONObject;
 
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;

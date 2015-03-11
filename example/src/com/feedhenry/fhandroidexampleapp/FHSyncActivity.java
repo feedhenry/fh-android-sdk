@@ -3,7 +3,7 @@ package com.feedhenry.fhandroidexampleapp;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.json.fh.JSONObject;
+import org.json.JSONObject;
 
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHResponse;

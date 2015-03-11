@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
-import org.json.fh.JSONArray;
-import org.json.fh.JSONObject;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.AsyncHttpClient;

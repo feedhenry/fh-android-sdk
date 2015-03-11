@@ -3,7 +3,7 @@ package com.feedhenry.sdk;
 import java.util.Properties;
 
 import org.apache.http.Header;
-import org.json.fh.JSONObject;
+import org.json.JSONObject;
 
 import android.content.Context;
 

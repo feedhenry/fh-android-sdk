@@ -22,9 +22,17 @@
         <tag>HEAD</tag>
     </scm>
 
-   <dependencies>
+    <properties>
+        <json.version>20140107</json.version>
+    </properties>
 
-        <!-- Needs remove dependecies source from the project and start use that as a lib -->
+    <dependencies>
+
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>${json.version}</version>
+        </dependency>
 
     </dependencies>
 

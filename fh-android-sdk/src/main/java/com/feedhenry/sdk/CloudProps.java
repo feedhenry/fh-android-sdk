@@ -1,7 +1,7 @@
 package com.feedhenry.sdk;
 
 import java.util.Properties;
-import org.json.fh.JSONObject;
+import org.json.JSONObject;
 
 import com.feedhenry.sdk.utils.FHLog;
 
