@@ -45,8 +45,8 @@ deploy:
   api_key:
     secure: "B2onmjShKQDX2a2aqkLDbZYISvlXpS44f5Xet9MMZD7qFM+UbHYdM4El2seh6mvKLpB8WRv/ss45oEMBw4uXEKD0Rm3Ruk9tFkT35e17bEdYkuGupBr7DK5q6fvi9EVMSqlUDd3OTgQ8iqVN4OnYHsc2bwSxJuQopTpcljsoipg="
   file:
-    - fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.jar
-    - fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.aar
+    - $TRAVIS_BUILD_DIR/fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.jar
+    - $TRAVIS_BUILD_DIR/fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.aar
   skip_cleanup: true
   on:
     tags: true
