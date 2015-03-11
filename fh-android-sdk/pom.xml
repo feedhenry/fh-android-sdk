@@ -22,9 +22,17 @@
         <tag>HEAD</tag>
     </scm>
 
-   <dependencies>
+    <properties>
+        <loopj.version>1.4.6</loopj.version>
+    </properties>
 
-        <!-- Needs remove dependecies source from the project and start use that as a lib -->
+    <dependencies>
+
+        <dependency>
+            <groupId>com.loopj.android</groupId>
+            <artifactId>android-async-http</artifactId>
+            <version>${loopj.version}</version>
+        </dependency>
 
     </dependencies>
 
