@@ -1,13 +1,16 @@
 language: android
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk6
+
+notifications:
+  irc: irc.freenode.org#feedhenry
+
 branches:
   except:
     - /^FHMOBSDK-.*$/
-jdk:
-- oraclejdk8
-- oraclejdk7
-- openjdk6
-notifications:
-  irc: irc.freenode.org#feedhenry
+
 android:
   components:
   - platform-tools
@@ -15,31 +18,36 @@ android:
   - build-tools-21.1.1
   - android-21
   - android-19
+
 env:
   global:
-  - RELEASE_VERSION=$(grep "<version>" fh-android-sdk/pom.xml | tr "\n" ":" | cut -d ':' -f1 | sed s/\<version\>//g| sed s/\"//g| sed s/\<\\/version\>//g | tr -d ' ')
+    - RELEASE_VERSION=$(grep "<version>" fh-android-sdk/pom.xml | tr "\n" ":" | cut -d ':' -f1 | sed s/\<version\>//g| sed s/\"//g| sed s/\<\\/version\>//g | tr -d ' ')
   matrix:
-  - ANDROID_SDK=android-21 ANDROID_EMULATOR=android-19 ANDROID_ABI=armeabi-v7a
+    - ANDROID_SDK=android-21 ANDROID_EMULATOR=android-19 ANDROID_ABI=armeabi-v7a
+
 before_install:
-- git clone git://github.com/mosabua/maven-android-sdk-deployer.git
-- cd $PWD/maven-android-sdk-deployer/platforms/$ANDROID_SDK
-- mvn  install -N --quiet
-- cd -
+  - git clone git://github.com/mosabua/maven-android-sdk-deployer.git
+  - cd $PWD/maven-android-sdk-deployer/platforms/$ANDROID_SDK
+  - mvn  install -N --quiet
+  - cd -
+
 before_script:
-- echo no | android create avd --force -n test -t $ANDROID_EMULATOR --abi $ANDROID_ABI
+  - echo no | android create avd --force -n test -t $ANDROID_EMULATOR --abi $ANDROID_ABI
+
 script:
-- set -ev
-- mvn install -Drelease
-- cd fh-android-sdk-test
-- mvn package -DskipTests=true;
-- emulator -avd test -no-skin -no-audio -no-window&
-- wget https://raw.githubusercontent.com/travis-ci/travis-cookbooks/master/ci_environment/android-sdk/files/default/android-wait-for-emulator
-- chmod a+x ./android-wait-for-emulator
-- "./android-wait-for-emulator"
-- adb shell input keyevent 82
-- adb shell df
-- adb install target/fh-android-sdk-test-$RELEASE_VERSION.apk
-- mvn android:instrument
+  - set -ev
+  - mvn install -Drelease
+  - cd fh-android-sdk-test
+  - mvn package -DskipTests=true;
+  - emulator -avd test -no-skin -no-audio -no-window&
+  - wget https://raw.githubusercontent.com/travis-ci/travis-cookbooks/master/ci_environment/android-sdk/files/default/android-wait-for-emulator
+  - chmod a+x ./android-wait-for-emulator
+  - "./android-wait-for-emulator"
+  - adb shell input keyevent 82
+  - adb shell df
+  - adb install target/fh-android-sdk-test-$RELEASE_VERSION.apk
+  - mvn android:instrument
+
 deploy:
   provider: releases
   api_key:
