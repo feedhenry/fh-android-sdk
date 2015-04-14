@@ -27,9 +27,14 @@ env:
 
 before_install:
   - git clone git://github.com/mosabua/maven-android-sdk-deployer.git
+
   - cd $PWD/maven-android-sdk-deployer/platforms/$ANDROID_SDK
   - mvn  install -N --quiet
   - cd -
+
+  - cd $PWD/maven-android-sdk-deployer/extras/google-play-services
+  - mvn install -N --quiet
+  - cd -  
 
 before_script:
   - echo no | android create avd --force -n test -t $ANDROID_EMULATOR --abi $ANDROID_ABI
