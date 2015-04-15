@@ -6,6 +6,8 @@
  */
 package com.feedhenry.sdk.tests.api;
 
+import com.feedhenry.sdk.api.FHAuthSession;
+import com.feedhenry.sdk.utils.DataManager;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.json.fh.JSONException;
@@ -29,14 +31,14 @@ public class FHSDKTest extends AndroidTestCase {
 
     private MockWebServer mockWebServer = null;
 
-    public void setUp() throws Exception {
-        super.setUp();
-        mockWebServer = new MockWebServer();
-        mockWebServer.play(9000);
-        FH.init(getContext(), null); // this will local fhconfig.local.properties
-                                     // file
-        FH.setLogLevel(FH.LOG_LEVEL_VERBOSE);
-    }
+  public void setUp() throws Exception {
+    super.setUp();
+    mockWebServer = new MockWebServer();
+    mockWebServer.play(9000);
+    FH.init(getContext(), null); // this will load fhconfig.local.properties file
+    FH.setLogLevel(FH.LOG_LEVEL_VERBOSE);
+    DataManager.getInstance().save(FHAuthSession.SESSION_TOKEN_KEY, "testsessiontoken");
+  }
 
     public void tearDown() throws Exception {
         super.tearDown();
@@ -118,15 +120,26 @@ public class FHSDKTest extends AndroidTestCase {
         makeCloudRequest("GET", null, p, true);
         verifyCloudRequest("/v1/cloud/test?test=true", "GET", null, null);
     }
+    
+    assertNotNull(resJson);
+    assertEquals("cloud", resJson.getString("type"));
+  }
+  
+  private void verifyCloudRequest(String path, String method, Header[] headers, JSONObject params) throws Exception {
+    RecordedRequest request = mockWebServer.takeRequest();
+    assertEquals(method.toLowerCase(), request.getMethod().toLowerCase());
+    
+    String cuidHeader = request.getHeader("x-fh-cuid");
+    assertEquals(getDeviceId(), cuidHeader);
 
-    public void testCloudDeleteSync() throws Exception {
-
-        enqueueCloudResponse();
-
-        JSONObject p = new JSONObject();
-        p.put("test", "true");
-        makeCloudRequest("DELETE", null, p, false);
-        verifyCloudRequest("/v1/cloud/test?test=true", "DELETE", null, null);
+    String sessionToken = request.getHeader("x-fh-sessiontoken");
+    assertNotNull(sessionToken);
+    
+    if(null != headers){
+      for(int i = 0; i<headers.length;i++){
+        String requestHeaderValue = request.getHeader(headers[i].getName());
+        assertEquals(requestHeaderValue, headers[i].getValue());
+      }
     }
 
     public void testCloudDeleteAsync() throws Exception {
