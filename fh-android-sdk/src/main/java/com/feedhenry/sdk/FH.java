@@ -32,8 +32,6 @@ public class FH {
   private static final String FH_API_AUTH = "auth";
   private static final String FH_API_CLOUD = "cloud";
 
-  public static final String INIT_KEY = "init";
-
   public static final int LOG_LEVEL_VERBOSE = 1;
   public static final int LOG_LEVEL_DEBUG = 2;
   public static final int LOG_LEVEL_INFO = 3;
@@ -93,8 +91,8 @@ public class FH {
     mContext = pContext;
     if (!mInitCalled) {
       Device.init(mContext);
-      checkNetworkStatus();
       DataManager.init(mContext).migrateLegacyData();
+      checkNetworkStatus();
       try {
         AppProps.load(mContext);
       } catch (IOException e) {
@@ -107,7 +105,7 @@ public class FH {
       final FHActCallback cb = pCallback;
       if (AppProps.getInstance().isLocalDevelopment()) {
         FHLog.i(LOG_TAG, "Local development mode enabled, loading properties from assets/fhconfig.local.properties file");
-        CloudProps.init();
+        CloudProps.initDev();
         mReady = true;
         if (null != cb) {
           cb.success(null);
@@ -122,16 +120,7 @@ public class FH {
               FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
               JSONObject cloudProps = pResponse.getJson();
               CloudProps.init(cloudProps);
-
-              // Save init
-              if (cloudProps.has(INIT_KEY)) {
-                try {
-                  DataManager.getInstance().save(INIT_KEY, cloudProps.getString(INIT_KEY));
-                } catch (JSONException e) {
-                  e.printStackTrace();
-                }
-              }
-
+              CloudProps.getInstance().save();
               if (null != cb) {
                 cb.success(null);
               }
@@ -139,11 +128,21 @@ public class FH {
 
             @Override
             public void fail(FHResponse pResponse) {
-              mReady = false;
               FHLog.e(LOG_TAG, "FH init failed with error = " + pResponse.getErrorMessage(),
                   pResponse.getError());
-              if (null != cb) {
-                cb.fail(pResponse);
+              CloudProps props = CloudProps.load();
+              if(null != props){
+                mReady = true;
+                FHLog.i(LOG_TAG, "Cached CloudProps data found");
+                if(null != cb){
+                  cb.success(null);
+                }
+              } else {
+                mReady = false;
+                FHLog.i(LOG_TAG, "No cache data found for CloudProps");
+                if (null != cb) {
+                  cb.fail(pResponse);
+                }
               }
             }
           });
@@ -322,7 +321,7 @@ public class FH {
       defaultParams.put("connectiontag", connectionTag);
     }
     // Load init
-    String init = DataManager.getInstance().read(INIT_KEY);
+    String init = CloudProps.getInitValue();
     if (init != null) {
       JSONObject initObj = new JSONObject(init);
       defaultParams.put("init", initObj);

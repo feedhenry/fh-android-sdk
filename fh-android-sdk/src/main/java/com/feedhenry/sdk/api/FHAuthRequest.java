@@ -1,6 +1,7 @@
 package com.feedhenry.sdk.api;
 
 import com.feedhenry.sdk.AppProps;
+import com.feedhenry.sdk.CloudProps;
 import com.feedhenry.sdk.Device;
 import com.feedhenry.sdk.utils.DataManager;
 import java.net.URLDecoder;
@@ -71,6 +72,7 @@ public class FHAuthRequest extends FHRemote {
    */
   public FHAuthRequest(Context context) {
     super(context);
+    mPresentingActivity = context;
   }
 
   /**
@@ -115,6 +117,10 @@ public class FHAuthRequest extends FHRemote {
         params.put("password", mPassword);
       }
       reqData.put("params", params);
+      String env = CloudProps.getInstance().getEnv();
+      if(null != env){
+        reqData.put("environment", env);
+      }
       FHLog.v(LOG_TAG, "auth params = " + reqData.toString());
     } catch (Exception e) {
       FHLog.e(LOG_TAG, e.getMessage(), e);

@@ -105,14 +105,14 @@ public class FHSyncClient {
    *
    * @param pDataId The id of the dataset.
    * @param pConfig The sync configuration for the dataset. If not specified, the sync configuration
-   * passed in the init method will be used
+   * passed in the initDev method will be used
    * @param pQueryParams Query parameters for the dataset
    * @throws Exception thrown if FHSyncClient isn't initialised.
    */
   public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams)
       throws Exception {
     if (!mInitialised) {
-      throw new Exception("FHSyncClient isn't initialised. Have you called the init function?");
+      throw new Exception("FHSyncClient isn't initialised. Have you called the initDev function?");
     }
     FHSyncDataset dataset = mDataSets.get(pDataId);
     FHSyncConfig syncConfig = mConfig;

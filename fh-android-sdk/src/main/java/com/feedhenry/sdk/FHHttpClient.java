@@ -149,5 +149,24 @@ public class FHHttpClient {
         callback.fail(fhres);
       }
     }
+
+    @Override public void onFailure(int pStatusCode, Header[] pHeaders, Throwable pError,
+        org.json.JSONObject pErrorResponse) {
+      FHLog.e(LOG_TAG, pError.getMessage(), pError);
+      if(null != callback){
+        FHResponse fhres = new FHResponse(new JSONObject(pErrorResponse.toString()), null, pError, pErrorResponse.toString());
+        callback.fail(fhres);
+      }
+    }
+
+    @Override public void onFailure(int pStatusCode, Header[] pHeaders, Throwable pError,
+        org.json.JSONArray pErrorResponse) {
+      FHLog.e(LOG_TAG, pError.getMessage(), pError);
+      if(null != callback) {
+        FHResponse fhres = new FHResponse(null, new JSONArray(pErrorResponse.toString()), pError,
+            pErrorResponse.toString());
+        callback.fail(fhres);
+      }
+    }
   }
 }

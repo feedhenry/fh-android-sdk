@@ -1,5 +1,7 @@
 package com.feedhenry.sdk;
 
+import com.feedhenry.sdk.utils.DataManager;
+import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
 import com.feedhenry.sdk.utils.FHLog;
@@ -8,8 +10,12 @@ public class CloudProps {
 
   private JSONObject mCloudProps;
   private String mHostUrl;
+  private String mEnv;
+  private static String mInitValue;
 
   private static final String LOG_TAG = "com.feedhenry.sdk.CloudProps";
+  public static final String HOSTS_KEY = "hosts";
+  private static final String INIT_KEY = "init";
 
   private static String INVALID_URI_PATTERN = "(_.*?)\\.";
 
@@ -70,13 +76,56 @@ public class CloudProps {
     return mHostUrl;
   }
 
-  public static CloudProps init(){
+  /**
+   * Get the environment of the cloud app
+   * @return
+   */
+  public String getEnv(){
+    if(null == mEnv){
+      JSONObject hosts = mCloudProps.getJSONObject("hosts");
+      if(hosts.has("environment")){
+        mEnv = hosts.getString("environment");
+      }
+    }
+    return mEnv;
+  }
+
+
+
+  /**
+   * Save the details of the cloud app to the device
+   */
+  public void save(){
+    if(null != mCloudProps) {
+      DataManager.getInstance().save(HOSTS_KEY, mCloudProps.toString());
+      // Save init
+      if (mCloudProps.has(INIT_KEY)) {
+        try {
+          mInitValue = mCloudProps.getString(INIT_KEY);
+          DataManager.getInstance().save(INIT_KEY, mInitValue);
+        } catch (JSONException e) {
+          FHLog.w(LOG_TAG, e.getMessage());
+        }
+      }
+    }
+  }
+
+  /**
+   * Get the instance of CloudProps for local development
+   * @return
+   */
+  public static CloudProps initDev(){
     if(null == mInstance){
       mInstance = new CloudProps();
     }
     return mInstance;
   }
 
+  /**
+   * Get the instance of the CloudProps via a JSONObject
+   * @param pCloudProps the JSONObjct contains the details of the cloud app
+   * @return
+   */
   public static CloudProps init(JSONObject pCloudProps){
     if(null == mInstance){
       mInstance = new CloudProps(pCloudProps);
@@ -84,7 +133,38 @@ public class CloudProps {
     return  mInstance;
   }
 
+  /**
+   * Get the instance of the CloudProps based on local cached data if exists.
+   * @return
+   */
+  public static CloudProps load(){
+    if(null == mInstance){
+      String saved = DataManager.getInstance().read(HOSTS_KEY);
+      if(null != saved){
+        try{
+          JSONObject parsed = new JSONObject(saved);
+          mInstance = new CloudProps(parsed);
+        }catch(Exception e){
+          mInstance = null;
+          FHLog.w(LOG_TAG, e.getMessage());
+        }
+      }
+    }
+    return mInstance;
+  }
+
   public static CloudProps getInstance(){
     return mInstance;
+  }
+
+  /**
+   * Get the tracking data from the init data
+   * @return
+   */
+  public static String getInitValue(){
+    if(null == mInitValue){
+      mInitValue = DataManager.getInstance().read(INIT_KEY);
+    }
+    return mInitValue;
   }
 }

@@ -11,7 +11,7 @@ public class CloudPropsTest extends AndroidTestCase {
 
   public void testCloudProps() throws Exception {
     AppProps.load(getContext());
-    CloudProps cloudProps = CloudProps.init();
+    CloudProps cloudProps = CloudProps.initDev();
     String cloudHost = cloudProps.getCloudHost();
     assertEquals("http://localhost:9000", cloudHost);
   }
