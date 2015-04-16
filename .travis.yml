@@ -48,6 +48,11 @@ script:
   - adb install target/fh-android-sdk-test-$RELEASE_VERSION.apk
   - mvn android:instrument
 
+before_deploy:
+  - mkdir -p $TRAVIS_BUILD_DIR/FHStarterProject/libs
+  - cp $TRAVIS_BUILD_DIR/fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.jar $TRAVIS_BUILD_DIR/FHStarterProject/libs/
+  - zip -9ry $TRAVIS_BUILD_DIR/fh-android-sdk/target/fh-starter-project-$RELEASE_VERSION.zip $TRAVIS_BUILD_DIR/FHStarterProject
+
 deploy:
   provider: releases
   api_key:
@@ -55,6 +60,7 @@ deploy:
   file:
     - $TRAVIS_BUILD_DIR/fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.jar
     - $TRAVIS_BUILD_DIR/fh-android-sdk/target/fh-android-sdk-$RELEASE_VERSION.aar
+    - $TRAVIS_BUILD_DIR/fh-android-sdk/target/fh-starter-project-$RELEASE_VERSION.zip
   skip_cleanup: true
   on:
     tags: true
