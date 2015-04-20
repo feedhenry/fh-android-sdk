@@ -165,7 +165,6 @@ public class FH {
 
     private static void checkNetworkStatus() {
         NetworkManager networkManager = NetworkManager.init(mContext);
-        ;
         networkManager.registerNetworkListener();
         networkManager.checkNetworkStatus();
         boolean isOnline = networkManager.isOnline();
