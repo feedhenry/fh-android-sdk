@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 package com.feedhenry.sdk;
 
 /**
@@ -7,6 +13,7 @@ package com.feedhenry.sdk;
  * You can either implement this interface in your app's own classes or using anonymous inner
  * class.
  * For example:
+ * 
  * <pre>
  * {@code
  * FHActRequest request = FH.buildActRequest("readData", new JSONObject());
@@ -14,7 +21,7 @@ package com.feedhenry.sdk;
  *     public void success(FHResponse pResp){
  *       //process response data
  *     }
- *
+ * 
  *     public void fail(FHResponse pResp){
  *       //process error data
  *     }
@@ -24,17 +31,17 @@ package com.feedhenry.sdk;
  */
 public interface FHActCallback {
 
-  /**
-   * Will be run if the action call is successful
-   *
-   * @param pResponse the response data
-   */
-  public void success(FHResponse pResponse);
+    /**
+     * Will be run if the action call is successful
+     * 
+     * @param pResponse the response data
+     */
+    public void success(FHResponse pResponse);
 
-  /**
-   * Will be run if the action call is failed
-   *
-   * @param pResponse the response data
-   */
-  public void fail(FHResponse pResponse);
+    /**
+     * Will be run if the action call is failed
+     * 
+     * @param pResponse the response data
+     */
+    public void fail(FHResponse pResponse);
 }
