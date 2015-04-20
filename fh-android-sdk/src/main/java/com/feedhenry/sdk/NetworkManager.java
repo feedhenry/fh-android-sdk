@@ -8,9 +8,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import com.feedhenry.sdk.utils.FHLog;
 
-/**
- * Created by weili on 15/04/15.
- */
 public class NetworkManager {
   private Context mContext;
   private boolean mIsOnline;

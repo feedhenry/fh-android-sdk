@@ -9,9 +9,6 @@ import com.feedhenry.sdk.api.FHAuthSession;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 
-/**
- * Created by weili on 15/04/15.
- */
 public class FHAuthRequestTest extends AndroidTestCase {
 
   private MockWebServer mockWebServer = null;
@@ -47,7 +44,7 @@ public class FHAuthRequestTest extends AndroidTestCase {
 
       }
     });
-    FHAuthSession authSession = FHAuthSession.getInstance();
+    FHAuthSession authSession = FHAuthSession.instance;
     assertTrue(authSession.exists());
   }
 }

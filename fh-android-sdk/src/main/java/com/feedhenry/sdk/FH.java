@@ -90,7 +90,6 @@ public class FH {
   public static void init(Context pContext, FHActCallback pCallback) {
     mContext = pContext;
     if (!mInitCalled) {
-      Device.init(mContext);
       DataManager.init(mContext).migrateLegacyData();
       checkNetworkStatus();
       try {
@@ -309,7 +308,7 @@ public class FH {
     JSONObject defaultParams = new JSONObject();
     defaultParams.put("appid", appProps.getAppId());
     defaultParams.put("appkey", appProps.getAppApiKey());
-    defaultParams.put("cuid", Device.getInstance().getDeviceId());
+    defaultParams.put("cuid", Device.getDeviceId(mContext));
     defaultParams.put("destination", "android");
     defaultParams.put("sdk_version", "FH_ANDROID_SDK/" + FH.VERSION);
     String projectId = appProps.getProjectId();
@@ -327,8 +326,8 @@ public class FH {
       defaultParams.put("init", initObj);
     }
 
-    if(FHAuthSession.getInstance().exists()){
-      defaultParams.put(FHAuthSession.SESSION_TOKEN_KEY, FHAuthSession.getInstance().getToken());
+    if(FHAuthSession.instance.exists()){
+      defaultParams.put(FHAuthSession.SESSION_TOKEN_KEY, FHAuthSession.instance.getToken());
     }
 
     return defaultParams;
@@ -416,6 +415,6 @@ public class FH {
    * @return customized user-agent string
    */
   public static String getUserAgent() {
-    return Device.getInstance().getUserAgent();
+    return Device.getUserAgent();
   }
 }

@@ -1,15 +1,12 @@
 package com.feedhenry.sdk.api;
 
-import android.content.Context;
 import com.feedhenry.sdk.AppProps;
-import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHHttpClient;
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk.utils.FHLog;
-import javax.xml.crypto.Data;
 import org.json.fh.JSONObject;
 
 public class FHAuthSession {
@@ -19,17 +16,10 @@ public class FHAuthSession {
   private static final String VERIFY_SESSION_ENDPOINT = "verifysession";
   private static final String REVOKE_SESSION_ENDPOINT = "revokesession";
 
-  private static FHAuthSession session;
+  public static final FHAuthSession instance = new FHAuthSession();
 
   private FHAuthSession() {
 
-  }
-
-  public static FHAuthSession getInstance() {
-    if (null == session) {
-      session = new FHAuthSession();
-    }
-    return session;
   }
 
   /**

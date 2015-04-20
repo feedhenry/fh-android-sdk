@@ -11,6 +11,10 @@
   <name>FeedHenry Android SDK Example</name>
 
   <properties>
+
+    <!-- Plugins versions -->
+    <maven.android.plugin.version>4.1.1</maven.android.plugin.version>
+
     <!-- Project depencies versions -->
     <android.version>[5.0.0,)</android.version>
     <android.platform>19</android.platform>
@@ -42,6 +46,7 @@
       <plugin>
         <groupId>com.simpligility.maven.plugins</groupId>
         <artifactId>android-maven-plugin</artifactId>
+        <version>${maven.android.plugin.version}</version>
         <configuration>
           <test>
             <debug>${android.debug}</debug>

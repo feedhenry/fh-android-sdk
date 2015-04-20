@@ -24,14 +24,17 @@ public class DataManager {
     this.mPrefs = this.mContext.getSharedPreferences(PREF_FILE_KEY, Context.MODE_PRIVATE);
   }
 
-  public static DataManager init(Context context){
+  public static synchronized DataManager init(Context context){
     if(null == mInstance){
       mInstance = new DataManager(context);
     }
     return mInstance;
   }
 
-  public static DataManager getInstance() {
+  public static synchronized DataManager getInstance() {
+    if(null == mInstance){
+      throw new IllegalStateException("DataManager is not initialised");
+    }
     return mInstance;
   }
 

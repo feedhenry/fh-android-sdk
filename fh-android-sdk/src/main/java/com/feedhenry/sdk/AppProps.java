@@ -35,7 +35,7 @@ public class AppProps {
   }
 
   /**
-   * Get the host value in fh.properties
+   * Get the value of "host" in fh.properties file
    * @return the host value
    */
   public String getHost(){
@@ -43,7 +43,7 @@ public class AppProps {
   }
 
   /**
-   * Get the project id
+   * Get the value of "projectid" in fh.properties file
    * @return the project id
    */
   public String getProjectId(){
@@ -51,7 +51,7 @@ public class AppProps {
   }
 
   /**
-   * Get the app id
+   * Get the value of "appid" in fh.properties file
    * @return the app id
    */
   public String getAppId(){
@@ -59,7 +59,7 @@ public class AppProps {
   }
 
   /**
-   * Get the app API key
+   * Get the value of "appkey" in fh.properties file
    * @return the app API key
    */
   public String getAppApiKey(){
@@ -67,7 +67,7 @@ public class AppProps {
   }
 
   /**
-   * Get the connection tag
+   * Get the value of "connectiontag" in fh.properties file
    * @return the connection tag
    */
   public String getConnectionTag(){
@@ -76,14 +76,15 @@ public class AppProps {
 
   @Deprecated
   /**
-   * Return the legacy app mode. can be null.
+   * Get the value of "mode" in fh.properties file. This is a legacy field and should not be used anymore.
+   * @return the legacy app mode. can be null.
    */
   public String getAppMode(){
     return this.mProps.getProperty(APP_MODE_KEY);
   }
 
   /**
-   * Return if the app is running in local dev mode.
+   * Return if the app is running in local dev mode (if fhconfig.local.properties file is found in the assets directory).
    * If this is true, the cloud host value returned in CloudProps will be the host value set in the property file.
    * @return
    */

@@ -109,7 +109,7 @@ public class FHAuthRequest extends FHRemote {
     try {
       reqData.put("__fh", FH.getDefaultParams()); //keep backward compatible
       reqData.put("policyId", mPolicyId);
-      reqData.put("device", Device.getInstance().getDeviceId());
+      reqData.put("device", Device.getDeviceId(mContext));
       reqData.put("clientToken", AppProps.getInstance().getAppId());
       JSONObject params = new JSONObject();
       if (null != mUserName && null != mPassword) {
@@ -160,7 +160,7 @@ public class FHAuthRequest extends FHRemote {
                 startAuthIntent(jsonRes, callback);
               } else {
                 if (jsonRes.has(FHAuthSession.SESSION_TOKEN_KEY)) {
-                  FHAuthSession.getInstance().save(jsonRes.getString(FHAuthSession.SESSION_TOKEN_KEY));
+                  FHAuthSession.instance.save(jsonRes.getString(FHAuthSession.SESSION_TOKEN_KEY));
                 }
                 callback.success(pResponse);
               }
@@ -198,7 +198,7 @@ public class FHAuthRequest extends FHRemote {
                 startAuthIntent(jsonRes, callback);
               } else {
                 if (jsonRes.has(FHAuthSession.SESSION_TOKEN_KEY)) {
-                  FHAuthSession.getInstance().save(jsonRes.getString(FHAuthSession.SESSION_TOKEN_KEY));
+                  FHAuthSession.instance.save(jsonRes.getString(FHAuthSession.SESSION_TOKEN_KEY));
                 }
                 callback.success(pResponse);
               }
@@ -265,7 +265,7 @@ public class FHAuthRequest extends FHRemote {
             try {
               String sessionToken = queryMap.get("fh_auth_session");
               if (null != sessionToken) {
-                FHAuthSession.getInstance().save(sessionToken);
+                FHAuthSession.instance.save(sessionToken);
               }
               resJson.put(FHAuthSession.SESSION_TOKEN_KEY, sessionToken);
               resJson.put("authResponse",

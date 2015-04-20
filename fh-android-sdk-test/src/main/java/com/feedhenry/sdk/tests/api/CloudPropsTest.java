@@ -4,9 +4,6 @@ import android.test.AndroidTestCase;
 import com.feedhenry.sdk.AppProps;
 import com.feedhenry.sdk.CloudProps;
 
-/**
- * Created by weili on 15/04/15.
- */
 public class CloudPropsTest extends AndroidTestCase {
 
   public void testCloudProps() throws Exception {

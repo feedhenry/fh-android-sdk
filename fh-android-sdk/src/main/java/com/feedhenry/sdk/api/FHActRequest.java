@@ -1,14 +1,11 @@
 package com.feedhenry.sdk.api;
 
-import org.apache.http.Header;
-import org.json.fh.JSONException;
-import org.json.fh.JSONObject;
-
 import android.content.Context;
-
 import com.feedhenry.sdk.CloudProps;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHRemote;
+import org.apache.http.Header;
+import org.json.fh.JSONObject;
 
 /**
  * The request for calling the cloud side function of the app. Example:

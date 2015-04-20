@@ -6,9 +6,6 @@ import android.test.AndroidTestCase;
 import com.feedhenry.sdk.utils.DataManager;
 import org.json.fh.JSONObject;
 
-/**
- * Created by weili on 15/04/15.
- */
 public class DataManagerTest extends AndroidTestCase {
 
   private static final String TRACKID = "faketrackid";

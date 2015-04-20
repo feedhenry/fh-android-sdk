@@ -8,9 +8,6 @@ import com.feedhenry.sdk.utils.DataManager;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 
-/**
- * Created by weili on 15/04/15.
- */
 public class FHAuthSessionTest extends AndroidTestCase {
 
   private MockWebServer mockWebServer = null;
@@ -32,7 +29,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
   }
 
   public void testExists() throws Exception {
-    FHAuthSession session = FHAuthSession.getInstance();
+    FHAuthSession session = FHAuthSession.instance;
     assertTrue(session.exists());
   }
 
@@ -41,7 +38,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
     cloudSuccessResponse.addHeader("Content-Type", "application/json");
     cloudSuccessResponse.setBody("{'status':'ok', 'isValid': true}");
     mockWebServer.enqueue(cloudSuccessResponse);
-    FHAuthSession authSession = FHAuthSession.getInstance();
+    FHAuthSession authSession = FHAuthSession.instance;
     authSession.verify(new FHAuthSession.Callback() {
       @Override public void handleSuccess(final boolean isValid) {
         valid = isValid;
@@ -60,7 +57,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
     cloudSuccessResponse.addHeader("Content-Type", "application/json");
     cloudSuccessResponse.setBody("{'status':'ok'}");
     mockWebServer.enqueue(cloudSuccessResponse);
-    FHAuthSession authSession = FHAuthSession.getInstance();
+    FHAuthSession authSession = FHAuthSession.instance;
     authSession.clear(true);
     boolean exists = authSession.exists();
     assertFalse(exists);
