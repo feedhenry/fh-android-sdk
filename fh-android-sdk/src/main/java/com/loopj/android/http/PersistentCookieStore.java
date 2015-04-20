@@ -1,20 +1,26 @@
+/**
+ * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 /*
-    Android Asynchronous Http Client
-    Copyright (c) 2011 James Smith <james@loopj.com>
-    http://loopj.com
+ Android Asynchronous Http Client
+ Copyright (c) 2011 James Smith <james@loopj.com>
+ http://loopj.com
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 package com.loopj.android.http;
 
@@ -39,7 +45,11 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * A persistent cookie store which implements the Apache HttpClient {@link CookieStore} interface.
  * Cookies are stored and will persist on the user's device between application sessions since they
- * are serialized and stored in {@link SharedPreferences}. <p>&nbsp;</p> Instances of this class are
+ * are serialized and stored in {@link SharedPreferences}.
+ * <p>
+ * &nbsp;
+ * </p>
+ * Instances of this class are
  * designed to be used with {@link AsyncHttpClient#setCookieStore}, but can also be used with a
  * regular old apache HttpClient/HttpContext if you prefer.
  */
@@ -55,7 +65,7 @@ public class PersistentCookieStore implements CookieStore {
 
     /**
      * Construct a persistent cookie store.
-     *
+     * 
      * @param context Context to attach cookie store to
      */
     public PersistentCookieStore(Context context) {
@@ -152,7 +162,7 @@ public class PersistentCookieStore implements CookieStore {
     /**
      * Will make PersistentCookieStore instance ignore Cookies, which are non-persistent by
      * signature (`Cookie.isPersistent`)
-     *
+     * 
      * @param omitNonPersistentCookies true if non-persistent cookies should be omited
      */
     public void setOmitNonPersistentCookies(boolean omitNonPersistentCookies) {
@@ -161,7 +171,7 @@ public class PersistentCookieStore implements CookieStore {
 
     /**
      * Non-standard helper method, to delete cookie
-     *
+     * 
      * @param cookie cookie to be removed
      */
     public void deleteCookie(Cookie cookie) {
@@ -174,7 +184,7 @@ public class PersistentCookieStore implements CookieStore {
 
     /**
      * Serializes Cookie object into String
-     *
+     * 
      * @param cookie cookie to be encoded, can be null
      * @return cookie encoded as String
      */
@@ -194,7 +204,7 @@ public class PersistentCookieStore implements CookieStore {
 
     /**
      * Returns cookie decoded from cookie string
-     *
+     * 
      * @param cookieString string of cookie as returned from http request
      * @return decoded cookie or null if exception occured
      */
@@ -215,7 +225,7 @@ public class PersistentCookieStore implements CookieStore {
     /**
      * Using some super basic byte array &lt;-&gt; hex conversions so we don't have to rely on any
      * large Base64 libraries. Can be overridden if you like!
-     *
+     * 
      * @param bytes byte array to be converted
      * @return string containing hex values
      */
@@ -233,7 +243,7 @@ public class PersistentCookieStore implements CookieStore {
 
     /**
      * Converts hex values from strings to byte arra
-     *
+     * 
      * @param hexString string of hex-encoded values
      * @return decoded byte array
      */

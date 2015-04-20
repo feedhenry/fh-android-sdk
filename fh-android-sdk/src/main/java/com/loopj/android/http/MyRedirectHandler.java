@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 package com.loopj.android.http;
 
 import org.apache.http.Header;
@@ -40,14 +46,14 @@ class MyRedirectHandler extends DefaultRedirectHandler {
         }
         int statusCode = response.getStatusLine().getStatusCode();
         switch (statusCode) {
-            case HttpStatus.SC_MOVED_TEMPORARILY:
-            case HttpStatus.SC_MOVED_PERMANENTLY:
-            case HttpStatus.SC_SEE_OTHER:
-            case HttpStatus.SC_TEMPORARY_REDIRECT:
-                return true;
-            default:
-                return false;
-        } //end of switch
+        case HttpStatus.SC_MOVED_TEMPORARILY:
+        case HttpStatus.SC_MOVED_PERMANENTLY:
+        case HttpStatus.SC_SEE_OTHER:
+        case HttpStatus.SC_TEMPORARY_REDIRECT:
+            return true;
+        default:
+            return false;
+        } // end of switch
     }
 
     public URI getLocationURI(
@@ -56,16 +62,15 @@ class MyRedirectHandler extends DefaultRedirectHandler {
         if (response == null) {
             throw new IllegalArgumentException("HTTP response may not be null");
         }
-        //get the location header to find out where to redirect to
+        // get the location header to find out where to redirect to
         Header locationHeader = response.getFirstHeader("location");
         if (locationHeader == null) {
             // got a redirect response, but no location header
             throw new ProtocolException(
                     "Received redirect response " + response.getStatusLine()
-                            + " but no location header"
-            );
+                            + " but no location header");
         }
-//HERE IS THE MODIFIED LINE OF CODE
+        // HERE IS THE MODIFIED LINE OF CODE
         String location = locationHeader.getValue().replaceAll(" ", "%20");
 
         URI uri;
@@ -77,7 +82,7 @@ class MyRedirectHandler extends DefaultRedirectHandler {
 
         HttpParams params = response.getParams();
         // rfc2616 demands the location value be a complete URI
-        // Location       = "Location" ":" absoluteURI
+        // Location = "Location" ":" absoluteURI
         if (!uri.isAbsolute()) {
             if (params.isParameterTrue(ClientPNames.REJECT_RELATIVE_REDIRECT)) {
                 throw new ProtocolException("Relative redirect location '"

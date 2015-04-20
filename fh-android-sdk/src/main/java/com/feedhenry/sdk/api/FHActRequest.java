@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 package com.feedhenry.sdk.api;
 
 import org.apache.http.Header;
@@ -33,71 +39,69 @@ import com.feedhenry.sdk.FHRemote;
  */
 public class FHActRequest extends FHRemote {
 
-  private String mRemoteAct;
-  private CloudProps mCloudProps;
-  protected JSONObject mArgs = new JSONObject();
+    private String mRemoteAct;
+    private CloudProps mCloudProps;
+    protected JSONObject mArgs = new JSONObject();
 
-  protected static String LOG_TAG = "com.feedhenry.sdk.api.FHActRequest";
+    protected static String LOG_TAG = "com.feedhenry.sdk.api.FHActRequest";
 
-  /**
-   * Constructor
-   * 
-   * @param context the applicaiton context
-   * @param pCloudProps the properties returned from the cloud
-   */
-  public FHActRequest(Context context, CloudProps pCloudProps) {
-    super(context, pCloudProps.getAppProperties());
-    mCloudProps = pCloudProps;
-  }
-  
-  
-  protected String getApiURl() {
-    String host = mCloudProps.getCloudHost();
-    String path = getPath();
-    String hostUrl = host + (path.startsWith("/")? path: ("/" + path));
-    return hostUrl;
-  }
-
-  /**
-   * The name of the cloud side function
-   * 
-   * @param pAction
-   *          cloud side function name
-   */
-  public void setRemoteAction(String pAction) {
-    mRemoteAct = pAction;
-  }
-
-  /**
-   * Set the parameters for the cloud side function
-   * 
-   * @param pArgs
-   *          the parameters that will be passed to the cloud side function
-   */
-  public void setArgs(JSONObject pArgs){
-    mArgs = pArgs;
-  //keep backward compatibility
-    if(!mArgs.has("__fh")){
-      try{
-        mArgs.put("__fh", FH.getDefaultParams());
-      } catch(Exception e){
-        
-      }
+    /**
+     * Constructor
+     * 
+     * @param context the applicaiton context
+     * @param pCloudProps the properties returned from the cloud
+     */
+    public FHActRequest(Context context, CloudProps pCloudProps) {
+        super(context, pCloudProps.getAppProperties());
+        mCloudProps = pCloudProps;
     }
-  }
 
-  protected JSONObject getRequestArgs() {
-    return mArgs;
-  }
+    protected String getApiURl() {
+        String host = mCloudProps.getCloudHost();
+        String path = getPath();
+        String hostUrl = host + (path.startsWith("/") ? path : ("/" + path));
+        return hostUrl;
+    }
 
-  @Override
-  protected String getPath() {
-    return "cloud/" + mRemoteAct;
-  }
+    /**
+     * The name of the cloud side function
+     * 
+     * @param pAction
+     *            cloud side function name
+     */
+    public void setRemoteAction(String pAction) {
+        mRemoteAct = pAction;
+    }
 
+    /**
+     * Set the parameters for the cloud side function
+     * 
+     * @param pArgs
+     *            the parameters that will be passed to the cloud side function
+     */
+    public void setArgs(JSONObject pArgs) {
+        mArgs = pArgs;
+        // keep backward compatibility
+        if (!mArgs.has("__fh")) {
+            try {
+                mArgs.put("__fh", FH.getDefaultParams());
+            } catch (Exception e) {
 
-  @Override
-  protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
-    return null;
-  }
+            }
+        }
+    }
+
+    protected JSONObject getRequestArgs() {
+        return mArgs;
+    }
+
+    @Override
+    protected String getPath() {
+        return "cloud/" + mRemoteAct;
+    }
+
+    @Override
+    protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+        return null;
+    }
 }

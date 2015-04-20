@@ -30,7 +30,11 @@
         <maven.android.plugin.version>4.1.1</maven.android.plugin.version>
         <builder.helper.plugin.version>1.7</builder.helper.plugin.version>
         <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
+        <java-formatter.plugin.version>0.4</java-formatter.plugin.version>
+        <license.plugin.version>1.9.0</license.plugin.version>
+        <aerogear-misc.version>0.2.0</aerogear-misc.version>
 
+        
         <!-- Android configs -->
         <android.platform>19</android.platform>
         <android.debug>false</android.debug>
@@ -58,8 +62,54 @@
                     <version>${maven.android.plugin.version}</version>
                     <extensions>true</extensions>
                 </plugin>
+                <plugin>
+                    <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
+                    <artifactId>maven-java-formatter-plugin</artifactId>
+                    <version>${java-formatter.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.mycila.maven-license-plugin</groupId>
+                    <artifactId>maven-license-plugin</artifactId>
+                    <version>${license.plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+        <plugin>
+                <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
+                <artifactId>maven-java-formatter-plugin</artifactId>
+                <configuration>
+                    <configFile>/eclipse-formatting.xml</configFile>
+                    <lineEnding>LF</lineEnding>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jboss.aerogear</groupId>
+                        <artifactId>aerogear-misc</artifactId>
+                        <version>${aerogear-misc.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+                    <plugin>
+                        <groupId>com.mycila.maven-license-plugin</groupId>
+                        <artifactId>maven-license-plugin</artifactId>
+                        <configuration>
+                            <header>LICENSE</header>
+                            <includes>
+                                <include>src/**</include>
+                                <include>test/**</include>
+                            </includes>
+                            <strictCheck>true</strictCheck>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.jboss.aerogear</groupId>
+                                <artifactId>aerogear-misc</artifactId>
+                                <version>${aerogear-misc.version}</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+            </plugins>
     </build>
     <profiles>
         <profile>

@@ -1,22 +1,28 @@
+/**
+ * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 package com.loopj.android.http;
 
 /*
-    Android Asynchronous Http Client
-    Copyright (c) 2011 James Smith <james@loopj.com>
-    http://loopj.com
+ Android Asynchronous Http Client
+ Copyright (c) 2011 James Smith <james@loopj.com>
+ http://loopj.com
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 import android.os.Message;
 import android.util.Log;
@@ -41,15 +47,14 @@ public abstract class DataAsyncHttpResponseHandler extends AsyncHttpResponseHand
 
     /**
      * Fired when the request progress, override to handle in your own code
-     *
+     * 
      * @param responseBody response body received so far
      */
     public void onProgressData(byte[] responseBody) {
     }
 
-
     final public void sendProgressDataMessage(byte[] responseBytes) {
-        sendMessage(obtainMessage(PROGRESS_DATA_MESSAGE, new Object[]{responseBytes}));
+        sendMessage(obtainMessage(PROGRESS_DATA_MESSAGE, new Object[] { responseBytes }));
     }
 
     // Methods which emulate android's Handler and Message methods
@@ -59,24 +64,24 @@ public abstract class DataAsyncHttpResponseHandler extends AsyncHttpResponseHand
         Object[] response;
 
         switch (message.what) {
-            case PROGRESS_DATA_MESSAGE:
-                response = (Object[]) message.obj;
-                if (response != null && response.length >= 1) {
-                    try {
-                        onProgressData((byte[]) response[0]);
-                    } catch (Throwable t) {
-                        Log.e(LOG_TAG, "custom onProgressData contains an error", t);
-                    }
-                } else {
-                    Log.e(LOG_TAG, "PROGRESS_DATA_MESSAGE didn't got enough params");
+        case PROGRESS_DATA_MESSAGE:
+            response = (Object[]) message.obj;
+            if (response != null && response.length >= 1) {
+                try {
+                    onProgressData((byte[]) response[0]);
+                } catch (Throwable t) {
+                    Log.e(LOG_TAG, "custom onProgressData contains an error", t);
                 }
-                break;
+            } else {
+                Log.e(LOG_TAG, "PROGRESS_DATA_MESSAGE didn't got enough params");
+            }
+            break;
         }
     }
 
     /**
      * Returns byte array of response HttpEntity contents
-     *
+     * 
      * @param entity can be null
      * @return response entity body or null
      * @throws java.io.IOException if reading entity or creating byte array failed
@@ -120,16 +125,15 @@ public abstract class DataAsyncHttpResponseHandler extends AsyncHttpResponseHand
 
     /**
      * Copies elements from {@code original} into a new array, from indexes start (inclusive) to end
-     * (exclusive). The original order of elements is preserved. If {@code end} is greater than
-     * {@code original.length}, the result is padded with the value {@code (byte) 0}.
-     *
+     * (exclusive). The original order of elements is preserved. If {@code end} is greater than {@code original.length}, the result is padded with the value {@code (byte) 0}.
+     * 
      * @param original the original array
-     * @param start    the start index, inclusive
-     * @param end      the end index, exclusive
+     * @param start the start index, inclusive
+     * @param end the end index, exclusive
      * @return the new array
      * @throws ArrayIndexOutOfBoundsException if {@code start < 0 || start > original.length}
-     * @throws IllegalArgumentException       if {@code start > end}
-     * @throws NullPointerException           if {@code original == null}
+     * @throws IllegalArgumentException if {@code start > end}
+     * @throws NullPointerException if {@code original == null}
      * @see java.util.Arrays
      * @since 1.6
      */
@@ -148,4 +152,3 @@ public abstract class DataAsyncHttpResponseHandler extends AsyncHttpResponseHand
         return result;
     }
 }
-

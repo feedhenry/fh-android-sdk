@@ -1,5 +1,10 @@
+/**
+ * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 package com.loopj.android.http;
-
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -17,8 +22,8 @@ public class Base64OutputStream extends FilterOutputStream {
     /**
      * Performs Base64 encoding on the data written to the stream, writing the encoded data to
      * another OutputStream.
-     *
-     * @param out   the OutputStream to write the encoded data to
+     * 
+     * @param out the OutputStream to write the encoded data to
      * @param flags bit flags for controlling the encoder; see the constants in {@link Base64}
      */
     public Base64OutputStream(OutputStream out, int flags) {
@@ -28,9 +33,9 @@ public class Base64OutputStream extends FilterOutputStream {
     /**
      * Performs Base64 encoding or decoding on the data written to the stream, writing the
      * encoded/decoded data to another OutputStream.
-     *
-     * @param out    the OutputStream to write the encoded data to
-     * @param flags  bit flags for controlling the encoder; see the constants in {@link Base64}
+     * 
+     * @param out the OutputStream to write the encoded data to
+     * @param flags bit flags for controlling the encoder; see the constants in {@link Base64}
      * @param encode true to encode, false to decode
      */
     public Base64OutputStream(OutputStream out, int flags, boolean encode) {
@@ -62,7 +67,7 @@ public class Base64OutputStream extends FilterOutputStream {
     }
 
     /**
-     * Flush any buffered data from calls to write(int).  Needed before doing a write(byte[], int,
+     * Flush any buffered data from calls to write(int). Needed before doing a write(byte[], int,
      * int) or a close().
      */
     private void flushBuffer() throws IOException {
@@ -74,7 +79,8 @@ public class Base64OutputStream extends FilterOutputStream {
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        if (len <= 0) return;
+        if (len <= 0)
+            return;
         flushBuffer();
         internalWrite(b, off, len, false);
     }
@@ -108,9 +114,9 @@ public class Base64OutputStream extends FilterOutputStream {
 
     /**
      * Write the given bytes to the encoder/decoder.
-     *
+     * 
      * @param finish true if this is the last batch of input, to cause encoder/decoder state to be
-     *               finalized.
+     *            finalized.
      */
     private void internalWrite(byte[] b, int off, int len, boolean finish) throws IOException {
         coder.output = embiggen(coder.output, coder.maxOutputSize(len));
@@ -121,7 +127,7 @@ public class Base64OutputStream extends FilterOutputStream {
     }
 
     /**
-     * If b.length is at least len, return b.  Otherwise return a new byte array of length len.
+     * If b.length is at least len, return b. Otherwise return a new byte array of length len.
      */
     private byte[] embiggen(byte[] b, int len) {
         if (b == null || b.length < len) {
