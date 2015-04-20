@@ -20,7 +20,7 @@ public class DataManager {
   private SharedPreferences mPrefs;
 
   private DataManager(Context context) {
-    this.mContext = context;
+    this.mContext = context.getApplicationContext();
     this.mPrefs = this.mContext.getSharedPreferences(PREF_FILE_KEY, Context.MODE_PRIVATE);
   }
 
