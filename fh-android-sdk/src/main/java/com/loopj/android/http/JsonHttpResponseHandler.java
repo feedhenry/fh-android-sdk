@@ -1,20 +1,26 @@
+/**
+ * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 /*
-    Android Asynchronous Http Client
-    Copyright (c) 2011 James Smith <james@loopj.com>
-    http://loopj.com
+ Android Asynchronous Http Client
+ Copyright (c) 2011 James Smith <james@loopj.com>
+ http://loopj.com
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 package com.loopj.android.http;
 
@@ -29,10 +35,16 @@ import org.json.JSONTokener;
 
 /**
  * Used to intercept and handle the responses from requests made using {@link AsyncHttpClient}, with
- * automatic parsing into a {@link JSONObject} or {@link JSONArray}. <p>&nbsp;</p> This class is
- * designed to be passed to get, post, put and delete requests with the {@link #onSuccess(int,
- * org.apache.http.Header[], org.json.JSONArray)} or {@link #onSuccess(int,
- * org.apache.http.Header[], org.json.JSONObject)} methods anonymously overridden. <p>&nbsp;</p>
+ * automatic parsing into a {@link JSONObject} or {@link JSONArray}.
+ * <p>
+ * &nbsp;
+ * </p>
+ * This class is
+ * designed to be passed to get, post, put and delete requests with the {@link #onSuccess(int, org.apache.http.Header[], org.json.JSONArray)} or
+ * {@link #onSuccess(int, org.apache.http.Header[], org.json.JSONObject)} methods anonymously overridden.
+ * <p>
+ * &nbsp;
+ * </p>
  * Additionally, you can override the other event methods from the parent class.
  */
 public class JsonHttpResponseHandler extends TextHttpResponseHandler {
@@ -47,7 +59,7 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
 
     /**
      * Creates new JsonHttpRespnseHandler with given Json String encoding
-     *
+     * 
      * @param encoding String encoding to be used when parsing JSON
      */
     public JsonHttpResponseHandler(String encoding) {
@@ -56,10 +68,10 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
 
     /**
      * Returns when request succeeds
-     *
+     * 
      * @param statusCode http response status line
-     * @param headers    response headers if any
-     * @param response   parsed response if any
+     * @param headers response headers if any
+     * @param response parsed response if any
      */
     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
 
@@ -67,10 +79,10 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
 
     /**
      * Returns when request succeeds
-     *
+     * 
      * @param statusCode http response status line
-     * @param headers    response headers if any
-     * @param response   parsed response if any
+     * @param headers response headers if any
+     * @param response parsed response if any
      */
     public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
 
@@ -78,10 +90,10 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
 
     /**
      * Returns when request failed
-     *
-     * @param statusCode    http response status line
-     * @param headers       response headers if any
-     * @param throwable     throwable describing the way request failed
+     * 
+     * @param statusCode http response status line
+     * @param headers response headers if any
+     * @param throwable throwable describing the way request failed
      * @param errorResponse parsed response if any
      */
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
@@ -90,10 +102,10 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
 
     /**
      * Returns when request failed
-     *
-     * @param statusCode    http response status line
-     * @param headers       response headers if any
-     * @param throwable     throwable describing the way request failed
+     * 
+     * @param statusCode http response status line
+     * @param headers response headers if any
+     * @param throwable throwable describing the way request failed
      * @param errorResponse parsed response if any
      */
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
@@ -113,7 +125,7 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
     @Override
     public final void onSuccess(final int statusCode, final Header[] headers, final byte[] responseBytes) {
         if (statusCode != HttpStatus.SC_NO_CONTENT) {
-	    Runnable parser = new Runnable() {
+            Runnable parser = new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -142,11 +154,12 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
                         });
                     }
                 }
-	    };
-	    if (!getUseSynchronousMode())
-		new Thread(parser).start();
-	    else // In synchronous mode everything should be run on one thread
-		parser.run();
+            };
+            if (!getUseSynchronousMode())
+                new Thread(parser).start();
+            else
+                // In synchronous mode everything should be run on one thread
+                parser.run();
         } else {
             onSuccess(statusCode, headers, new JSONObject());
         }
@@ -155,7 +168,7 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
     @Override
     public final void onFailure(final int statusCode, final Header[] headers, final byte[] responseBytes, final Throwable throwable) {
         if (responseBytes != null) {
-	    Runnable parser = new Runnable() {
+            Runnable parser = new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -185,11 +198,12 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
 
                     }
                 }
-	    };
-	    if (!getUseSynchronousMode())
-		new Thread(parser).start();
-	    else // In synchronous mode everything should be run on one thread
-		parser.run();
+            };
+            if (!getUseSynchronousMode())
+                new Thread(parser).start();
+            else
+                // In synchronous mode everything should be run on one thread
+                parser.run();
         } else {
             Log.v(LOG_TAG, "response body is null, calling onFailure(Throwable, JSONObject)");
             onFailure(statusCode, headers, throwable, (JSONObject) null);
@@ -199,7 +213,7 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
     /**
      * Returns Object of type {@link JSONObject}, {@link JSONArray}, String, Boolean, Integer, Long,
      * Double or {@link JSONObject#NULL}, see {@link org.json.JSONTokener#nextValue()}
-     *
+     * 
      * @param responseBody response bytes to be assembled in String and parsed as JSON
      * @return Object parsedResponse
      * @throws org.json.JSONException exception if thrown while parsing JSON
@@ -208,7 +222,7 @@ public class JsonHttpResponseHandler extends TextHttpResponseHandler {
         if (null == responseBody)
             return null;
         Object result = null;
-        //trim the string to prevent start with blank, and test if the string is valid JSON, because the parser don't do this :(. If Json is not valid this will return null
+        // trim the string to prevent start with blank, and test if the string is valid JSON, because the parser don't do this :(. If Json is not valid this will return null
         String jsonString = getResponseString(responseBody, getCharset());
         if (jsonString != null) {
             jsonString = jsonString.trim();

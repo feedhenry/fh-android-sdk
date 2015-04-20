@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 package com.loopj.android.http;
 
 import java.lang.ref.WeakReference;
@@ -18,14 +24,17 @@ public class RequestHandle {
      * and this request has not started when cancel is called, this request should never run. If the
      * request has already started, then the mayInterruptIfRunning parameter determines whether the
      * thread executing this request should be interrupted in an attempt to stop the request.
-     * <p>&nbsp;</p> After this method returns, subsequent calls to isDone() will always return
+     * <p>
+     * &nbsp;
+     * </p>
+     * After this method returns, subsequent calls to isDone() will always return
      * true. Subsequent calls to isCancelled() will always return true if this method returned
      * true.
-     *
+     * 
      * @param mayInterruptIfRunning true if the thread executing this request should be interrupted;
-     *                              otherwise, in-progress requests are allowed to complete
+     *            otherwise, in-progress requests are allowed to complete
      * @return false if the request could not be cancelled, typically because it has already
-     * completed normally; true otherwise
+     *         completed normally; true otherwise
      */
     public boolean cancel(boolean mayInterruptIfRunning) {
         AsyncHttpRequest _request = request.get();
@@ -35,7 +44,7 @@ public class RequestHandle {
     /**
      * Returns true if this task completed. Completion may be due to normal termination, an
      * exception, or cancellation -- in all of these cases, this method will return true.
-     *
+     * 
      * @return true if this task completed
      */
     public boolean isFinished() {
@@ -45,7 +54,7 @@ public class RequestHandle {
 
     /**
      * Returns true if this task was cancelled before it completed normally.
-     *
+     * 
      * @return true if this task was cancelled before it completed
      */
     public boolean isCancelled() {

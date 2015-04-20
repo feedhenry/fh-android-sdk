@@ -1,3 +1,9 @@
+/**
+ * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 package com.loopj.android.http;
 
 import org.apache.http.HttpVersion;
@@ -34,7 +40,11 @@ import javax.net.ssl.X509TrustManager;
 
 /**
  * This file is introduced to fix HTTPS Post bug on API &lt; ICS see
- * http://code.google.com/p/android/issues/detail?id=13117#c14 <p>&nbsp;</p> Warning! This omits SSL
+ * http://code.google.com/p/android/issues/detail?id=13117#c14
+ * <p>
+ * &nbsp;
+ * </p>
+ * Warning! This omits SSL
  * certificate validation on every device, use with caution
  */
 public class MySSLSocketFactory extends SSLSocketFactory {
@@ -42,7 +52,7 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 
     /**
      * Creates a new SSL Socket Factory with the given KeyStore.
-     *
+     * 
      * @param truststore A KeyStore to create the SSL Socket Factory in context of
      * @throws java.security.NoSuchAlgorithmException This will not happen on a stock dalvik/Android system
      * @throws java.security.KeyManagementException This will not happen on a stock dalvik/Android system
@@ -64,7 +74,7 @@ public class MySSLSocketFactory extends SSLSocketFactory {
             }
         };
 
-        sslContext.init(null, new TrustManager[]{tm}, null);
+        sslContext.init(null, new TrustManager[] { tm }, null);
     }
 
     @Override
@@ -86,7 +96,7 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 
     /**
      * Gets a KeyStore containing the Certificate
-     *
+     * 
      * @param cert InputStream of the Certificate
      * @return KeyStore
      */
@@ -126,7 +136,7 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 
     /**
      * Gets a Default KeyStore
-     *
+     * 
      * @return KeyStore
      */
     public static KeyStore getKeystore() {
@@ -142,7 +152,7 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 
     /**
      * Returns a SSlSocketFactory which trusts all certificates
-     *
+     * 
      * @return SSLSocketFactory
      */
     public static SSLSocketFactory getFixedSocketFactory() {
@@ -159,7 +169,7 @@ public class MySSLSocketFactory extends SSLSocketFactory {
 
     /**
      * Gets a DefaultHttpClient which trusts a set of certificates specified by the KeyStore
-     *
+     * 
      * @param keyStore custom provided KeyStore instance
      * @return DefaultHttpClient
      */

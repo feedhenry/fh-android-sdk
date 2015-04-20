@@ -1,20 +1,26 @@
+/**
+ * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ *
+ * Please refer to your contract with FeedHenry for the software license agreement.
+ * If you do not have a contract, you do not have a license to use this software.
+ */
 /*
-    Android Asynchronous Http Client
-    Copyright (c) 2011 James Smith <james@loopj.com>
-    http://loopj.com
+ Android Asynchronous Http Client
+ Copyright (c) 2011 James Smith <james@loopj.com>
+ http://loopj.com
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 package com.loopj.android.http;
 
@@ -42,8 +48,15 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * A collection of string request parameters or files to send along with requests made from an
- * {@link AsyncHttpClient} instance. <p>&nbsp;</p> For example: <p>&nbsp;</p>
+ * A collection of string request parameters or files to send along with requests made from an {@link AsyncHttpClient} instance.
+ * <p>
+ * &nbsp;
+ * </p>
+ * For example:
+ * <p>
+ * &nbsp;
+ * </p>
+ * 
  * <pre>
  * RequestParams params = new RequestParams();
  * params.put("username", "james");
@@ -52,25 +65,25 @@ import java.util.concurrent.ConcurrentHashMap;
  * params.put("profile_picture", new File("pic.jpg")); // Upload a File
  * params.put("profile_picture2", someInputStream); // Upload an InputStream
  * params.put("profile_picture3", new ByteArrayInputStream(someBytes)); // Upload some bytes
- *
+ * 
  * Map&lt;String, String&gt; map = new HashMap&lt;String, String&gt;();
  * map.put("first_name", "James");
  * map.put("last_name", "Smith");
  * params.put("user", map); // url params: "user[first_name]=James&amp;user[last_name]=Smith"
- *
+ * 
  * Set&lt;String&gt; set = new HashSet&lt;String&gt;(); // unordered collection
  * set.add("music");
  * set.add("art");
  * params.put("like", set); // url params: "like=music&amp;like=art"
- *
+ * 
  * List&lt;String&gt; list = new ArrayList&lt;String&gt;(); // Ordered collection
  * list.add("Java");&lt;&gt;
  * list.add("C");
  * params.put("languages", list); // url params: "languages[]=Java&amp;languages[]=C"
- *
+ * 
  * String[] colors = { "blue", "yellow" }; // Ordered collection
  * params.put("colors", colors); // url params: "colors[]=blue&amp;colors[]=yellow"
- *
+ * 
  * List&lt;Map&lt;String, String&gt;&gt; listOfMaps = new ArrayList&lt;Map&lt;String,
  * String&gt;&gt;();
  * Map&lt;String, String&gt; user1 = new HashMap&lt;String, String&gt;();
@@ -82,7 +95,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * listOfMaps.add(user1);
  * listOfMaps.add(user2);
  * params.put("users", listOfMaps); // url params: "users[][age]=30&amp;users[][gender]=male&amp;users[][age]=25&amp;users[][gender]=female"
- *
+ * 
  * AsyncHttpClient client = new AsyncHttpClient();
  * client.post("http://myendpoint.com", params, responseHandler);
  * </pre>
@@ -90,7 +103,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RequestParams {
 
     public final static String APPLICATION_OCTET_STREAM =
-        "application/octet-stream";
+            "application/octet-stream";
 
     protected final static String LOG_TAG = "RequestParams";
     protected boolean isRepeatable;
@@ -103,9 +116,12 @@ public class RequestParams {
     protected String contentEncoding = HTTP.UTF_8;
 
     /**
-     * Sets content encoding for return value of {@link #getParamString()} and {@link
-     * #createFormEntity()} <p>&nbsp;</p> Default encoding is "UTF-8"
-     *
+     * Sets content encoding for return value of {@link #getParamString()} and {@link #createFormEntity()}
+     * <p>
+     * &nbsp;
+     * </p>
+     * Default encoding is "UTF-8"
+     * 
      * @param encoding String constant from {@link org.apache.http.protocol.HTTP}
      */
     public void setContentEncoding(final String encoding) {
@@ -125,7 +141,7 @@ public class RequestParams {
     /**
      * Constructs a new RequestParams instance containing the key/value string params from the
      * specified map.
-     *
+     * 
      * @param source the source key/value string map to add.
      */
     public RequestParams(Map<String, String> source) {
@@ -139,22 +155,24 @@ public class RequestParams {
     /**
      * Constructs a new RequestParams instance and populate it with a single initial key/value
      * string param.
-     *
-     * @param key   the key name for the intial param.
+     * 
+     * @param key the key name for the intial param.
      * @param value the value string for the initial param.
      */
     public RequestParams(final String key, final String value) {
-        this(new HashMap<String, String>() {{
-            put(key, value);
-        }});
+        this(new HashMap<String, String>() {
+            {
+                put(key, value);
+            }
+        });
     }
 
     /**
      * Constructs a new RequestParams instance and populate it with multiple initial key/value
      * string param.
-     *
+     * 
      * @param keysAndValues a sequence of keys and values. Objects are automatically converted to
-     *                      Strings (including the value {@code null}).
+     *            Strings (including the value {@code null}).
      * @throws IllegalArgumentException if the number of arguments isn't even.
      */
     public RequestParams(Object... keysAndValues) {
@@ -170,8 +188,8 @@ public class RequestParams {
 
     /**
      * Adds a key/value string pair to the request.
-     *
-     * @param key   the key name for the new param.
+     * 
+     * @param key the key name for the new param.
      * @param value the value string for the new param.
      */
     public void put(String key, String value) {
@@ -182,8 +200,8 @@ public class RequestParams {
 
     /**
      * Adds a file to the request.
-     *
-     * @param key  the key name for the new param.
+     * 
+     * @param key the key name for the new param.
      * @param file the file to add.
      * @throws java.io.FileNotFoundException throws if wrong File argument was passed
      */
@@ -193,9 +211,9 @@ public class RequestParams {
 
     /**
      * Adds a file to the request.
-     *
-     * @param key         the key name for the new param.
-     * @param file        the file to add.
+     * 
+     * @param key the key name for the new param.
+     * @param file the file to add.
      * @param contentType the content type of the file, eg. application/json
      * @throws java.io.FileNotFoundException throws if wrong File argument was passed
      */
@@ -210,8 +228,8 @@ public class RequestParams {
 
     /**
      * Adds an input stream to the request.
-     *
-     * @param key    the key name for the new param.
+     * 
+     * @param key the key name for the new param.
      * @param stream the input stream to add.
      */
     public void put(String key, InputStream stream) {
@@ -220,10 +238,10 @@ public class RequestParams {
 
     /**
      * Adds an input stream to the request.
-     *
-     * @param key    the key name for the new param.
+     * 
+     * @param key the key name for the new param.
      * @param stream the input stream to add.
-     * @param name   the name of the stream.
+     * @param name the name of the stream.
      */
     public void put(String key, InputStream stream, String name) {
         put(key, stream, name, null);
@@ -231,10 +249,10 @@ public class RequestParams {
 
     /**
      * Adds an input stream to the request.
-     *
-     * @param key         the key name for the new param.
-     * @param stream      the input stream to add.
-     * @param name        the name of the stream.
+     * 
+     * @param key the key name for the new param.
+     * @param stream the input stream to add.
+     * @param name the name of the stream.
      * @param contentType the content type of the file, eg. application/json
      */
     public void put(String key, InputStream stream, String name, String contentType) {
@@ -243,12 +261,12 @@ public class RequestParams {
 
     /**
      * Adds an input stream to the request.
-     *
-     * @param key         the key name for the new param.
-     * @param stream      the input stream to add.
-     * @param name        the name of the stream.
+     * 
+     * @param key the key name for the new param.
+     * @param stream the input stream to add.
+     * @param name the name of the stream.
      * @param contentType the content type of the file, eg. application/json
-     * @param autoClose   close input stream automatically on successful upload
+     * @param autoClose close input stream automatically on successful upload
      */
     public void put(String key, InputStream stream, String name, String contentType, boolean autoClose) {
         if (key != null && stream != null) {
@@ -258,8 +276,8 @@ public class RequestParams {
 
     /**
      * Adds param with non-string value (e.g. Map, List, Set).
-     *
-     * @param key   the key name for the new param.
+     * 
+     * @param key the key name for the new param.
      * @param value the non-string value object for the new param.
      */
     public void put(String key, Object value) {
@@ -270,8 +288,8 @@ public class RequestParams {
 
     /**
      * Adds a int value to the request.
-     *
-     * @param key   the key name for the new param.
+     * 
+     * @param key the key name for the new param.
      * @param value the value int for the new param.
      */
     public void put(String key, int value) {
@@ -282,8 +300,8 @@ public class RequestParams {
 
     /**
      * Adds a long value to the request.
-     *
-     * @param key   the key name for the new param.
+     * 
+     * @param key the key name for the new param.
      * @param value the value long for the new param.
      */
     public void put(String key, long value) {
@@ -294,8 +312,8 @@ public class RequestParams {
 
     /**
      * Adds string value to param which can have more than one value.
-     *
-     * @param key   the key name for the param, either existing or new.
+     * 
+     * @param key the key name for the param, either existing or new.
      * @param value the value string for the new param.
      */
     public void add(String key, String value) {
@@ -316,7 +334,7 @@ public class RequestParams {
 
     /**
      * Removes a parameter from the request.
-     *
+     * 
      * @param key the key name for the parameter to remove.
      */
     public void remove(String key) {
@@ -380,7 +398,7 @@ public class RequestParams {
     /**
      * Set global flag which determines whether to automatically close input
      * streams on successful upload.
-     *
+     * 
      * @param flag boolean whether to automatically close input streams
      */
     public void setAutoCloseInputStreams(boolean flag) {
@@ -389,10 +407,9 @@ public class RequestParams {
 
     /**
      * Returns an HttpEntity containing all request parameters.
-     *
+     * 
      * @param progressHandler HttpResponseHandler for reporting progress on entity submit
-     * @return HttpEntity resulting HttpEntity to be included along with {@link
-     * org.apache.http.client.methods.HttpEntityEnclosingRequestBase}
+     * @return HttpEntity resulting HttpEntity to be included along with {@link org.apache.http.client.methods.HttpEntityEnclosingRequestBase}
      * @throws IOException if one of the streams cannot be read
      */
     public HttpEntity getEntity(ResponseHandlerInterface progressHandler) throws IOException {
@@ -407,7 +424,7 @@ public class RequestParams {
 
     private HttpEntity createJsonStreamerEntity(ResponseHandlerInterface progressHandler) throws IOException {
         JsonStreamerEntity entity = new JsonStreamerEntity(progressHandler,
-            !fileParams.isEmpty() || !streamParams.isEmpty());
+                !fileParams.isEmpty() || !streamParams.isEmpty());
 
         // Add string params
         for (ConcurrentHashMap.Entry<String, String> entry : urlParams.entrySet()) {
@@ -429,11 +446,11 @@ public class RequestParams {
             StreamWrapper stream = entry.getValue();
             if (stream.inputStream != null) {
                 entity.addPart(entry.getKey(),
-                    StreamWrapper.newInstance(
-                        stream.inputStream,
-                        stream.name,
-                        stream.contentType,
-                        stream.autoClose));
+                        StreamWrapper.newInstance(
+                                stream.inputStream,
+                                stream.name,
+                                stream.contentType,
+                                stream.autoClose));
             }
         }
 
@@ -562,10 +579,10 @@ public class RequestParams {
 
         static StreamWrapper newInstance(InputStream inputStream, String name, String contentType, boolean autoClose) {
             return new StreamWrapper(
-                inputStream,
-                name,
-                contentType == null ? APPLICATION_OCTET_STREAM : contentType,
-                autoClose);
+                    inputStream,
+                    name,
+                    contentType == null ? APPLICATION_OCTET_STREAM : contentType,
+                    autoClose);
         }
     }
 }
