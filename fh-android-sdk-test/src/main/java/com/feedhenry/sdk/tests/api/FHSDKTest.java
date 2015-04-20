@@ -121,6 +121,16 @@ public class FHSDKTest extends AndroidTestCase {
         verifyCloudRequest("/v1/cloud/test?test=true", "GET", null, null);
     }
 
+    public void testCloudDeleteSync() throws Exception {
+
+        enqueueCloudResponse();
+
+        JSONObject p = new JSONObject();
+        p.put("test", "true");
+        makeCloudRequest("DELETE", null, p, false);
+        verifyCloudRequest("/v1/cloud/test?test=true", "DELETE", null, null);
+    }
+
     public void testCloudDeleteAsync() throws Exception {
         enqueueCloudResponse();
         JSONObject p = new JSONObject();
