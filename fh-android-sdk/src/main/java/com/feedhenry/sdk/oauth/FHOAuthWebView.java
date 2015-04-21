@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -23,8 +23,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * Construct a WebView window and load a url request. Broadcast url changes event to anyone who's interested.
- * 
+ * Construct a WebView window and load a url request. Broadcast url changes event to anyone who's
+ * interested.
  */
 public class FHOAuthWebView {
 
@@ -48,7 +48,8 @@ public class FHOAuthWebView {
         String title = mSettings.getString("title");
         mMainLayout = null;
         mMainLayout = new LinearLayout(this.mContext);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT, 0.0F);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+                ViewGroup.LayoutParams.FILL_PARENT, 0.0F);
         mMainLayout.setLayoutParams(lp);
         ((LinearLayout) mMainLayout).setGravity(Gravity.CENTER_VERTICAL);
         ((LinearLayout) mMainLayout).setOrientation(LinearLayout.VERTICAL);
@@ -60,7 +61,8 @@ public class FHOAuthWebView {
         settings.setBuiltInZoomControls(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
 
-        mWebView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT, 1.0F));
+        mWebView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+                ViewGroup.LayoutParams.FILL_PARENT, 1.0F));
 
         mWebView.setWebViewClient(new WebViewClient() {
 
@@ -88,7 +90,8 @@ public class FHOAuthWebView {
             }
 
             @Override
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+            public void onReceivedError(WebView view, int errorCode, String description,
+                    String failingUrl) {
                 FHLog.d(LOG_TAG, "error: " + description + "url: " + failingUrl);
             }
         });
@@ -96,7 +99,9 @@ public class FHOAuthWebView {
         mWebView.requestFocusFromTouch();
         mWebView.setVisibility(View.VISIBLE);
         LinearLayout barlayout = new LinearLayout(this.mContext);
-        LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, 0.0F);
+        LinearLayout.LayoutParams blp =
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT, 0.0F);
         barlayout.setLayoutParams(blp);
         barlayout.setGravity(Gravity.CENTER_VERTICAL);
 
@@ -122,7 +127,8 @@ public class FHOAuthWebView {
         text.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
         text.setTextSize(20);
         text.setTypeface(null, 1);
-        text.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, 1.0F));
+        text.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0F));
 
         barlayout.addView(text);
     }
@@ -145,5 +151,4 @@ public class FHOAuthWebView {
             mWebView.destroy();
         }
     }
-
 }

@@ -46,7 +46,7 @@ public class FHLoginActivity extends Activity {
       return;
     }
     try{
-      FHAuthRequest authRequest = FH.buildAuthRequest("MyFeedHenryPolicy", userName, password);
+      FHAuthRequest authRequest = FH.buildAuthRequest("LdapTest", userName, password);
       authRequest.executeAsync(new FHActCallback() {
         
         @Override

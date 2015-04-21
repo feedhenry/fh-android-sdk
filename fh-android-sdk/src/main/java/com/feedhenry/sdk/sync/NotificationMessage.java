@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -56,7 +56,8 @@ public class NotificationMessage {
     private String mCodeMessage;
     private String mExtraMessage;
 
-    public NotificationMessage(String pDataId, String pUID, String pCodeMessage, String pExtraMessage) {
+    public NotificationMessage(String pDataId, String pUID, String pCodeMessage,
+            String pExtraMessage) {
         this.mDataId = pDataId;
         this.mUID = pUID;
         this.mCodeMessage = pCodeMessage;
@@ -100,11 +101,18 @@ public class NotificationMessage {
     }
 
     public String toString() {
-        return "DataId:" + mDataId + "-UID:" + mUID + "-Code:" + mCodeMessage + "-Message:" + mExtraMessage;
+        return "DataId:"
+                + mDataId
+                + "-UID:"
+                + mUID
+                + "-Code:"
+                + mCodeMessage
+                + "-Message:"
+                + mExtraMessage;
     }
 
-    public static NotificationMessage getMessage(String pDatasetId, String pUid, int pCode, String pMessage) {
+    public static NotificationMessage getMessage(String pDatasetId, String pUid, int pCode,
+            String pMessage) {
         return new NotificationMessage(pDatasetId, pUid, mMessageMap.get(pCode), pMessage);
     }
-
 }

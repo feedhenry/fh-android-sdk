@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -7,9 +7,11 @@
 package com.feedhenry.sdk;
 
 /**
- * A FHActCallback will be used to execute code after a FH API request finishes running on a background thread. This will make sure the UI does not freeze.
+ * A FHActCallback will be used to execute code after a FH API request finishes running on a
+ * background thread. This will make sure the UI does not freeze.
  * The {@link #success} and {@link #fail} methods will run on the main UI thread.
- * You can either implement this interface in your app's own classes or using anonymous inner class.
+ * You can either implement this interface in your app's own classes or using anonymous inner
+ * class.
  * For example:
  * 
  * <pre>
@@ -19,14 +21,13 @@ package com.feedhenry.sdk;
  *     public void success(FHResponse pResp){
  *       //process response data
  *     }
- *        
+ * 
  *     public void fail(FHResponse pResp){
  *       //process error data
  *     }
  * })
  * }
  * </pre>
- * 
  */
 public interface FHActCallback {
 

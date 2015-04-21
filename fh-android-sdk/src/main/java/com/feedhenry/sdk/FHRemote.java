@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -20,22 +20,15 @@ import com.feedhenry.sdk.utils.FHLog;
  */
 public abstract class FHRemote implements FHAct {
 
-    protected static final String PATH_PREFIX = "/box/srv/1.1/";
+    public static final String PATH_PREFIX = "/box/srv/1.1/";
 
     protected static String LOG_TAG = "com.feedhenry.sdk.FHRemote";
 
-    protected Properties mProperties;
     protected FHActCallback mCallback;
-    protected String mUDID;
     protected Context mContext;
 
-    public FHRemote(Context context, Properties pProps) {
+    public FHRemote(Context context) {
         mContext = context;
-        mProperties = pProps;
-    }
-
-    public void setUDID(String pUDID) {
-        mUDID = pUDID;
     }
 
     @Override
@@ -68,8 +61,10 @@ public abstract class FHRemote implements FHAct {
     }
 
     protected String getApiURl() {
-        String apiUrl = mProperties.getProperty(FH.APP_HOST_KEY);
-        String url = (apiUrl.endsWith("/") ? apiUrl.substring(0, apiUrl.length() - 1) : apiUrl) + PATH_PREFIX + getPath();
+        String apiUrl = AppProps.getInstance().getHost();
+        String url = (apiUrl.endsWith("/") ? apiUrl.substring(0, apiUrl.length() - 1) : apiUrl)
+                + PATH_PREFIX
+                + getPath();
         return url;
     }
 
@@ -78,5 +73,4 @@ public abstract class FHRemote implements FHAct {
     protected abstract JSONObject getRequestArgs();
 
     protected abstract Header[] buildHeaders(Header[] pHeaders) throws Exception;
-
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -51,5 +51,4 @@ public class FHLog {
     public static void e(String pTag, String pMessage, Throwable pThrowable) {
         log(FH.LOG_LEVEL_ERROR, pTag, pMessage, pThrowable);
     }
-
 }

@@ -1,41 +1,45 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
  */
 package com.feedhenry.sdk;
 
-import java.util.Properties;
+import com.feedhenry.sdk.utils.DataManager;
+import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
 import com.feedhenry.sdk.utils.FHLog;
 
 public class CloudProps {
 
-    private Properties mProperties;
     private JSONObject mCloudProps;
     private String mHostUrl;
+    private String mEnv;
+    private static String mInitValue;
 
     private static final String LOG_TAG = "com.feedhenry.sdk.CloudProps";
+    public static final String HOSTS_KEY = "hosts";
+    private static final String INIT_KEY = "init";
 
     private static String INVALID_URI_PATTERN = "(_.*?)\\.";
 
-    public CloudProps(Properties pAppProps, JSONObject pCloudProps) {
+    private static CloudProps mInstance;
+
+    private CloudProps(JSONObject pCloudProps) {
         mCloudProps = pCloudProps;
-        mProperties = pAppProps;
     }
 
     /**
-     * Construct a cloudProps instance for local development. The cloud url will be the value of "host" specified in
+     * Construct a cloudProps instance for local development. The cloud url will be the value of
+     * "host" specified in
      * assets/fhconfig.local.properties file.
      * 
-     * @param pAppPropsForDev needs to contain at least a "host" key
      */
-    public CloudProps(Properties pAppPropsForDev) {
-        mProperties = pAppPropsForDev;
+    private CloudProps() {
         mCloudProps = new JSONObject();
-        mCloudProps.put("url", mProperties.get(FH.APP_HOST_KEY));
+        mCloudProps.put("url", AppProps.getInstance().getHost());
     }
 
     /**
@@ -50,7 +54,7 @@ public class CloudProps {
                 if (mCloudProps.has("url")) {
                     hostUrl = mCloudProps.getString("url");
                 } else {
-                    String appMode = mProperties.getProperty(FH.APP_MODE_KEY);
+                    String appMode = AppProps.getInstance().getAppMode();
                     JSONObject hosts = mCloudProps.getJSONObject("hosts");
                     if (hosts.has("url")) {
                         hostUrl = hosts.getString("url");
@@ -78,7 +82,98 @@ public class CloudProps {
         return mHostUrl;
     }
 
-    public Properties getAppProperties() {
-        return mProperties;
+    /**
+     * Get the environment of the cloud app
+     * 
+     * @return
+     */
+    public String getEnv() {
+        if (null == mEnv) {
+            JSONObject hosts = mCloudProps.getJSONObject("hosts");
+            if (hosts.has("environment")) {
+                mEnv = hosts.getString("environment");
+            }
+        }
+        return mEnv;
+    }
+
+    /**
+     * Save the details of the cloud app to the device
+     */
+    public void save() {
+        if (null != mCloudProps) {
+            DataManager.getInstance().save(HOSTS_KEY, mCloudProps.toString());
+            // Save init
+            if (mCloudProps.has(INIT_KEY)) {
+                try {
+                    mInitValue = mCloudProps.getString(INIT_KEY);
+                    DataManager.getInstance().save(INIT_KEY, mInitValue);
+                } catch (JSONException e) {
+                    FHLog.w(LOG_TAG, e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Get the instance of CloudProps for local development
+     * 
+     * @return
+     */
+    public static CloudProps initDev() {
+        if (null == mInstance) {
+            mInstance = new CloudProps();
+        }
+        return mInstance;
+    }
+
+    /**
+     * Get the instance of the CloudProps via a JSONObject
+     * 
+     * @param pCloudProps the JSONObjct contains the details of the cloud app
+     * @return
+     */
+    public static CloudProps init(JSONObject pCloudProps) {
+        if (null == mInstance) {
+            mInstance = new CloudProps(pCloudProps);
+        }
+        return mInstance;
+    }
+
+    /**
+     * Get the instance of the CloudProps based on local cached data if exists.
+     * 
+     * @return
+     */
+    public static CloudProps load() {
+        if (null == mInstance) {
+            String saved = DataManager.getInstance().read(HOSTS_KEY);
+            if (null != saved) {
+                try {
+                    JSONObject parsed = new JSONObject(saved);
+                    mInstance = new CloudProps(parsed);
+                } catch (Exception e) {
+                    mInstance = null;
+                    FHLog.w(LOG_TAG, e.getMessage());
+                }
+            }
+        }
+        return mInstance;
+    }
+
+    public static CloudProps getInstance() {
+        return mInstance;
+    }
+
+    /**
+     * Get the tracking data from the init data
+     * 
+     * @return
+     */
+    public static String getInitValue() {
+        if (null == mInitValue) {
+            mInitValue = DataManager.getInstance().read(INIT_KEY);
+        }
+        return mInitValue;
     }
 }

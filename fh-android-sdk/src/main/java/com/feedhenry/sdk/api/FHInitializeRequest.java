@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -30,10 +30,9 @@ public class FHInitializeRequest extends FHRemote {
      * Constructor
      * 
      * @param context Android's applicaiton context
-     * @param pProps the app configuration
      */
-    public FHInitializeRequest(Context context, Properties pProps) {
-        super(context, pProps);
+    public FHInitializeRequest(Context context) {
+        super(context);
     }
 
     @Override
@@ -58,5 +57,4 @@ public class FHInitializeRequest extends FHRemote {
     protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
         return null;
     }
-
 }

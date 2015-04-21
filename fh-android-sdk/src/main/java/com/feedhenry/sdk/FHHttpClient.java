@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -26,7 +26,8 @@ public class FHHttpClient {
 
     private static final String LOG_TAG = "com.feedhenry.sdk.FHHttpClient";
 
-    public static void put(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback, boolean pUseSync) throws Exception {
+    public static void put(String pUrl, Header[] pHeaders, JSONObject pParams,
+            FHActCallback pCallback, boolean pUseSync) throws Exception {
         if (FH.isOnline()) {
             StringEntity entity = new StringEntity(new JSONObject().toString());
             if (null != pParams) {
@@ -34,35 +35,39 @@ public class FHHttpClient {
             }
             if (pUseSync) {
                 mSyncClient.setUserAgent(FH.getUserAgent());
-                mSyncClient.put(null, pUrl, pHeaders, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+                mSyncClient.put(null, pUrl, pHeaders, entity, "application/json",
+                        new FHJsonHttpResponseHandler(pCallback));
             } else {
                 mClient.setUserAgent(FH.getUserAgent());
-                mClient.put(null, pUrl, pHeaders, entity, "application/json", new FHJsonHttpResponseHandler(pCallback));
+                mClient.put(null, pUrl, pHeaders, entity, "application/json",
+                        new FHJsonHttpResponseHandler(pCallback));
             }
         } else {
-            FHResponse res = new FHResponse(null, null, new Exception("offline"),
-                    "offline");
+            FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
             pCallback.fail(res);
         }
     }
 
-    public static void get(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback, boolean pUseSync) throws Exception {
+    public static void get(String pUrl, Header[] pHeaders, JSONObject pParams,
+            FHActCallback pCallback, boolean pUseSync) throws Exception {
         if (FH.isOnline()) {
             if (pUseSync) {
                 mSyncClient.setUserAgent(FH.getUserAgent());
-                mSyncClient.get(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
+                mSyncClient.get(null, pUrl, pHeaders, convertToRequestParams(pParams),
+                        new FHJsonHttpResponseHandler(pCallback));
             } else {
                 mClient.setUserAgent(FH.getUserAgent());
-                mClient.get(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
+                mClient.get(null, pUrl, pHeaders, convertToRequestParams(pParams),
+                        new FHJsonHttpResponseHandler(pCallback));
             }
         } else {
-            FHResponse res = new FHResponse(null, null, new Exception("offline"),
-                    "offline");
+            FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
             pCallback.fail(res);
         }
     }
 
-    public static void post(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback, boolean pUseSync) throws Exception {
+    public static void post(String pUrl, Header[] pHeaders, JSONObject pParams,
+            FHActCallback pCallback, boolean pUseSync) throws Exception {
         if (FH.isOnline()) {
 
             StringEntity entity = new StringEntity(new JSONObject().toString());
@@ -79,24 +84,25 @@ public class FHHttpClient {
                         new FHJsonHttpResponseHandler(pCallback));
             }
         } else {
-            FHResponse res = new FHResponse(null, null, new Exception("offline"),
-                    "offline");
+            FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
             pCallback.fail(res);
         }
     }
 
-    public static void delete(String pUrl, Header[] pHeaders, JSONObject pParams, FHActCallback pCallback, boolean pUseSync) throws Exception {
+    public static void delete(String pUrl, Header[] pHeaders, JSONObject pParams,
+            FHActCallback pCallback, boolean pUseSync) throws Exception {
         if (FH.isOnline()) {
             if (pUseSync) {
                 mSyncClient.setUserAgent(FH.getUserAgent());
-                mSyncClient.delete(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
+                mSyncClient.delete(null, pUrl, pHeaders, convertToRequestParams(pParams),
+                        new FHJsonHttpResponseHandler(pCallback));
             } else {
                 mClient.setUserAgent(FH.getUserAgent());
-                mClient.delete(null, pUrl, pHeaders, convertToRequestParams(pParams), new FHJsonHttpResponseHandler(pCallback));
+                mClient.delete(null, pUrl, pHeaders, convertToRequestParams(pParams),
+                        new FHJsonHttpResponseHandler(pCallback));
             }
         } else {
-            FHResponse res = new FHResponse(null, null, new Exception("offline"),
-                    "offline");
+            FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
             pCallback.fail(res);
         }
     }
@@ -146,6 +152,27 @@ public class FHHttpClient {
             FHLog.e(LOG_TAG, pError.getMessage(), pError);
             if (null != callback) {
                 FHResponse fhres = new FHResponse(null, null, pError, pContent);
+                callback.fail(fhres);
+            }
+        }
+
+        @Override
+        public void onFailure(int pStatusCode, Header[] pHeaders, Throwable pError,
+                org.json.JSONObject pErrorResponse) {
+            FHLog.e(LOG_TAG, pError.getMessage(), pError);
+            if (null != callback) {
+                FHResponse fhres = new FHResponse(new JSONObject(pErrorResponse.toString()), null, pError, pErrorResponse.toString());
+                callback.fail(fhres);
+            }
+        }
+
+        @Override
+        public void onFailure(int pStatusCode, Header[] pHeaders, Throwable pError,
+                org.json.JSONArray pErrorResponse) {
+            FHLog.e(LOG_TAG, pError.getMessage(), pError);
+            if (null != callback) {
+                FHResponse fhres = new FHResponse(null, new JSONArray(pErrorResponse.toString()), pError,
+                        pErrorResponse.toString());
                 callback.fail(fhres);
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -40,19 +40,19 @@ public class FHCloudRequest extends FHRemote {
                 throw new Exception("Unsupported HTTP method:" + pMethod);
             }
         }
-    };
+    }
+
+    ;
 
     protected static final String LOG_TAG = "com.feedhenry.sdk.api.FHCloudRequest";
 
-    private CloudProps mCloudProps;
     private String mPath = "";
     private Methods mMethod = Methods.GET;
     private Header[] mHeaders = null;
     private JSONObject mArgs = new JSONObject();
 
-    public FHCloudRequest(Context context, CloudProps pCloudProps) {
-        super(context, pCloudProps.getAppProperties());
-        mCloudProps = pCloudProps;
+    public FHCloudRequest(Context context) {
+        super(context);
     }
 
     public void setPath(String pPath) {
@@ -130,12 +130,11 @@ public class FHCloudRequest extends FHRemote {
     }
 
     private String getURL() {
-        String host = mCloudProps.getCloudHost();
+        String host = CloudProps.getInstance().getCloudHost();
         return host + (getPath().startsWith("/") ? getPath() : ("/" + getPath()));
     }
 
     protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
         return FH.getDefaultParamsAsHeaders(pHeaders);
     }
-
 }

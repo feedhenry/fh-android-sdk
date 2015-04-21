@@ -1,11 +1,13 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
  */
 package com.feedhenry.sdk.tests.api;
 
+import com.feedhenry.sdk.api.FHAuthSession;
+import com.feedhenry.sdk.utils.DataManager;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 import org.json.fh.JSONException;
@@ -33,9 +35,9 @@ public class FHSDKTest extends AndroidTestCase {
         super.setUp();
         mockWebServer = new MockWebServer();
         mockWebServer.play(9000);
-        FH.init(getContext(), null); // this will local fhconfig.local.properties
-                                     // file
+        FH.init(getContext(), null); // this will load fhconfig.local.properties file
         FH.setLogLevel(FH.LOG_LEVEL_VERBOSE);
+        DataManager.getInstance().save(FHAuthSession.SESSION_TOKEN_KEY, "testsessiontoken");
     }
 
     public void tearDown() throws Exception {

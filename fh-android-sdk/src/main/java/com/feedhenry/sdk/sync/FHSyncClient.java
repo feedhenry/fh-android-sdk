@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -26,8 +26,10 @@ import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
 
 /**
- * The sync client is part of the FeedHenry data sync framework. It provides a mechanism to manage bi-direction data synchronization.
- * For more details, please check <a href="http://docs.feedhenry.com/v2/development_sync_service.html">data sync framewrok docs</a>.
+ * The sync client is part of the FeedHenry data sync framework. It provides a mechanism to manage
+ * bi-direction data synchronization.
+ * For more details, please check <a href="http://docs.feedhenry.com/v2/development_sync_service.html">data
+ * sync framewrok docs</a>.
  */
 public class FHSyncClient {
 
@@ -108,13 +110,15 @@ public class FHSyncClient {
      * Use the sync client to manage a dataset.
      * 
      * @param pDataId The id of the dataset.
-     * @param pConfig The sync configuration for the dataset. If not specified, the sync configuration passed in the init method will be used
+     * @param pConfig The sync configuration for the dataset. If not specified, the sync configuration
+     *            passed in the initDev method will be used
      * @param pQueryParams Query parameters for the dataset
      * @throws Exception thrown if FHSyncClient isn't initialised.
      */
-    public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams) throws Exception {
+    public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams)
+            throws Exception {
         if (!mInitialised) {
-            throw new Exception("FHSyncClient isn't initialised. Have you called the init function?");
+            throw new Exception("FHSyncClient isn't initialised. Have you called the initDev function?");
         }
         FHSyncDataset dataset = mDataSets.get(pDataId);
         FHSyncConfig syncConfig = mConfig;
@@ -125,7 +129,8 @@ public class FHSyncClient {
             dataset.setContext(mContext);
             dataset.setNotificationHandler(mNotificationHandler);
         } else {
-            dataset = new FHSyncDataset(mContext, mNotificationHandler, pDataId, syncConfig, pQueryParams);
+            dataset =
+                    new FHSyncDataset(mContext, mNotificationHandler, pDataId, syncConfig, pQueryParams);
             mDataSets.put(pDataId, dataset);
             dataset.setSyncRunning(false);
             dataset.setInitialised(true);
@@ -141,7 +146,8 @@ public class FHSyncClient {
      * List all the data in the dataset with pDataId.
      * 
      * @param pDataId The id of the dataset
-     * @return all data records. Each record contains a key "uid" with the id value and a key "data" with the JSON data.
+     * @return all data records. Each record contains a key "uid" with the id value and a key "data"
+     *         with the JSON data.
      */
     public JSONObject list(String pDataId) {
         FHSyncDataset dataset = mDataSets.get(pDataId);
@@ -157,7 +163,8 @@ public class FHSyncClient {
      * 
      * @param pDataId the id of the dataset
      * @param pUID the id of the data record
-     * @return the data record. Each record contains a key "uid" with the id value and a key "data" with the JSON data.
+     * @return the data record. Each record contains a key "uid" with the id value and a key "data"
+     *         with the JSON data.
      */
     public JSONObject read(String pDataId, String pUID) {
         FHSyncDataset dataset = mDataSets.get(pDataId);
@@ -173,7 +180,8 @@ public class FHSyncClient {
      * 
      * @param pDataId the id of the dataset
      * @param pData the actual data
-     * @return the created data record. Each record contains a key "uid" with the id value and a key "data" with the JSON data.
+     * @return the created data record. Each record contains a key "uid" with the id value and a key
+     *         "data" with the JSON data.
      * @throws Exception if the dataId is not known
      */
     public JSONObject create(String pDataId, JSONObject pData) throws Exception {
@@ -191,7 +199,8 @@ public class FHSyncClient {
      * @param pDataId the id of the dataset
      * @param pUID the id of the data record
      * @param pData the new content of the data record
-     * @return the updated data record. Each record contains a key "uid" with the id value and a key "data" with the JSON data.
+     * @return the updated data record. Each record contains a key "uid" with the id value and a key
+     *         "data" with the JSON data.
      * @throws Exception if the dataId is not known
      */
     public JSONObject update(String pDataId, String pUID, JSONObject pData) throws Exception {
@@ -208,7 +217,8 @@ public class FHSyncClient {
      * 
      * @param pDataId the id of the dataset
      * @param pUID the id of the data record
-     * @return the deleted data record. Each record contains a key "uid" with the id value and a key "data" with the JSON data.
+     * @return the deleted data record. Each record contains a key "uid" with the id value and a key
+     *         "data" with the JSON data.
      * @throws Exception if the dataId is not known
      */
     public JSONObject delete(String pDataId, String pUID) throws Exception {
@@ -218,7 +228,6 @@ public class FHSyncClient {
         } else {
             throw new Exception("Unknown dataId : " + pDataId);
         }
-
     }
 
     /**
@@ -243,7 +252,8 @@ public class FHSyncClient {
      * @param pCallback the callback function
      * @throws Exception thrown if building the remove request or executing the remove request fails
      */
-    public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback) throws Exception {
+    public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback)
+            throws Exception {
         JSONObject params = new JSONObject();
         params.put("fn", "removeCollision");
         params.put("hash", pCollisionHash);
@@ -332,9 +342,7 @@ public class FHSyncClient {
                     FHLog.e(LOG_TAG, "MonitorTask thread is interrupted", e);
                     this.interrupt();
                 }
-
             }
         }
-
     }
 }

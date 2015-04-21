@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -9,12 +9,13 @@ package com.feedhenry.sdk;
 /**
  * Representing a request call to FeedHenry.
  * 
- * When the asynchronous mode is used, the request will be executed on a separate thread and the calling thread will be returned immediately.
- * When the request is completed, the callback to process the response will be executed on the calling thread by using Looper class.
+ * When the asynchronous mode is used, the request will be executed on a separate thread and the
+ * calling thread will be returned immediately.
+ * When the request is completed, the callback to process the response will be executed on the
+ * calling thread by using Looper class.
  * Therefore the calling thread needs to be alive for the callback to be processed properly.
  * 
  * If you are using APIs on short-lived threads, consider using the sync mode instead.
- * 
  */
 
 public interface FHAct {
@@ -47,12 +48,4 @@ public interface FHAct {
      * @throws Exception this method is allowed to throw an exception
      */
     public void execute(FHActCallback pCallback) throws Exception;
-
-    /**
-     * Set the client unique id (device id) for the request
-     * 
-     * @param pUDID the unique device id
-     */
-    public void setUDID(String pUDID);
-
 }

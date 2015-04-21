@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
@@ -269,8 +269,9 @@ public class FHSyncConfig {
     }
 
     /**
-     * Set the maximum crash count number. Changes may fail to be applied(crash) due to various reasons (network issue for example). If the crash count reaches this limit, the changes will be either
-     * re-submitted or abandoned.
+     * Set the maximum crash count number. Changes may fail to be applied(crash) due to various
+     * reasons (network issue for example). If the crash count reaches this limit, the changes will be
+     * either re-submitted or abandoned.
      * 
      * @param mCrashCountWait the crash limit
      */
@@ -288,7 +289,8 @@ public class FHSyncConfig {
     }
 
     /**
-     * If this is set to true, crashed changes will be re-submitted if crash count limit is reached, otherwise they will be abandoned.
+     * If this is set to true, crashed changes will be re-submitted if crash count limit is reached,
+     * otherwise they will be abandoned.
      * 
      * @param mResendCrashedUpdates true or false.
      */
@@ -349,5 +351,4 @@ public class FHSyncConfig {
         JSONObject json = this.getJSON();
         return FHSyncConfig.fromJSON(json);
     }
-
 }

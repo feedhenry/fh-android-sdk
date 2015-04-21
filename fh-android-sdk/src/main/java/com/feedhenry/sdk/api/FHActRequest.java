@@ -1,20 +1,17 @@
 /**
- * Copyright (c) 2014 FeedHenry Ltd, All Rights Reserved.
+ * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
  *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
  */
 package com.feedhenry.sdk.api;
 
-import org.apache.http.Header;
-import org.json.fh.JSONException;
-import org.json.fh.JSONObject;
-
 import android.content.Context;
-
 import com.feedhenry.sdk.CloudProps;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHRemote;
+import org.apache.http.Header;
+import org.json.fh.JSONObject;
 
 /**
  * The request for calling the cloud side function of the app. Example:
@@ -22,13 +19,14 @@ import com.feedhenry.sdk.FHRemote;
  * <pre>
  * {@code
  *   //calling a cloud side function called "getTweets" and pass in the keywords
- *   FHActRequest request = FH.buildActRequest("getTweets", new JSONObject().put("keyword", "FeedHenry"));
+ *   FHActRequest request = FH.buildActRequest("getTweets", new JSONObject().put("keyword",
+ * "FeedHenry"));
  *   reqeust.executeAsync(new FHActCallback(){
  *     public void success(FHResponse pResp){
  *       JSONObject tweetsObj = pResp.getJson();
  *       ...
  *     }
- *        
+ * 
  *     public void fail(FHResponse pResp){
  *       //process error data
  *       ...
@@ -40,7 +38,6 @@ import com.feedhenry.sdk.FHRemote;
 public class FHActRequest extends FHRemote {
 
     private String mRemoteAct;
-    private CloudProps mCloudProps;
     protected JSONObject mArgs = new JSONObject();
 
     protected static String LOG_TAG = "com.feedhenry.sdk.api.FHActRequest";
@@ -49,15 +46,13 @@ public class FHActRequest extends FHRemote {
      * Constructor
      * 
      * @param context the applicaiton context
-     * @param pCloudProps the properties returned from the cloud
      */
-    public FHActRequest(Context context, CloudProps pCloudProps) {
-        super(context, pCloudProps.getAppProperties());
-        mCloudProps = pCloudProps;
+    public FHActRequest(Context context) {
+        super(context);
     }
 
     protected String getApiURl() {
-        String host = mCloudProps.getCloudHost();
+        String host = CloudProps.getInstance().getCloudHost();
         String path = getPath();
         String hostUrl = host + (path.startsWith("/") ? path : ("/" + path));
         return hostUrl;
@@ -66,8 +61,7 @@ public class FHActRequest extends FHRemote {
     /**
      * The name of the cloud side function
      * 
-     * @param pAction
-     *            cloud side function name
+     * @param pAction cloud side function name
      */
     public void setRemoteAction(String pAction) {
         mRemoteAct = pAction;
@@ -76,8 +70,7 @@ public class FHActRequest extends FHRemote {
     /**
      * Set the parameters for the cloud side function
      * 
-     * @param pArgs
-     *            the parameters that will be passed to the cloud side function
+     * @param pArgs the parameters that will be passed to the cloud side function
      */
     public void setArgs(JSONObject pArgs) {
         mArgs = pArgs;
@@ -102,6 +95,6 @@ public class FHActRequest extends FHRemote {
 
     @Override
     protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
-        return null;
+        return FH.getDefaultParamsAsHeaders(pHeaders);
     }
 }

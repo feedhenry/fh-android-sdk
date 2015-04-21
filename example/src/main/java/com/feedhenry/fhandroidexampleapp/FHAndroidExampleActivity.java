@@ -14,8 +14,8 @@ public class FHAndroidExampleActivity extends TabActivity {
     setContentView(R.layout.activity_tab);
     TabHost tabHost = getTabHost();
     
-    TabSpec actSpec = tabHost.newTabSpec("FHAct");
-    actSpec.setIndicator("FHAct");
+    TabSpec actSpec = tabHost.newTabSpec("FHCloud");
+    actSpec.setIndicator("FHCloud");
     Intent actIntent = new Intent(this, FHActActivity.class);
     actSpec.setContent(actIntent);
     
