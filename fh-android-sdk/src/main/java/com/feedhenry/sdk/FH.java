@@ -27,6 +27,7 @@ import org.jboss.aerogear.android.core.Callback;
 import org.jboss.aerogear.android.unifiedpush.PushRegistrar;
 import org.jboss.aerogear.android.unifiedpush.RegistrarManager;
 import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushConfiguration;
+import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushJsonConfiguration;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -439,7 +440,8 @@ public class FH {
      * @param pCallback the pCallback function to be executed after the device registration is finished
      */
     public void pushRegister(final Context pContext, final FHActCallback pCallback) {
-        RegistrarManager.config("fh", AeroGearGCMPushConfiguration.class)
+        RegistrarManager.config("fh", AeroGearGCMPushJsonConfiguration.class)
+                .loadConfigJson(pContext)
                 .asRegistrar()
                 .register(pContext, new Callback<Void>() {
                     @Override
