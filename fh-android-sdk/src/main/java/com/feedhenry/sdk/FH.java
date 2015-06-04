@@ -436,6 +436,18 @@ public class FH {
      *
      * Registers a device to a push network.
      *
+     * The push informations will be loaded from assets/push-config.json
+     *
+     * <pre>
+     * {
+     *   "pushServerURL": "<pushServerURL e.g http(s)//host:port/context >",
+     *   "android": {
+     *     "senderID": "<senderID e.g Google Project ID only for android>",
+     *     "variantID": "<variantID e.g. 1234456-234320>",
+     *     "variantSecret": "<variantSecret e.g. 1234456-234320>"
+     * }
+     * </pre>
+     *
      * @param pContext  your application's context
      * @param pCallback the pCallback function to be executed after the device registration is finished
      */
