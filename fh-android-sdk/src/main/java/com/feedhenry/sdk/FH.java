@@ -448,6 +448,8 @@ public class FH {
      * }
      * </pre>
      *
+     * This method need to be called <b>after</b> a success {@link #init(android.content.Context, FHActCallback)}
+     *
      * @param pContext  your application's context
      * @param pCallback the pCallback function to be executed after the device registration is finished
      */
