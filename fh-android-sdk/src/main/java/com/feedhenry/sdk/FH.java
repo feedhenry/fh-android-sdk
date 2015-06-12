@@ -28,6 +28,8 @@ import org.jboss.aerogear.android.unifiedpush.PushRegistrar;
 import org.jboss.aerogear.android.unifiedpush.RegistrarManager;
 import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushConfiguration;
 import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushJsonConfiguration;
+import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushRegistrar;
+import org.jboss.aerogear.android.unifiedpush.metrics.UnifiedPushMetricsMessage;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -44,6 +46,8 @@ public class FH {
     private static final String FH_API_ACT = "act";
     private static final String FH_API_AUTH = "auth";
     private static final String FH_API_CLOUD = "cloud";
+
+    private static final String FH_PUSH_NAME = "FH";
 
     public static final int LOG_LEVEL_VERBOSE = 1;
     public static final int LOG_LEVEL_DEBUG = 2;
@@ -433,11 +437,10 @@ public class FH {
     }
 
     /**
-     *
      * Registers a device to a push network.
-     *
+     * <p/>
      * The push informations will be loaded from assets/push-config.json
-     *
+     * <p/>
      * <pre>
      * {
      *   "pushServerURL": "<pushServerURL e.g http(s)//host:port/context >",
@@ -447,14 +450,14 @@ public class FH {
      *     "variantSecret": "<variantSecret e.g. 1234456-234320>"
      * }
      * </pre>
-     *
+     * <p/>
      * This method need to be called <b>after</b> a success {@link #init(android.content.Context, FHActCallback)}
      *
      * @param pContext  your application's context
      * @param pCallback the pCallback function to be executed after the device registration is finished
      */
     public void pushRegister(final Context pContext, final FHActCallback pCallback) {
-        RegistrarManager.config("fh", AeroGearGCMPushJsonConfiguration.class)
+        RegistrarManager.config(FH_PUSH_NAME, AeroGearGCMPushJsonConfiguration.class)
                 .loadConfigJson(pContext)
                 .asRegistrar()
                 .register(pContext, new Callback<Void>() {
@@ -468,5 +471,27 @@ public class FH {
                         pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
                     }
                 });
+    }
+
+    /**
+     * Send a confirmation the message was opened
+     *
+     * @param pMessageId Id of the message received
+     * @param pCallback  the pCallback function to be executed after the metrics sent
+     */
+    public void sendPushMetrics(String pMessageId, final FHActCallback pCallback) {
+        AeroGearGCMPushRegistrar registrar = (AeroGearGCMPushRegistrar) RegistrarManager.getRegistrar(FH_PUSH_NAME);
+        registrar.sendMetrics(new UnifiedPushMetricsMessage(pMessageId), new Callback<UnifiedPushMetricsMessage>() {
+            @Override
+            public void onSuccess(UnifiedPushMetricsMessage data) {
+                pCallback.success(new FHResponse(null, null, null, null));
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
+            }
+        });
+
     }
 }
