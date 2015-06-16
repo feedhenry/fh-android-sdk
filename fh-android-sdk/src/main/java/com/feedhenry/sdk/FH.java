@@ -441,18 +441,35 @@ public class FH {
      * Registers a device to a push network.
      *
      * The push informations will be loaded from fhconfig.properties
-     * 
+     *
      * This method need to be called <b>after</b> a success {@link #init(android.content.Context, FHActCallback)}
      *
      * @param pContext  your application's context
      * @param pCallback the pCallback function to be executed after the device registration is finished
      */
-    public void pushRegister(final Context pContext, final FHActCallback pCallback) {
+    public void pushRegister(Context pContext, FHActCallback pCallback) {
+        this.pushRegister(pContext, new PushConfig(), pCallback);
+    }
+
+    /**
+     * Registers a device to a push network.
+     *
+     * The push informations will be loaded from fhconfig.properties
+     *
+     * This method need to be called <b>after</b> a success {@link #init(android.content.Context, FHActCallback)}
+     *
+     * @param pContext  your application's context
+     * @param pPushConfig extra configuration for push
+     * @param pCallback the pCallback function to be executed after the device registration is finished
+     */
+    public void pushRegister(final Context pContext, final PushConfig pPushConfig, final FHActCallback pCallback) {
         RegistrarManager.config(FH_PUSH_NAME, AeroGearGCMPushConfiguration.class)
                 .setPushServerURI(URI.create(AppProps.getInstance().getPushServerUrl()))
                 .setSenderIds(AppProps.getInstance().getPushSenderId())
                 .setVariantID(AppProps.getInstance().getPushVariant())
                 .setSecret(AppProps.getInstance().getPushSecret())
+                .setAlias(pPushConfig.getAlias())
+                .setCategories(pPushConfig.getCategories())
                 .asRegistrar()
                 .register(pContext, new Callback<Void>() {
                     @Override
