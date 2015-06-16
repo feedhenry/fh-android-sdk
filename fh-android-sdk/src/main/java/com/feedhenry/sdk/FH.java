@@ -18,6 +18,7 @@ import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk.utils.FHLog;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -438,27 +439,20 @@ public class FH {
 
     /**
      * Registers a device to a push network.
-     * <p/>
-     * The push informations will be loaded from assets/push-config.json
-     * <p/>
-     * <pre>
-     * {
-     *   "pushServerURL": "<pushServerURL e.g http(s)//host:port/context >",
-     *   "android": {
-     *     "senderID": "<senderID e.g Google Project ID only for android>",
-     *     "variantID": "<variantID e.g. 1234456-234320>",
-     *     "variantSecret": "<variantSecret e.g. 1234456-234320>"
-     * }
-     * </pre>
-     * <p/>
+     *
+     * The push informations will be loaded from fhconfig.properties
+     * 
      * This method need to be called <b>after</b> a success {@link #init(android.content.Context, FHActCallback)}
      *
      * @param pContext  your application's context
      * @param pCallback the pCallback function to be executed after the device registration is finished
      */
     public void pushRegister(final Context pContext, final FHActCallback pCallback) {
-        RegistrarManager.config(FH_PUSH_NAME, AeroGearGCMPushJsonConfiguration.class)
-                .loadConfigJson(pContext)
+        RegistrarManager.config(FH_PUSH_NAME, AeroGearGCMPushConfiguration.class)
+                .setPushServerURI(URI.create(AppProps.getInstance().getPushServerUrl()))
+                .setSenderIds(AppProps.getInstance().getPushSenderId())
+                .setVariantID(AppProps.getInstance().getPushVariant())
+                .setSecret(AppProps.getInstance().getPushSecret())
                 .asRegistrar()
                 .register(pContext, new Callback<Void>() {
                     @Override
