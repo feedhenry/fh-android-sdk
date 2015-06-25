@@ -104,7 +104,7 @@ public class AppProps {
      * Return if the app is running in local dev mode (if fhconfig.local.properties file is found in the assets directory).
      * If this is true, the cloud host value returned in CloudProps will be the host value set in the property file.
      * 
-     * @return
+     * @return if the app is running in local dev mode
      */
     public boolean isLocalDevelopment() {
         return this.isLocalDev;
@@ -151,9 +151,9 @@ public class AppProps {
     }
 
     /**
-     * Return the singleton object of AppProps
+     * A method to retrive a singleton instance of AppProps
      * 
-     * @return
+     * @return The singleton object of AppProps
      */
     public static AppProps getInstance() {
         if (null == mInstance) {
@@ -165,9 +165,11 @@ public class AppProps {
     /**
      * Load the fh.properties file
      * 
-     * @param context
-     * @return
-     * @throws IOException
+     * @param context Apllication context
+     *
+     * @return Return The AppProps after read the properties file
+     *
+     * @throws IOException It will be thrown if something wrong occurred while reading the properties file.
      */
     public static AppProps load(Context context) throws IOException {
         if (null == mInstance) {

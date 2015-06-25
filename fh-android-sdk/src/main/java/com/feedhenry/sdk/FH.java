@@ -78,7 +78,7 @@ public class FH {
      * success method.
      * The callback functions are invoked on the main UI thread. For example, in your main activity
      * class's onCreate method, you can do this
-     * <p/>
+     * 
      * <pre>
      * {@code
      *  FH.init(this, new FHActCallback() {

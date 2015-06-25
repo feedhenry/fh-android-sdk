@@ -85,7 +85,7 @@ public class CloudProps {
     /**
      * Get the environment of the cloud app
      * 
-     * @return
+     * @return The environment of the cloud app
      */
     public String getEnv() {
         if (null == mEnv) {
@@ -118,7 +118,7 @@ public class CloudProps {
     /**
      * Get the instance of CloudProps for local development
      * 
-     * @return
+     * @return The instance of CloudProps for local development
      */
     public static CloudProps initDev() {
         if (null == mInstance) {
@@ -131,7 +131,8 @@ public class CloudProps {
      * Get the instance of the CloudProps via a JSONObject
      * 
      * @param pCloudProps the JSONObjct contains the details of the cloud app
-     * @return
+     *
+     * @return CloudProps
      */
     public static CloudProps init(JSONObject pCloudProps) {
         if (null == mInstance) {
@@ -143,7 +144,7 @@ public class CloudProps {
     /**
      * Get the instance of the CloudProps based on local cached data if exists.
      * 
-     * @return
+     * @return CloudProps
      */
     public static CloudProps load() {
         if (null == mInstance) {
@@ -168,7 +169,7 @@ public class CloudProps {
     /**
      * Get the tracking data from the init data
      * 
-     * @return
+     * @return the tracking data
      */
     public static String getInitValue() {
         if (null == mInitValue) {
