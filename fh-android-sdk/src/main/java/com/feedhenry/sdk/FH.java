@@ -447,8 +447,8 @@ public class FH {
      * @param pContext  your application's context
      * @param pCallback the pCallback function to be executed after the device registration is finished
      */
-    public void pushRegister(Context pContext, FHActCallback pCallback) {
-        this.pushRegister(pContext, new PushConfig(), pCallback);
+    public static void pushRegister(Context pContext, FHActCallback pCallback) {
+        pushRegister(pContext, new PushConfig(), pCallback);
     }
 
     /**
@@ -462,7 +462,7 @@ public class FH {
      * @param pPushConfig extra configuration for push
      * @param pCallback the pCallback function to be executed after the device registration is finished
      */
-    public void pushRegister(final Context pContext, final PushConfig pPushConfig, final FHActCallback pCallback) {
+    public static void pushRegister(final Context pContext, final PushConfig pPushConfig, final FHActCallback pCallback) {
         RegistrarManager.config(FH_PUSH_NAME, AeroGearGCMPushConfiguration.class)
                 .setPushServerURI(URI.create(AppProps.getInstance().getPushServerUrl()))
                 .setSenderIds(AppProps.getInstance().getPushSenderId())
@@ -490,7 +490,7 @@ public class FH {
      * @param pMessageId Id of the message received
      * @param pCallback  the pCallback function to be executed after the metrics sent
      */
-    public void sendPushMetrics(String pMessageId, final FHActCallback pCallback) {
+    public static void sendPushMetrics(String pMessageId, final FHActCallback pCallback) {
         AeroGearGCMPushRegistrar registrar = (AeroGearGCMPushRegistrar) RegistrarManager.getRegistrar(FH_PUSH_NAME);
         registrar.sendMetrics(new UnifiedPushMetricsMessage(pMessageId), new Callback<UnifiedPushMetricsMessage>() {
             @Override
