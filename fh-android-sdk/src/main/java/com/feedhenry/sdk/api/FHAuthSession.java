@@ -50,7 +50,7 @@ public class FHAuthSession {
     /**
      * Save the seesionToken value on the device
      * 
-     * @param sessionToken
+     * @param sessionToken Session token
      */
     protected void save(String sessionToken) {
         DataManager.getInstance().save(SESSION_TOKEN_KEY, sessionToken);
@@ -60,7 +60,9 @@ public class FHAuthSession {
      * Call remote server to check if the existing sessionToken is actually valid
      * 
      * @param pCallback a callback to be executed when remote call is completed
-     * @throws Exception
+     * @param pSync A flag to call it sync
+     *
+     * @throws Exception An exception will be thrown when callRemote fail
      */
     public void verify(Callback pCallback, boolean pSync) throws Exception {
         String sessionToken = DataManager.getInstance().read(SESSION_TOKEN_KEY);
@@ -72,7 +74,7 @@ public class FHAuthSession {
     /**
      * Remove the session token on the device and try to remove it remotely as well.
      * 
-     * @throws Exception
+     * @throws Exception An exception will be thrown when callRemote fail
      */
     public void clear(boolean pSync) throws Exception {
         String sessionToken = DataManager.getInstance().read(SESSION_TOKEN_KEY);

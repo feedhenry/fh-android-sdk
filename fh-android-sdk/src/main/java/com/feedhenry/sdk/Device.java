@@ -23,7 +23,9 @@ public class Device {
 
     /**
      * Return the unique device id.
-     * 
+     *
+     * @param context Application context
+     *
      * @return the unique device id
      */
     public static String getDeviceId(Context context) {

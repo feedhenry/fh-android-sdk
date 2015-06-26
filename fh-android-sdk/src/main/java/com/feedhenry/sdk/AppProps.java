@@ -24,6 +24,12 @@ public class AppProps {
     public static final String APP_APIKEY_KEY = "appkey";
     public static final String APP_MODE_KEY = "mode";
 
+    // UnifiedPush properties
+    public static final String PUSH_SERVER_URL = "PUSH_SERVER_URL";
+    public static final String PUSH_SENDER_ID = "PUSH_SENDER_ID";
+    public static final String PUSH_VARIANT = "PUSH_VARIANT";
+    public static final String PUSH_SECRET = "PUSH_SECRET";
+
     private static final String OLD_PROPERTY_FILE = "fh.properties";
     private static final String NEW_PROPERTY_FILE = "fhconfig.properties";
     private static final String DEBUG_PROPERTY_FILE = "fhconfig.local.properties";
@@ -98,16 +104,56 @@ public class AppProps {
      * Return if the app is running in local dev mode (if fhconfig.local.properties file is found in the assets directory).
      * If this is true, the cloud host value returned in CloudProps will be the host value set in the property file.
      * 
-     * @return
+     * @return if the app is running in local dev mode
      */
     public boolean isLocalDevelopment() {
         return this.isLocalDev;
     }
 
     /**
-     * Return the singleton object of AppProps
+     *
+     * Get the value of UnifiedPush server URL in fhconfig.properties file
+     *
+     * @return UnifiedPush server URL
+     */
+    public String getPushServerUrl() {
+        return this.mProps.getProperty(PUSH_SERVER_URL);
+    }
+
+    /**
+     *
+     * Get the value of Sender ID in fhconfig.properties file
+     *
+     * @return Sender ID
+     */
+    public String getPushSenderId() {
+        return this.mProps.getProperty(PUSH_SENDER_ID);
+    }
+
+    /**
+     *
+     * Get the value of UnifiedPush variant in fhconfig.properties file
+     *
+     * @return UnifiedPush variant
+     */
+    public String getPushVariant() {
+        return this.mProps.getProperty(PUSH_VARIANT);
+    }
+
+    /**
+     *
+     * Get the value of variant secret in fhconfig.properties file
+     *
+     * @return Variant secret
+     */
+    public String getPushSecret() {
+        return this.mProps.getProperty(PUSH_SECRET);
+    }
+
+    /**
+     * A method to retrive a singleton instance of AppProps
      * 
-     * @return
+     * @return The singleton object of AppProps
      */
     public static AppProps getInstance() {
         if (null == mInstance) {
@@ -119,9 +165,11 @@ public class AppProps {
     /**
      * Load the fh.properties file
      * 
-     * @param context
-     * @return
-     * @throws IOException
+     * @param context Apllication context
+     *
+     * @return Return The AppProps after read the properties file
+     *
+     * @throws IOException It will be thrown if something wrong occurred while reading the properties file.
      */
     public static AppProps load(Context context) throws IOException {
         if (null == mInstance) {

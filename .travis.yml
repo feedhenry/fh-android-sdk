@@ -26,9 +26,17 @@ env:
     - ANDROID_SDK=android-21 ANDROID_EMULATOR=android-19 ANDROID_ABI=armeabi-v7a
 
 before_install:
+  # Checkout maven-android-sdk-deployer
   - git clone git://github.com/mosabua/maven-android-sdk-deployer.git
+
+  # Install Android in locally Maven repository
   - cd $PWD/maven-android-sdk-deployer/platforms/$ANDROID_SDK
   - mvn  install -N --quiet
+  - cd -
+
+  # Install locally google-m2repository (including play services aar)
+  - cd $PWD/maven-android-sdk-deployer/repositories/google-m2repository
+  - mvn install -N --quiet
   - cd -
 
 before_script:

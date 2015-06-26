@@ -16,11 +16,21 @@ import com.feedhenry.sdk.api.FHInitializeRequest;
 import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk.utils.FHLog;
+
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
+
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
+import org.jboss.aerogear.android.core.Callback;
+import org.jboss.aerogear.android.unifiedpush.PushRegistrar;
+import org.jboss.aerogear.android.unifiedpush.RegistrarManager;
+import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushConfiguration;
+import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushJsonConfiguration;
+import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushRegistrar;
+import org.jboss.aerogear.android.unifiedpush.metrics.UnifiedPushMetricsMessage;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
@@ -37,6 +47,8 @@ public class FH {
     private static final String FH_API_ACT = "act";
     private static final String FH_API_AUTH = "auth";
     private static final String FH_API_CLOUD = "cloud";
+
+    private static final String FH_PUSH_NAME = "FH";
 
     public static final int LOG_LEVEL_VERBOSE = 1;
     public static final int LOG_LEVEL_DEBUG = 2;
@@ -77,21 +89,21 @@ public class FH {
      *        public void success(FHResponse pResp){
      *          //process response data
      *        }
-     * 
+     *
      *        public void fail(FHResponse pResp){
      *          //process error data
      *        }
      *      })
      *    }
-     * 
+     *
      *    public void fail(FHResponse pRes) {
      *      Log.e("FHInit", pRes.getErrorMessage(), pRes.getError());
      *    }
      *  });
      * }
      * </pre>
-     * 
-     * @param pContext your application's context
+     *
+     * @param pContext  your application's context
      * @param pCallback the callback function to be executed after the initialization is finished
      */
     public static void init(Context pContext, FHActCallback pCallback) {
@@ -200,7 +212,7 @@ public class FH {
 
     /**
      * Check if FH is ready
-     * 
+     *
      * @return A boolean value to indicate if FH finishes initialization
      */
     public static boolean isReady() {
@@ -225,7 +237,7 @@ public class FH {
 
     /**
      * Build an instance of FHAuthRequest object to perform authentication request.
-     * 
+     *
      * @return an instance of FHAuthRequest
      * @throws FHNotReadyException if init has not been called
      */
@@ -237,7 +249,7 @@ public class FH {
     /**
      * Build an instance of FHAuthRequest object to perform authentication request and set the auth
      * policy id
-     * 
+     *
      * @param pPolicyId the auth policy id used by this auth request
      * @return an instance of FHAuthRequest
      * @throws FHNotReadyException if init has not been called
@@ -251,7 +263,7 @@ public class FH {
     /**
      * Build an instance of FHAuthRequest object to perform authentication request and set the auth
      * policy id, user name and passowrd
-     * 
+     *
      * @param pPolicyId the auth policy id used by this auth request
      * @param pUserName the required user name for the auth request
      * @param pPassword the required password for the auth request
@@ -267,17 +279,17 @@ public class FH {
 
     /**
      * Build an instance of FHCloudRequest object to call cloud APIs
-     * 
-     * @param pPath the path of the cloud API
-     * @param pMethod currently supports GET, POST, PUT and DELETE
+     *
+     * @param pPath    the path of the cloud API
+     * @param pMethod  currently supports GET, POST, PUT and DELETE
      * @param pHeaders headers need to be set, can be null
-     * @param pParams the request params, can be null
+     * @param pParams  the request params, can be null
      * @return an instance of FHCloudRequest
      * @throws FHNotReadyException if init has not been called
-     * @throws Exception if pMethod is not one of GET, POST, PUT and DELETE
+     * @throws Exception           if pMethod is not one of GET, POST, PUT and DELETE
      */
     public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders,
-            JSONObject pParams) throws FHNotReadyException, Exception {
+                                                   JSONObject pParams) throws FHNotReadyException, Exception {
         FHCloudRequest request = (FHCloudRequest) buildAction(FH_API_CLOUD);
         request.setPath(pPath);
         request.setHeaders(pHeaders);
@@ -288,7 +300,7 @@ public class FH {
 
     /**
      * Get the cloud host after app finish initialising
-     * 
+     *
      * @return the cloud host of the app
      * @throws FHNotReadyException if init has not been called
      */
@@ -306,7 +318,7 @@ public class FH {
      * or use the {@link #getDefaultParamsAsHeaders(Header[]) getDefaultParamsAsHeaders} method to
      * add
      * them as HTTP request headers.
-     * 
+     *
      * @return a JSONObject contains the default params
      * @throws Exception if the app property file is not loaded
      */
@@ -342,7 +354,7 @@ public class FH {
 
     /**
      * Similar to {@link #getDefaultParams() getDefaultParams}, but return HTTP headers instead
-     * 
+     *
      * @param pHeaders existing headers
      * @return new headers by combining existing headers and default headers
      * @throws Exception if the app property file is not loaded
@@ -369,20 +381,20 @@ public class FH {
 
     /**
      * Call cloud APIs asynchronously.
-     * 
-     * @param pPath the path to the cloud API
-     * @param pMethod currently supports GET, POST, PUT and DELETE
-     * @param pHeaders headers need to be set, can be null
-     * @param pParams the request params, can be null. Will be converted to query strings depending
-     *            on
-     *            the HTTP method
+     *
+     * @param pPath     the path to the cloud API
+     * @param pMethod   currently supports GET, POST, PUT and DELETE
+     * @param pHeaders  headers need to be set, can be null
+     * @param pParams   the request params, can be null. Will be converted to query strings depending
+     *                  on
+     *                  the HTTP method
      * @param pCallback the callback to be executed when the cloud call is finished
      * @throws FHNotReadyException if init has not been called
-     * @throws Exception if pMethod is not one of GET, POST, PUT and DELETE OR if the cloud request
-     *             fails
+     * @throws Exception           if pMethod is not one of GET, POST, PUT and DELETE OR if the cloud request
+     *                             fails
      */
     public static void cloud(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams,
-            FHActCallback pCallback) throws Exception {
+                             FHActCallback pCallback) throws Exception {
         FHCloudRequest cloudRequest = buildCloudRequest(pPath, pMethod, pHeaders, pParams);
         cloudRequest.executeAsync(pCallback);
     }
@@ -400,7 +412,7 @@ public class FH {
      * <li>{@link #LOG_LEVEL_ERROR}</li>
      * <li>{@link #LOG_LEVEL_NONE}</li>
      * </ul>
-     * 
+     *
      * @param pLogLevel The level of logging for the FH library
      */
     public static void setLogLevel(int pLogLevel) {
@@ -409,7 +421,7 @@ public class FH {
 
     /**
      * Get the current log level for the FH library
-     * 
+     *
      * @return The current log level
      */
     public static int getLogLevel() {
@@ -418,10 +430,79 @@ public class FH {
 
     /**
      * Get the customized user-agent string for the SDK
-     * 
+     *
      * @return customized user-agent string
      */
     public static String getUserAgent() {
         return Device.getUserAgent();
+    }
+
+    /**
+     * Registers a device to a push network.
+     *
+     * The push informations will be loaded from fhconfig.properties
+     *
+     * This method need to be called <b>after</b> a success {@link #init(android.content.Context, FHActCallback)}
+     *
+     * @param pContext  your application's context
+     * @param pCallback the pCallback function to be executed after the device registration is finished
+     */
+    public void pushRegister(Context pContext, FHActCallback pCallback) {
+        this.pushRegister(pContext, new PushConfig(), pCallback);
+    }
+
+    /**
+     * Registers a device to a push network.
+     *
+     * The push informations will be loaded from fhconfig.properties
+     *
+     * This method need to be called <b>after</b> a success {@link #init(android.content.Context, FHActCallback)}
+     *
+     * @param pContext  your application's context
+     * @param pPushConfig extra configuration for push
+     * @param pCallback the pCallback function to be executed after the device registration is finished
+     */
+    public void pushRegister(final Context pContext, final PushConfig pPushConfig, final FHActCallback pCallback) {
+        RegistrarManager.config(FH_PUSH_NAME, AeroGearGCMPushConfiguration.class)
+                .setPushServerURI(URI.create(AppProps.getInstance().getPushServerUrl()))
+                .setSenderIds(AppProps.getInstance().getPushSenderId())
+                .setVariantID(AppProps.getInstance().getPushVariant())
+                .setSecret(AppProps.getInstance().getPushSecret())
+                .setAlias(pPushConfig.getAlias())
+                .setCategories(pPushConfig.getCategories())
+                .asRegistrar()
+                .register(pContext, new Callback<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        pCallback.success(new FHResponse(null, null, null, null));
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
+                    }
+                });
+    }
+
+    /**
+     * Send a confirmation the message was opened
+     *
+     * @param pMessageId Id of the message received
+     * @param pCallback  the pCallback function to be executed after the metrics sent
+     */
+    public void sendPushMetrics(String pMessageId, final FHActCallback pCallback) {
+        AeroGearGCMPushRegistrar registrar = (AeroGearGCMPushRegistrar) RegistrarManager.getRegistrar(FH_PUSH_NAME);
+        registrar.sendMetrics(new UnifiedPushMetricsMessage(pMessageId), new Callback<UnifiedPushMetricsMessage>() {
+            @Override
+            public void onSuccess(UnifiedPushMetricsMessage data) {
+                pCallback.success(new FHResponse(null, null, null, null));
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
+            }
+        });
+
     }
 }
