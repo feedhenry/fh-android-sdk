@@ -41,7 +41,7 @@ This will compile the source code, generating an aar and a jar file in the _targ
 
 ## Usage
 
-See [FH Android SDK Guide](http://docs.feedhenry.com/v3/dev_tools/sdks/android.html)
+See [FH Android SDK Guide](http://docs.feedhenry.com/v3/dev_tools/sdks/android.html).
 
 ## Example
 
