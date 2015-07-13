@@ -35,7 +35,7 @@ public class FHSyncClient {
 
     protected static final String LOG_TAG = "com.feedhenry.sdk.sync.FHSyncClient";
 
-    private final Handler handler;
+    private final Handler mHandler;
 
     private Context mContext;
     private Map<String, FHSyncDataset> mDataSets = new HashMap<String, FHSyncDataset>();
@@ -62,7 +62,7 @@ public class FHSyncClient {
     public FHSyncClient() {
         HandlerThread thread = new HandlerThread("FHSyncClient");
         thread.start();
-        handler = new Handler(thread.getLooper());
+        mHandler = new Handler(thread.getLooper());
     }
 
     /**
@@ -327,7 +327,7 @@ public class FHSyncClient {
                         }
 
                         if (dataset.isSyncPending()) {
-                            handler.post(
+                            mHandler.post(
                                 new Runnable() {
                                     @Override
                                     public void run() {
