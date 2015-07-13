@@ -73,7 +73,7 @@ public class FHSyncClient {
         mContext = pContext;
         mConfig = pConfig;
         mSyncListener = pListener;
-        initHanlders();
+        initHandlers();
         mInitialised = true;
         if (null == mMonitorTask) {
             mMonitorTask = new MonitorTask();
@@ -84,7 +84,7 @@ public class FHSyncClient {
     /**
      * Initialize the notification handlers
      */
-    private void initHanlders() {
+    private void initHandlers() {
         if (null != Looper.myLooper()) {
             mNotificationHandler = new FHSyncNotificationHandler(this.mSyncListener);
         } else {
