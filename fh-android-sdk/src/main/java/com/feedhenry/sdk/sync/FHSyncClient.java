@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
- * <p/>
+ *
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
  */
@@ -48,7 +48,7 @@ public class FHSyncClient {
     private MonitorTask mMonitorTask = null;
 
     /**
-     * Get the singleton instance of the sync client.
+     * Gets the singleton instance of the sync client.
      *
      * @return the sync client instance
      */
@@ -66,7 +66,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Initialize the sync client. Should be called every time an app/activity starts.
+     * Initializes the sync client. Should be called every time an app/activity starts.
      *
      * @param pContext The app context
      * @param pConfig The sync configuration
@@ -89,7 +89,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Initialize the notification handlers
+     * Initializes the notification handlers.
      */
     private void initHandlers() {
         if (null != Looper.myLooper()) {
@@ -102,7 +102,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Re-set the sync listener
+     * Re-sets the sync listener.
      *
      * @param pListener the new sync listener
      */
@@ -114,7 +114,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Use the sync client to manage a dataset.
+     * Uses the sync client to manage a dataset.
      *
      * @param pDataId The id of the dataset.
      * @param pConfig The sync configuration for the dataset. If not specified, the sync configuration
@@ -150,7 +150,7 @@ public class FHSyncClient {
     }
 
     /**
-     * List all the data in the dataset with pDataId.
+     * Lists all the data in the dataset with pDataId.
      *
      * @param pDataId The id of the dataset
      * @return all data records. Each record contains a key "uid" with the id value and a key "data"
@@ -166,7 +166,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Read a data record with pUID in dataset with pDataId
+     * Reads a data record with pUID in dataset with pDataId.
      *
      * @param pDataId the id of the dataset
      * @param pUID the id of the data record
@@ -183,7 +183,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Create a new data record in dataset with pDataId
+     * Creates a new data record in dataset with pDataId.
      *
      * @param pDataId the id of the dataset
      * @param pData the actual data
@@ -201,7 +201,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Update an existing data record in dataset with pDataId
+     * Updates an existing data record in dataset with pDataId.
      *
      * @param pDataId the id of the dataset
      * @param pUID the id of the data record
@@ -220,7 +220,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Delete a data record in the dataset with pDataId
+     * Deletes a data record in the dataset with pDataId.
      *
      * @param pDataId the id of the dataset
      * @param pUID the id of the data record
@@ -238,7 +238,7 @@ public class FHSyncClient {
     }
 
     /**
-     * List sync collisions in dataset with id pDataId
+     * Lists sync collisions in dataset with id pDataId.
      *
      * @param pDataId the id of the dataset
      * @param pCallback the callback function
@@ -252,7 +252,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Remove a sync collision record in the dataset with id pDataId
+     * Removes a sync collision record in the dataset with id pDataId.
      *
      * @param pDataId the id of the dataset
      * @param pCollisionHash the hash value of the collision record
@@ -269,7 +269,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Stop the sync process for dataset with id pDataId
+     * Stops the sync process for dataset with id pDataId.
      *
      * @param pDataId the id of the dataset
      */
@@ -281,7 +281,7 @@ public class FHSyncClient {
     }
 
     /**
-     * Stop all sync processes for all the datasets managed by the sync client.
+     * Stops all sync processes for all the datasets managed by the sync client.
      */
     public void destroy() {
         if (mInitialised) {
