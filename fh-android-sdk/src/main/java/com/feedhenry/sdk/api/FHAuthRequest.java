@@ -6,37 +6,24 @@
  */
 package com.feedhenry.sdk.api;
 
-import com.feedhenry.sdk.AppProps;
-import com.feedhenry.sdk.CloudProps;
-import com.feedhenry.sdk.Device;
-import com.feedhenry.sdk.utils.DataManager;
-import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
+import android.content.*;
+import android.os.Bundle;
+import com.feedhenry.sdk.*;
+import com.feedhenry.sdk.oauth.FHOAuthIntent;
+import com.feedhenry.sdk.oauth.FHOAuthWebView;
+import com.feedhenry.sdk.utils.FHLog;
 import org.apache.http.Header;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-
-import com.feedhenry.sdk.FH;
-import com.feedhenry.sdk.FHActCallback;
-import com.feedhenry.sdk.FHRemote;
-import com.feedhenry.sdk.FHResponse;
-import com.feedhenry.sdk.oauth.FHOAuthIntent;
-import com.feedhenry.sdk.oauth.FHOAuthWebView;
-import com.feedhenry.sdk.utils.FHLog;
+import java.net.URLDecoder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The request for calling the authentication function.
  * Example:
- * 
+ *
  * <pre>
  * {@code
  *  FHAuthRequest authRequest = FH.buildAuthRequest();
@@ -51,7 +38,7 @@ import com.feedhenry.sdk.utils.FHLog;
  *    public void success(FHResponse resp) {
  *      Log.d("FHAuthActivity", "user sessionToken = "+ resp.getJson().getString("sessionToken"));
  *    }
- * 
+ *
  *    public void fail(FHResponse resp) {
  *      Log.d("FHAuthActivity", resp.getErrorMessage());
  *   }
@@ -72,19 +59,14 @@ public class FHAuthRequest extends FHRemote {
 
     protected static String LOG_TAG = "com.feedhenry.sdk.FHAuthRequest";
 
-    /**
-     * Constructor
-     * 
-     * @param context Android's applicaiton Context
-     */
     public FHAuthRequest(Context context) {
         super(context);
         mPresentingActivity = context;
     }
 
     /**
-     * Set the policy id for this auth request
-     * 
+     * Sets the policy ID for this auth request.
+     *
      * @param pPolicyId the auth policy id. It is required for all the auth requests
      */
     public void setAuthPolicyId(String pPolicyId) {
@@ -92,9 +74,9 @@ public class FHAuthRequest extends FHRemote {
     }
 
     /**
-     * Set the user name for the auth request. Only required if the auth policy type is FeedHenry or
-     * LDAP.
-     * 
+     * Sets the user name for the auth request.
+     * Only required if the auth policy type is FeedHenry or LDAP.
+     *
      * @param pPolicyId the auth policy id
      * @param pUserName the user name
      * @param pPassword the password
@@ -114,18 +96,18 @@ public class FHAuthRequest extends FHRemote {
     protected JSONObject getRequestArgs() {
         JSONObject reqData = new JSONObject();
         try {
-            reqData.put("__fh", FH.getDefaultParams()); // keep backward compatible
+            reqData.put("__fh", FH.getDefaultParams()); // keep backward compatibility
             reqData.put("policyId", mPolicyId);
             reqData.put("device", Device.getDeviceId(mContext));
             reqData.put("clientToken", AppProps.getInstance().getAppId());
             JSONObject params = new JSONObject();
-            if (null != mUserName && null != mPassword) {
+            if (mUserName != null && mPassword != null) {
                 params.put("userId", mUserName);
                 params.put("password", mPassword);
             }
             reqData.put("params", params);
             String env = CloudProps.getInstance().getEnv();
-            if (null != env) {
+            if (env != null) {
                 reqData.put("environment", env);
             }
             FHLog.v(LOG_TAG, "auth params = " + reqData.toString());
@@ -136,13 +118,11 @@ public class FHAuthRequest extends FHRemote {
     }
 
     /**
-     * If the auth policy type is OAuth, user need to enter their username and password for the OAuth
-     * provider.
+     * If the auth policy type is OAuth, user need to enter their username and password for the OAuth provider.
      * If an Activity instance is provided, the SDK will automatically handle this (By presenting the
-     * OAuth login page in a WebView and back to the application once the authentication process is
-     * finished).
-     * If it's not provided, the application need to handle the OAuth process itself.
-     * 
+     * OAuth login page in a WebView and back to the application once the authentication process is finished).
+     * If it's not provided, the application will need to handle the OAuth process itself.
+     *
      * @param pActivity the parent Activity instance to invoke the WebView
      */
     public void setPresentingActivity(Context pActivity) {
@@ -151,7 +131,7 @@ public class FHAuthRequest extends FHRemote {
 
     @Override
     public void executeAsync(FHActCallback pCallback) throws Exception {
-        if (null == mPresentingActivity) {
+        if (mPresentingActivity == null) {
             // the app didn't provide an activity to presenting the webview, let the app handle the oauth process
             super.executeAsync(pCallback);
         } else {
@@ -167,7 +147,7 @@ public class FHAuthRequest extends FHRemote {
                                 startAuthIntent(jsonRes, callback);
                             } else {
                                 if (jsonRes.has(FHAuthSession.SESSION_TOKEN_KEY)) {
-                                    FHAuthSession.instance.save(jsonRes.getString(FHAuthSession.SESSION_TOKEN_KEY));
+                                    FHAuthSession.save(jsonRes.getString(FHAuthSession.SESSION_TOKEN_KEY));
                                 }
                                 callback.success(pResponse);
                             }
@@ -175,7 +155,7 @@ public class FHAuthRequest extends FHRemote {
                             callback.fail(pResponse);
                         }
                     } catch (Exception e) {
-
+                        FHLog.e(LOG_TAG, "Error handling response", e);
                     }
                 }
 
@@ -190,7 +170,7 @@ public class FHAuthRequest extends FHRemote {
 
     @Override
     public void execute(FHActCallback pCallback) throws Exception {
-        if (null == mPresentingActivity) {
+        if (mPresentingActivity == null) {
             super.execute(pCallback);
         } else {
             final FHActCallback callback = pCallback;
@@ -205,7 +185,7 @@ public class FHAuthRequest extends FHRemote {
                                 startAuthIntent(jsonRes, callback);
                             } else {
                                 if (jsonRes.has(FHAuthSession.SESSION_TOKEN_KEY)) {
-                                    FHAuthSession.instance.save(jsonRes.getString(FHAuthSession.SESSION_TOKEN_KEY));
+                                    FHAuthSession.save(jsonRes.getString(FHAuthSession.SESSION_TOKEN_KEY));
                                 }
                                 callback.success(pResponse);
                             }
@@ -213,7 +193,7 @@ public class FHAuthRequest extends FHRemote {
                             callback.fail(pResponse);
                         }
                     } catch (Exception e) {
-
+                        FHLog.e(LOG_TAG, "Error handling response", e);
                     }
                 }
 
@@ -226,8 +206,7 @@ public class FHAuthRequest extends FHRemote {
         }
     }
 
-    private void startAuthIntent(final JSONObject pJsonRes, final FHActCallback pCallback)
-            throws Exception {
+    private void startAuthIntent(final JSONObject pJsonRes, final FHActCallback pCallback) throws Exception {
         String url = pJsonRes.getString("url");
         FHLog.v(LOG_TAG, "Got oAuth url back, url = " + url + ". Open it in new intent.");
         Bundle data = new Bundle();
@@ -258,12 +237,12 @@ public class FHAuthRequest extends FHRemote {
                 res = new FHResponse(null, null, new Exception("Cancelled"), "Cancelled");
                 mCallback.fail(res);
             } else {
-                if (data.indexOf("status=complete") > -1) {
+                if (data.contains("status=complete")) {
                     String query = data.split("\\?")[1];
                     String[] parts = query.split("&");
                     Map<String, String> queryMap = new HashMap<String, String>();
-                    for (int i = 0; i < parts.length; i++) {
-                        String[] kv = parts[i].split("=");
+                    for (String part : parts) {
+                        String[] kv = part.split("=");
                         queryMap.put(kv[0], kv[1]);
                     }
                     String result = queryMap.get("result");
@@ -271,12 +250,13 @@ public class FHAuthRequest extends FHRemote {
                         JSONObject resJson = new JSONObject();
                         try {
                             String sessionToken = queryMap.get("fh_auth_session");
-                            if (null != sessionToken) {
-                                FHAuthSession.instance.save(sessionToken);
+                            if (sessionToken != null) {
+                                FHAuthSession.save(sessionToken);
                             }
                             resJson.put(FHAuthSession.SESSION_TOKEN_KEY, sessionToken);
-                            resJson.put("authResponse",
-                                    new JSONObject(URLDecoder.decode(queryMap.get("authResponse"))));
+                            resJson.put(
+                                "authResponse",
+                                new JSONObject(URLDecoder.decode(queryMap.get("authResponse"))));
                             res = new FHResponse(resJson, null, null, null);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -284,8 +264,11 @@ public class FHAuthRequest extends FHRemote {
                         mPresentingActivity.unregisterReceiver(this);
                         mCallback.success(res);
                     } else {
-                        res = new FHResponse(null, null, new Exception("Authentication failed"),
-                                "Authentication Failed");
+                        res = new FHResponse(
+                            null,
+                            null,
+                            new Exception("Authentication failed"),
+                            "Authentication Failed");
                         mCallback.fail(res);
                     }
                 } else {

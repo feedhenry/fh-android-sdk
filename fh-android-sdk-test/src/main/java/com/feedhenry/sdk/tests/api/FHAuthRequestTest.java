@@ -32,7 +32,6 @@ public class FHAuthRequestTest extends AndroidTestCase {
     }
 
     public void testFHAuthRequest() throws Exception {
-
         MockResponse cloudSuccessResponse = new MockResponse();
         cloudSuccessResponse.addHeader("Content-Type", "application/json");
         cloudSuccessResponse.setBody("{'status':'ok', 'sessionToken': 'testSessionToken'}");
@@ -53,7 +52,6 @@ public class FHAuthRequestTest extends AndroidTestCase {
 
             }
         });
-        FHAuthSession authSession = FHAuthSession.instance;
-        assertTrue(authSession.exists());
+        assertTrue(FHAuthSession.exists());
     }
 }

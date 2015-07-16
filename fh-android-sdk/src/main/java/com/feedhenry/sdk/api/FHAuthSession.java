@@ -6,13 +6,10 @@
  */
 package com.feedhenry.sdk.api;
 
-import com.feedhenry.sdk.AppProps;
-import com.feedhenry.sdk.FHActCallback;
-import com.feedhenry.sdk.FHHttpClient;
-import com.feedhenry.sdk.FHRemote;
-import com.feedhenry.sdk.FHResponse;
+import com.feedhenry.sdk.*;
 import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk.utils.FHLog;
+import com.feedhenry.sdk.utils.StringUtils;
 import org.json.fh.JSONObject;
 
 public class FHAuthSession {
@@ -22,63 +19,60 @@ public class FHAuthSession {
     private static final String VERIFY_SESSION_ENDPOINT = "verifysession";
     private static final String REVOKE_SESSION_ENDPOINT = "revokesession";
 
-    public static final FHAuthSession instance = new FHAuthSession();
-
     private FHAuthSession() {
 
     }
 
     /**
-     * Check if a sessionToken value exists on the device
-     * 
+     * Checks if a sessionToken value exists on the device.
+     *
      * @return if the sessionToken exists
      */
-    public boolean exists() {
-        String sessionToken = DataManager.getInstance().read(SESSION_TOKEN_KEY);
-        return null != sessionToken;
+    public static boolean exists() {
+        return DataManager.getInstance().read(SESSION_TOKEN_KEY) != null;
     }
 
     /**
-     * Return the value of the current session token
-     * 
+     * Gets the value of the current session token.
+     *
      * @return the current session token value
      */
-    public String getToken() {
+    public static String getToken() {
         return DataManager.getInstance().read(SESSION_TOKEN_KEY);
     }
 
     /**
-     * Save the seesionToken value on the device
-     * 
+     * Saves the seesionToken value on the device.
+     *
      * @param sessionToken Session token
      */
-    protected void save(String sessionToken) {
+    protected static void save(String sessionToken) {
         DataManager.getInstance().save(SESSION_TOKEN_KEY, sessionToken);
     }
 
     /**
-     * Call remote server to check if the existing sessionToken is actually valid
-     * 
-     * @param pCallback a callback to be executed when remote call is completed
-     * @param pSync A flag to call it sync
+     * Calls the remote server to check if the existing sessionToken is actually valid.
      *
+     * @param pCallback a callback to be executed when remote call is completed
+     * @param pSync     A flag to call it sync
      * @throws Exception An exception will be thrown when callRemote fail
      */
-    public void verify(Callback pCallback, boolean pSync) throws Exception {
+    public static void verify(Callback pCallback, boolean pSync) throws Exception {
         String sessionToken = DataManager.getInstance().read(SESSION_TOKEN_KEY);
-        if (null != sessionToken) {
+        if (sessionToken != null) {
             callRemote(VERIFY_SESSION_ENDPOINT, sessionToken, pCallback, pSync);
         }
     }
 
     /**
-     * Remove the session token on the device and try to remove it remotely as well.
-     * 
+     * Removes the session token on the device and tries to remove it remotely as well.
+     *
+     * @param pSync     A flag to call it sync
      * @throws Exception An exception will be thrown when callRemote fail
      */
-    public void clear(boolean pSync) throws Exception {
+    public static void clear(boolean pSync) throws Exception {
         String sessionToken = DataManager.getInstance().read(SESSION_TOKEN_KEY);
-        if (null != sessionToken) {
+        if (sessionToken != null) {
             DataManager.getInstance().remove(SESSION_TOKEN_KEY);
             try {
                 callRemote(REVOKE_SESSION_ENDPOINT, sessionToken, null, pSync);
@@ -88,40 +82,44 @@ public class FHAuthSession {
         }
     }
 
-    private void callRemote(String pPath, String pSessionToken, final Callback pCallback, boolean pUseSync) throws Exception {
+    private static void callRemote(String pPath, String pSessionToken, final Callback pCallback, boolean pUseSync)
+        throws Exception {
         String host = AppProps.getInstance().getHost();
-        String url = (host.endsWith("/") ? host.substring(0, host.length() - 1) : host) + FHRemote.PATH_PREFIX + pPath;
+        String url = StringUtils.removeTrailingSlash(host) + FHRemote.PATH_PREFIX + pPath;
         JSONObject params = new JSONObject().put(SESSION_TOKEN_KEY, pSessionToken);
         try {
-            FHHttpClient.post(url, null, params, new FHActCallback() {
-                @Override
-                public void success(FHResponse pResponse) {
-                    JSONObject res = pResponse.getJson();
-                    boolean isValid = res.getBoolean("isValid");
-                    if (null != pCallback) {
-                        pCallback.handleSuccess(isValid);
+            FHHttpClient.post(
+                url,
+                null,
+                params,
+                new FHActCallback() {
+                    @Override
+                    public void success(FHResponse pResponse) {
+                        JSONObject res = pResponse.getJson();
+                        if (pCallback != null) {
+                            pCallback.handleSuccess(res.getBoolean("isValid"));
+                        }
                     }
 
-                }
-
-                @Override
-                public void fail(FHResponse pResponse) {
-                    FHLog.w(LOG_TAG, pResponse.getRawResponse());
-                    if (null != pCallback) {
-                        pCallback.handleError(pResponse);
+                    @Override
+                    public void fail(FHResponse pResponse) {
+                        FHLog.w(LOG_TAG, pResponse.getRawResponse());
+                        if (pCallback != null) {
+                            pCallback.handleError(pResponse);
+                        }
                     }
-                }
-            }, pUseSync);
+                },
+                pUseSync);
         } catch (Exception e) {
             FHLog.e(LOG_TAG, e.getMessage(), e);
             throw e;
         }
     }
 
-    public static interface Callback {
+    public interface Callback {
 
-        public void handleSuccess(boolean isValid);
+        void handleSuccess(boolean isValid);
 
-        public void handleError(FHResponse pRes);
+        void handleError(FHResponse pRes);
     }
 }

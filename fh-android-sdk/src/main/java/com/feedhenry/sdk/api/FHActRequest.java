@@ -54,7 +54,7 @@ public class FHActRequest extends FHRemote {
     protected String getApiURl() {
         String host = CloudProps.getInstance().getCloudHost();
         String path = getPath();
-        String hostUrl = host + (path.startsWith("/") ? path : ("/" + path));
+        String hostUrl = host + (path.startsWith("/") ? path : '/' + path);
         return hostUrl;
     }
 
