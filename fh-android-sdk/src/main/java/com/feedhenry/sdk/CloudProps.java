@@ -7,23 +7,24 @@
 package com.feedhenry.sdk;
 
 import com.feedhenry.sdk.utils.DataManager;
+import com.feedhenry.sdk.utils.FHLog;
+import com.feedhenry.sdk.utils.StringUtils;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
-import com.feedhenry.sdk.utils.FHLog;
+import java.util.regex.Pattern;
 
 public class CloudProps {
 
+    private static final Pattern INVALID_URI_SEGMENT = Pattern.compile("(_.*?)\\.");
     private JSONObject mCloudProps;
     private String mHostUrl;
     private String mEnv;
     private static String mInitValue;
 
     private static final String LOG_TAG = "com.feedhenry.sdk.CloudProps";
-    public static final String HOSTS_KEY = "hosts";
+    private static final String HOSTS_KEY = "hosts";
     private static final String INIT_KEY = "init";
-
-    private static String INVALID_URI_PATTERN = "(_.*?)\\.";
 
     private static CloudProps mInstance;
 
@@ -33,9 +34,7 @@ public class CloudProps {
 
     /**
      * Construct a cloudProps instance for local development. The cloud url will be the value of
-     * "host" specified in
-     * assets/fhconfig.local.properties file.
-     * 
+     * "host" specified in assets/fhconfig.local.properties file.
      */
     private CloudProps() {
         mCloudProps = new JSONObject();
@@ -43,36 +42,41 @@ public class CloudProps {
     }
 
     /**
-     * Return the cloud host of the app
-     * 
-     * @return the cloud host (no trailing "/")
+     * Return the cloud host of the app.
+     *
+     * @return the cloud host with no trailing "/"
      */
     public String getCloudHost() {
-        if (null == mHostUrl) {
-            String hostUrl = null;
+        if (mHostUrl == null) {
+            String hostUri = null;
             try {
                 if (mCloudProps.has("url")) {
-                    hostUrl = mCloudProps.getString("url");
-                } else {
-                    String appMode = AppProps.getInstance().getAppMode();
+                    hostUri = mCloudProps.getString("url");
+                } else if (mCloudProps.has("hosts")) {
                     JSONObject hosts = mCloudProps.getJSONObject("hosts");
                     if (hosts.has("url")) {
-                        hostUrl = hosts.getString("url");
+                        hostUri = hosts.getString("url");
                     } else {
-                        if ("dev".equalsIgnoreCase(appMode)) {
-                            hostUrl = hosts.getString("debugCloudUrl");
-                        } else {
-                            hostUrl = hosts.getString("releaseCloudUrl");
-                        }
+                        String appMode = AppProps.getInstance().getAppMode();
+                        String key = "dev".equalsIgnoreCase(appMode) ? "debugCloudUrl" : "releaseCloudUrl";
+                        hostUri = hosts.getString(key);
                     }
                 }
-                hostUrl = hostUrl.endsWith("/") ? hostUrl.substring(0, hostUrl.length() - 1) : hostUrl;
-                // previously cloud host url could look like this: testing-nge0bsskhnq2slb3b1luvbwr-dev_testing.df.dev.e111.feedhenry.net
-                // however, "_" is not valid in JAVA as URI host, that will cause the parsed URI contains null host.
-                // since dynofarm now accept urls like this: testing-nge0bsskhnq2slb3b1luvbwr-dev.df.dev.e111.feedhenry.net
-                // we need to remove the "_" + dynomame part if it exists
-                hostUrl = hostUrl.replaceFirst(INVALID_URI_PATTERN, ".");
-                mHostUrl = hostUrl;
+                if (hostUri == null) {
+                    throw new Exception("Could not get cloud host URL");
+                }
+
+                hostUri = StringUtils.removeTrailingSlash(hostUri);
+                /*
+                Previously, the cloud host URI could look like this:
+                testing-nge0bsskhnq2slb3b1luvbwr-dev_testing.df.dev.e111.feedhenry.net
+                However, "_" is not a valid character in a Java URI. This will cause getHost() to return null.
+                Since dynofarm now accepts URIs like this:
+                testing-nge0bsskhnq2slb3b1luvbwr-dev.df.dev.e111.feedhenry.net
+                We need to remove the "_" + environment part if it exists.
+                */
+                hostUri = INVALID_URI_SEGMENT.matcher(hostUri).replaceFirst(".");
+                mHostUrl = hostUri;
                 FHLog.v(LOG_TAG, "host url = " + mHostUrl);
             } catch (Exception e) {
                 FHLog.e(LOG_TAG, e.getMessage(), e);
@@ -83,12 +87,12 @@ public class CloudProps {
     }
 
     /**
-     * Get the environment of the cloud app
-     * 
+     * Gets the environment of the cloud app.
+     *
      * @return The environment of the cloud app
      */
     public String getEnv() {
-        if (null == mEnv) {
+        if (mEnv == null) {
             JSONObject hosts = mCloudProps.getJSONObject("hosts");
             if (hosts.has("environment")) {
                 mEnv = hosts.getString("environment");
@@ -98,10 +102,10 @@ public class CloudProps {
     }
 
     /**
-     * Save the details of the cloud app to the device
+     * Saves the details of the cloud app to the device.
      */
     public void save() {
-        if (null != mCloudProps) {
+        if (mCloudProps != null) {
             DataManager.getInstance().save(HOSTS_KEY, mCloudProps.toString());
             // Save init
             if (mCloudProps.has(INIT_KEY)) {
@@ -116,40 +120,39 @@ public class CloudProps {
     }
 
     /**
-     * Get the instance of CloudProps for local development
-     * 
+     * Gets the instance of CloudProps for local development.
+     *
      * @return The instance of CloudProps for local development
      */
     public static CloudProps initDev() {
-        if (null == mInstance) {
+        if (mInstance == null) {
             mInstance = new CloudProps();
         }
         return mInstance;
     }
 
     /**
-     * Get the instance of the CloudProps via a JSONObject
-     * 
-     * @param pCloudProps the JSONObjct contains the details of the cloud app
+     * Gets the instance of CloudProps via a JSONObject.
      *
+     * @param pCloudProps the JSONObjct contains the details of the cloud app
      * @return CloudProps
      */
     public static CloudProps init(JSONObject pCloudProps) {
-        if (null == mInstance) {
+        if (mInstance == null) {
             mInstance = new CloudProps(pCloudProps);
         }
         return mInstance;
     }
 
     /**
-     * Get the instance of the CloudProps based on local cached data if exists.
-     * 
+     * Gets the instance of the CloudProps based on local cached data if exists.
+     *
      * @return CloudProps
      */
     public static CloudProps load() {
-        if (null == mInstance) {
+        if (mInstance == null) {
             String saved = DataManager.getInstance().read(HOSTS_KEY);
-            if (null != saved) {
+            if (saved != null) {
                 try {
                     JSONObject parsed = new JSONObject(saved);
                     mInstance = new CloudProps(parsed);
@@ -167,12 +170,12 @@ public class CloudProps {
     }
 
     /**
-     * Get the tracking data from the init data
-     * 
+     * Gets tracking data from init data.
+     *
      * @return the tracking data
      */
     public static String getInitValue() {
-        if (null == mInitValue) {
+        if (mInitValue == null) {
             mInitValue = DataManager.getInstance().read(INIT_KEY);
         }
         return mInitValue;

@@ -10,7 +10,7 @@ import org.json.fh.JSONArray;
 import org.json.fh.JSONObject;
 
 /**
- * Representing the response data from FeedHenry when an API call is finished
+ * Represents the response data from FeedHenry when an API call completes.
  */
 
 public class FHResponse {
@@ -28,8 +28,8 @@ public class FHResponse {
     }
 
     /**
-     * Get the response data as JSONObject
-     * 
+     * Gets the response data as a JSONObject.
+     *
      * @return a JSONObject
      */
     public JSONObject getJson() {
@@ -37,8 +37,8 @@ public class FHResponse {
     }
 
     /**
-     * Get the response data as JSONArray
-     * 
+     * Gets the response data as a JSONArray.
+     *
      * @return a JSONArray
      */
     public JSONArray getArray() {
@@ -46,8 +46,8 @@ public class FHResponse {
     }
 
     /**
-     * Get the error
-     * 
+     * Gets the error.
+     *
      * @return the error
      */
     public Throwable getError() {
@@ -55,8 +55,8 @@ public class FHResponse {
     }
 
     /**
-     * Get the error message
-     * 
+     * Gets the error message.
+     *
      * @return the error message
      */
     public String getErrorMessage() {
@@ -64,14 +64,14 @@ public class FHResponse {
     }
 
     /**
-     * Get the raw response content
-     * 
+     * Gets the raw response content.
+     *
      * @return the raw response content
      */
     public String getRawResponse() {
-        if (null != mResults) {
+        if (mResults != null) {
             return mResults.toString();
-        } else if (null != mResultArray) {
+        } else if (mResultArray != null) {
             return mResultArray.toString();
         } else {
             return mErrorMessage;

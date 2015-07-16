@@ -6,14 +6,11 @@
  */
 package com.feedhenry.sdk;
 
-import java.util.Properties;
-
+import android.content.Context;
+import com.feedhenry.sdk.utils.FHLog;
+import com.feedhenry.sdk.utils.StringUtils;
 import org.apache.http.Header;
 import org.json.fh.JSONObject;
-
-import android.content.Context;
-
-import com.feedhenry.sdk.utils.FHLog;
 
 /**
  * The base class that implements {@link FHAct}.
@@ -61,11 +58,8 @@ public abstract class FHRemote implements FHAct {
     }
 
     protected String getApiURl() {
-        String apiUrl = AppProps.getInstance().getHost();
-        String url = (apiUrl.endsWith("/") ? apiUrl.substring(0, apiUrl.length() - 1) : apiUrl)
-                + PATH_PREFIX
-                + getPath();
-        return url;
+        String apiUrl = StringUtils.removeTrailingSlash(AppProps.getInstance().getHost());
+        return apiUrl + PATH_PREFIX + getPath();
     }
 
     protected abstract String getPath();
