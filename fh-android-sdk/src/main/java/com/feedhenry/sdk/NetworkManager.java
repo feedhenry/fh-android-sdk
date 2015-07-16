@@ -6,10 +6,7 @@
  */
 package com.feedhenry.sdk;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import com.feedhenry.sdk.utils.FHLog;
@@ -51,13 +48,12 @@ public class NetworkManager {
     public void checkNetworkStatus() {
         ConnectivityManager connMgr = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (null != networkInfo && networkInfo.isConnected()) {
+        mIsOnline = networkInfo != null && networkInfo.isConnected();
+        if (mIsOnline) {
             String type = networkInfo.getTypeName();
             FHLog.i(LOG_TAG, "Device is online. Connection type : " + type);
-            mIsOnline = true;
         } else {
             FHLog.i(LOG_TAG, "Device is offline.");
-            mIsOnline = false;
         }
     }
 
@@ -73,7 +69,7 @@ public class NetworkManager {
     }
 
     public static NetworkManager init(Context pContext) {
-        if (null == mInstance) {
+        if (mInstance == null) {
             mInstance = new NetworkManager(pContext);
         }
         return mInstance;

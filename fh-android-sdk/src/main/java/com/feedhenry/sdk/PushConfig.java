@@ -23,5 +23,4 @@ public class PushConfig {
     public void setCategories(List<String> categories) {
         this.categories = categories;
     }
-
 }
