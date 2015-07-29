@@ -12,7 +12,7 @@ import com.feedhenry.sdk.Device;
 public class DeviceTest extends AndroidTestCase {
     public void testDevice() {
         assertNotNull(Device.getDeviceId(getContext()));
-        assertNotNull(Device.getDeviceName());
+        assertNotNull(Device.getDeviceModelAndManufacturer());
         assertNotNull(Device.getUserAgent());
     }
 }
