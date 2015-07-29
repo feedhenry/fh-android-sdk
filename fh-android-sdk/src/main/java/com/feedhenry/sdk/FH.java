@@ -392,8 +392,9 @@ public class FH {
     }
 
     /**
-     * Sets the log level for the library. The default level is {@link #LOG_LEVEL_ERROR}. Please make
-     * sure this is set to {@link #LOG_LEVEL_ERROR} or {@link #LOG_LEVEL_NONE} before releasing the application.
+     * Sets the log level for the library.
+     * The default level is {@link #LOG_LEVEL_ERROR}. Please make sure this is set to {@link #LOG_LEVEL_ERROR}
+     * or {@link #LOG_LEVEL_NONE} before releasing the application.
      * The log level can be one of
      * <ul>
      * <li>{@link #LOG_LEVEL_VERBOSE}</li>
