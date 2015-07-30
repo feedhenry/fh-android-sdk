@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.feedhenry</groupId>
@@ -34,7 +35,7 @@
         <license.plugin.version>1.9.0</license.plugin.version>
         <aerogear-misc.version>0.2.0</aerogear-misc.version>
 
-        
+
         <!-- Android configs -->
         <android.platform>19</android.platform>
         <android.debug>false</android.debug>
@@ -51,8 +52,8 @@
             <scope>provided</scope>
             <version>${android.version}</version>
         </dependency>
-   </dependencies>
-   
+    </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -75,7 +76,7 @@
             </plugins>
         </pluginManagement>
         <plugins>
-        <plugin>
+            <plugin>
                 <groupId>com.googlecode.maven-java-formatter-plugin</groupId>
                 <artifactId>maven-java-formatter-plugin</artifactId>
                 <configuration>
@@ -90,26 +91,26 @@
                     </dependency>
                 </dependencies>
             </plugin>
-                    <plugin>
-                        <groupId>com.mycila.maven-license-plugin</groupId>
-                        <artifactId>maven-license-plugin</artifactId>
-                        <configuration>
-                            <header>LICENSE</header>
-                            <includes>
-                                <include>src/**</include>
-                                <include>test/**</include>
-                            </includes>
-                            <strictCheck>true</strictCheck>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>org.jboss.aerogear</groupId>
-                                <artifactId>aerogear-misc</artifactId>
-                                <version>${aerogear-misc.version}</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-            </plugins>
+            <plugin>
+                <groupId>com.mycila.maven-license-plugin</groupId>
+                <artifactId>maven-license-plugin</artifactId>
+                <configuration>
+                    <header>LICENSE</header>
+                    <includes>
+                        <include>src/**</include>
+                        <include>test/**</include>
+                    </includes>
+                    <strictCheck>true</strictCheck>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jboss.aerogear</groupId>
+                        <artifactId>aerogear-misc</artifactId>
+                        <version>${aerogear-misc.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
     </build>
     <profiles>
         <profile>
@@ -124,6 +125,15 @@
             </modules>
         </profile>
     </profiles>
-
+    <distributionManagement>
+        <repository>
+            <id>releases-repo</id>
+            <url>https://github.com/feedhenry/fh-android-sdk-repository/raw/master/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshot-repo</id>
+            <url>https://github.com/feedhenry/fh-android-sdk-repository/raw/master/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
 

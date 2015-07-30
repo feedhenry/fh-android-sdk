@@ -39,9 +39,48 @@ mvn clean package
 
 This will compile the source code, generating an aar and a jar file in the _target_ directory.
 
+## Deploy
+
+Until we don't have it released in Maven Central we are hosting it in a [Github repo](https://github.com/feedhenry/fh-android-sdk-repository)
+
+To deploy it, you need to follow the instructions below:
+
+For create snapshots
+
+```shell
+mvn -DaltDeploymentRepository=snapshot-repo:default::file:[your repo dir]/snapshots clean deploy
+```
+
+For create releases
+
+```shell
+mvn -DaltDeploymentRepository=releases-repo:default::file:[your repo dir]/releases clean deploy
+```
+
+After that, commit it in the [fh-android-sdk-repository](https://github.com/feedhenry/fh-android-sdk-repository) and send a PR on it
+
 ## Usage
 
-See [FH Android SDK Guide](http://docs.feedhenry.com/v3/dev_tools/sdks/android.html).
+Add our Github host repo in your `gradle.build` project
+
+```
+allprojects {
+	repositories {
+   	jcenter()
+		maven { url "https://github.com/danielpassos/fh-android-sdk-repository/raw/master/releases" }
+	}
+}
+```
+
+Add the FH Android `aar` library in your `build.gradle` project
+
+```
+dependencies {
+	compile 'com.feedhenry:fh-android-sdk:2.3.1'
+}
+```
+
+For more detail about our API, See [FH Android SDK Guide](http://docs.feedhenry.com/v3/dev_tools/sdks/android.html).
 
 ## Example
 
