@@ -7,45 +7,47 @@
 package com.feedhenry.sdk;
 
 /**
- * Representing a request call to FeedHenry.
- * 
- * When the asynchronous mode is used, the request will be executed on a separate thread and the
+ * Represents a request call to FeedHenry.
+ *
+ * When asynchronous mode is used, the request will be executed on a separate thread and the
  * calling thread will be returned immediately.
  * When the request is completed, the callback to process the response will be executed on the
- * calling thread by using Looper class.
- * Therefore the calling thread needs to be alive for the callback to be processed properly.
- * 
- * If you are using APIs on short-lived threads, consider using the sync mode instead.
+ * calling thread using the Looper class.
+ * The calling thread needs to be alive for the callback to be processed properly.
+ *
+ * If you are making API calls on short-lived threads, consider using synchronous mode instead.
  */
 
 public interface FHAct {
     /**
-     * Set the callback function to be executed when the action is finished.
-     * 
+     * Sets the callback function to be executed when the action is finished.
+     *
      * @param pCallback the callback function
      */
-    public void setCallback(FHActCallback pCallback);
+    void setCallback(FHActCallback pCallback);
 
     /**
-     * Execute the request asynchronously. Execute the callback function set by {@link #setCallback(FHActCallback pCallback)} when the request finishes.
-     * 
+     * Executes the request asynchronously.
+     * Executes the callback function set by {@link #setCallback(FHActCallback pCallback)} when the request finishes.
+     *
      * @throws Exception this method is allowed to throw an exception
      */
-    public void executeAsync() throws Exception;
+    void executeAsync() throws Exception;
 
     /**
-     * Execute the request asynchronously. Execute the pCallback function when it finishes.
-     * 
-     * @param pCallback the callback function
-     * @throws Exception this method is allowed to throw an exception
-     */
-    public void executeAsync(FHActCallback pCallback) throws Exception;
-
-    /**
-     * Execute the request synchronously.
-     * 
+     * Executes the request asynchronously.
+     * Executes the pCallback function when it finishes.
+     *
      * @param pCallback the callback function
      * @throws Exception this method is allowed to throw an exception
      */
-    public void execute(FHActCallback pCallback) throws Exception;
+    void executeAsync(FHActCallback pCallback) throws Exception;
+
+    /**
+     * Executes the request synchronously.
+     *
+     * @param pCallback the callback function
+     * @throws Exception this method is allowed to throw an exception
+     */
+    void execute(FHActCallback pCallback) throws Exception;
 }
