@@ -338,8 +338,8 @@ public class FH {
             defaultParams.put("init", initObj);
         }
 
-        if (FHAuthSession.instance.exists()) {
-            defaultParams.put(FHAuthSession.SESSION_TOKEN_KEY, FHAuthSession.instance.getToken());
+        if (FHAuthSession.exists()) {
+            defaultParams.put(FHAuthSession.SESSION_TOKEN_KEY, FHAuthSession.getToken());
         }
 
         return defaultParams;
