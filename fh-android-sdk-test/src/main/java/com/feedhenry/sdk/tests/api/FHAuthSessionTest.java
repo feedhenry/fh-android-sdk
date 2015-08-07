@@ -35,8 +35,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
     }
 
     public void testExists() throws Exception {
-        FHAuthSession session = FHAuthSession.instance;
-        assertTrue(session.exists());
+        assertTrue(FHAuthSession.exists());
     }
 
     public void testVerify() throws Exception {
@@ -44,8 +43,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
         cloudSuccessResponse.addHeader("Content-Type", "application/json");
         cloudSuccessResponse.setBody("{'status':'ok', 'isValid': true}");
         mockWebServer.enqueue(cloudSuccessResponse);
-        FHAuthSession authSession = FHAuthSession.instance;
-        authSession.verify(new FHAuthSession.Callback() {
+        FHAuthSession.verify(new FHAuthSession.Callback() {
             @Override
             public void handleSuccess(final boolean isValid) {
                 valid = isValid;
@@ -57,7 +55,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
             }
         }, true);
         assertTrue(valid);
-        assertEquals(TEST_TOKEN, authSession.getToken());
+        assertEquals(TEST_TOKEN, FHAuthSession.getToken());
     }
 
     public void testClear() throws Exception {
@@ -65,9 +63,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
         cloudSuccessResponse.addHeader("Content-Type", "application/json");
         cloudSuccessResponse.setBody("{'status':'ok'}");
         mockWebServer.enqueue(cloudSuccessResponse);
-        FHAuthSession authSession = FHAuthSession.instance;
-        authSession.clear(true);
-        boolean exists = authSession.exists();
-        assertFalse(exists);
+        FHAuthSession.clear(true);
+        assertFalse(FHAuthSession.exists());
     }
 }
