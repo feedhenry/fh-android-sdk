@@ -23,7 +23,7 @@
     </scm>
 
     <properties>
-        <loopj.version>1.4.6</loopj.version>
+        <loopj.version>1.4.8</loopj.version>
         <aerogear.android.push.version>2.2.0</aerogear.android.push.version>
     </properties>
 
