@@ -6,8 +6,6 @@
  */
 package com.feedhenry.sdk.oauth;
 
-import com.feedhenry.sdk.utils.FHLog;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,13 +19,13 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.feedhenry.sdk.utils.FHLog;
 
 /**
- * Construct a WebView window and load a url request. Broadcast url changes event to anyone who's
- * interested.
+ * Construct a WebView window and load a url request.
+ * Broadcasts URL change events.
  */
 public class FHOAuthWebView {
-
     private WebView mWebView;
     private Bundle mSettings = null;
     private Activity mContext = null;
@@ -48,8 +46,10 @@ public class FHOAuthWebView {
         String title = mSettings.getString("title");
         mMainLayout = null;
         mMainLayout = new LinearLayout(this.mContext);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-                ViewGroup.LayoutParams.FILL_PARENT, 0.0F);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            0.0F);
         mMainLayout.setLayoutParams(lp);
         ((LinearLayout) mMainLayout).setGravity(Gravity.CENTER_VERTICAL);
         ((LinearLayout) mMainLayout).setOrientation(LinearLayout.VERTICAL);
@@ -61,53 +61,54 @@ public class FHOAuthWebView {
         settings.setBuiltInZoomControls(true);
         settings.setJavaScriptCanOpenWindowsAutomatically(true);
 
-        mWebView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-                ViewGroup.LayoutParams.FILL_PARENT, 1.0F));
+        mWebView.setLayoutParams(
+            new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                1.0F));
 
-        mWebView.setWebViewClient(new WebViewClient() {
+        mWebView.setWebViewClient(
+            new WebViewClient() {
 
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                FHLog.d(LOG_TAG, "going to load url " + url);
-                if (url.contains("http")) {
-                    return false;
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    FHLog.d(LOG_TAG, "going to load url " + url);
+                    return !url.contains("http");
                 }
-                return true;
-            }
 
-            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                FHLog.d(LOG_TAG, "start to load " + url);
-                if (url.indexOf("status=complete") > -1) {
-                    mFinishedUrl = url;
-                    mFinished = true;
+                public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                    FHLog.d(LOG_TAG, "start to load " + url);
+                    if (url.contains("status=complete")) {
+                        mFinishedUrl = url;
+                        mFinished = true;
+                    }
                 }
-            }
 
-            public void onPageFinished(WebView view, String url) {
-                FHLog.d(LOG_TAG, "finish loading " + url);
-                if (mFinished && !"about:blank".equals(url)) {
-                    close();
+                public void onPageFinished(WebView view, String url) {
+                    FHLog.d(LOG_TAG, "finish loading " + url);
+                    if (mFinished && !"about:blank".equals(url)) {
+                        close();
+                    }
                 }
-            }
 
-            @Override
-            public void onReceivedError(WebView view, int errorCode, String description,
-                    String failingUrl) {
-                FHLog.d(LOG_TAG, "error: " + description + "url: " + failingUrl);
-            }
-        });
+                @Override
+                public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+                    FHLog.d(LOG_TAG, "error: " + description + "url: " + failingUrl);
+                }
+            });
 
         mWebView.requestFocusFromTouch();
         mWebView.setVisibility(View.VISIBLE);
-        LinearLayout barlayout = new LinearLayout(this.mContext);
-        LinearLayout.LayoutParams blp =
-                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 0.0F);
-        barlayout.setLayoutParams(blp);
-        barlayout.setGravity(Gravity.CENTER_VERTICAL);
+        LinearLayout barLayout = new LinearLayout(this.mContext);
+        LinearLayout.LayoutParams blp = new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            0.0F);
+        barLayout.setLayoutParams(blp);
+        barLayout.setGravity(Gravity.CENTER_VERTICAL);
 
-        initHeaderBar(barlayout, title);
+        initHeaderBar(barLayout, title);
 
-        mMainLayout.addView(barlayout);
+        mMainLayout.addView(barLayout);
         mMainLayout.setBackgroundColor(Color.TRANSPARENT);
         mMainLayout.setBackgroundResource(0);
         mMainLayout.addView(this.mWebView);
@@ -115,9 +116,9 @@ public class FHOAuthWebView {
         mWebView.loadUrl(startUrl);
     }
 
-    private void initHeaderBar(LinearLayout barlayout, String title) {
-        barlayout.setGravity(Gravity.RIGHT | Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
-        barlayout.setBackgroundColor(Color.BLACK);
+    private void initHeaderBar(LinearLayout barLayout, String title) {
+        barLayout.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        barLayout.setBackgroundColor(Color.BLACK);
 
         TextView text = new TextView(this.mContext);
         if (!title.equals("undefined")) {
@@ -127,10 +128,13 @@ public class FHOAuthWebView {
         text.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
         text.setTextSize(20);
         text.setTypeface(null, 1);
-        text.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT, 1.0F));
+        text.setLayoutParams(
+            new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1.0F));
 
-        barlayout.addView(text);
+        barLayout.addView(text);
     }
 
     public void close() {
@@ -147,7 +151,7 @@ public class FHOAuthWebView {
     }
 
     public void destroy() {
-        if (null != mWebView) {
+        if (mWebView != null) {
             mWebView.destroy();
         }
     }

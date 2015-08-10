@@ -14,7 +14,6 @@ import org.json.fh.JSONObject;
  * Internal class for managing data persistence.
  */
 public class DataManager {
-
     private static final String LEGACY_PREF_KEY = "init";
     private static final String PREF_FILE_KEY = "fhsdkprivatedata";
     private static final String PREF_KEY_PREFIX = "fhsdk_";
@@ -31,14 +30,14 @@ public class DataManager {
     }
 
     public static synchronized DataManager init(Context context) {
-        if (null == mInstance) {
+        if (mInstance == null) {
             mInstance = new DataManager(context);
         }
         return mInstance;
     }
 
     public static synchronized DataManager getInstance() {
-        if (null == mInstance) {
+        if (mInstance == null) {
             throw new IllegalStateException("DataManager is not initialised");
         }
         return mInstance;
@@ -60,20 +59,20 @@ public class DataManager {
         editor.commit();
     }
 
-    private String getKey(String key) {
+    private static String getKey(String key) {
         return PREF_KEY_PREFIX + key;
     }
 
     /**
-     * Move the "init" value from the old pref file to the new pref file, only do it once.
+     * Move the "init" value from the old pref file to the new pref file.
+     * Only do it once.
      */
     public void migrateLegacyData() {
-        if (null == read(MIGRATED_KEY)) {
-            SharedPreferences legacyPref =
-                    this.mContext.getSharedPreferences(LEGACY_PREF_KEY, Context.MODE_PRIVATE);
-            if (null != legacyPref) {
+        if (read(MIGRATED_KEY) == null) {
+            SharedPreferences legacyPref = this.mContext.getSharedPreferences(LEGACY_PREF_KEY, Context.MODE_PRIVATE);
+            if (legacyPref != null) {
                 String initValue = legacyPref.getString(LEGACY_PREF_KEY, null);
-                if (null != initValue) {
+                if (initValue != null) {
                     if (isFHInitValue(initValue)) {
                         save(LEGACY_PREF_KEY, initValue);
                         FHLog.d(LOG_TAG, "legacy init data has been migrated : " + initValue);
@@ -84,23 +83,17 @@ public class DataManager {
                     }
                 }
             }
-            // at this point, the legacy data has been migrated if exists. If it does not exist, no need to check again in the future anyway.
+            // at this point, the legacy data has been migrated if it exists.
+            // If it does not exist, no need to check again in the future anyway.
             save(MIGRATED_KEY, String.valueOf(true));
         }
     }
 
-    private boolean isFHInitValue(String value) {
-        boolean isFHInitValue = false;
+    private static boolean isFHInitValue(String value) {
         try {
-            JSONObject obj = new JSONObject(value);
-            if (obj.has(TRACKID_KEY)) {
-                isFHInitValue = true;
-            } else {
-                isFHInitValue = false;
-            }
+            return new JSONObject(value).has(TRACKID_KEY);
         } catch (Exception e) {
-            isFHInitValue = false;
+            return false;
         }
-        return isFHInitValue;
     }
 }
