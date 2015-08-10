@@ -1,3 +1,5 @@
+sudo: false # See: docs.travis-ci.com/user/migrating-from-legacy
+
 language: android
 jdk:
   - oraclejdk8
