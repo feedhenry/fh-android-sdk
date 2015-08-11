@@ -51,7 +51,7 @@ public class FHTestUtils {
     public static FHSyncPendingRecord generateRandomPendingRecord() throws Exception {
         FHSyncPendingRecord pending = new FHSyncPendingRecord();
         pending.setInFlightDate(new Date());
-        pending.setInFight(true);
+        pending.setInFlight(true);
         pending.setCrashed(false);
         pending.setAction("create");
         pending.setTimestamp(new Date().getTime());
