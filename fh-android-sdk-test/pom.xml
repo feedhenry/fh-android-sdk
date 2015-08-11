@@ -15,7 +15,7 @@
     </parent>
 
     <properties>
-        <mockwebserver.version>2.0.0</mockwebserver.version>
+        <mockwebserver.version>2.4.0</mockwebserver.version>
     </properties>
 
     <dependencies>
