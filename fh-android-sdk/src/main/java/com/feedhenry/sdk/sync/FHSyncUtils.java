@@ -6,19 +6,19 @@
  */
 package com.feedhenry.sdk.sync;
 
+import org.json.fh.JSONArray;
+import org.json.fh.JSONException;
+import org.json.fh.JSONObject;
+
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.json.fh.JSONArray;
-import org.json.fh.JSONException;
-import org.json.fh.JSONObject;
-
 public class FHSyncUtils {
 
     private static final char[] DIGITS = {
-            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
     };
 
     public static JSONArray sortObj(Object pObject) throws Exception {
@@ -26,7 +26,7 @@ public class FHSyncUtils {
         if (pObject instanceof JSONArray) {
             results = new JSONArray();
             JSONArray castedObj = (JSONArray) pObject;
-            for (int i = 0; i < castedObj.length(); i++) {
+            for (int i = 0, length = castedObj.length(); i < length; i++) {
                 JSONObject obj = new JSONObject();
                 obj.put("key", i + "");
                 Object value = castedObj.get(i);
@@ -40,11 +40,11 @@ public class FHSyncUtils {
         } else if (pObject instanceof JSONObject) {
             JSONArray keys = ((JSONObject) pObject).names();
             List<String> sortedKeys = sortNames(keys);
-            for (int i = 0; i < sortedKeys.size(); i++) {
+            for (String sortedKey : sortedKeys) {
                 JSONObject obj = new JSONObject();
-                String key = sortedKeys.get(i);
+                String key = sortedKey;
                 Object value = ((JSONObject) pObject).get(key);
-                obj.put("key", sortedKeys.get(i));
+                obj.put("key", sortedKey);
                 if (value instanceof JSONObject || value instanceof JSONArray) {
                     obj.put("value", sortObj(value));
                 } else {
@@ -70,7 +70,7 @@ public class FHSyncUtils {
     }
 
     public static String generateHash(String pText) throws Exception {
-        String hashValue = null;
+        String hashValue;
         MessageDigest md = MessageDigest.getInstance("SHA-1");
         md.reset();
         md.update(pText.getBytes("ASCII"));
@@ -93,13 +93,12 @@ public class FHSyncUtils {
     }
 
     private static List<String> sortNames(JSONArray pNames) throws JSONException {
-        ArrayList<String> names = new ArrayList<String>();
-        if (null != pNames) {
-            for (int i = 0; i < pNames.length(); i++) {
-                names.add(pNames.getString(i));
-            }
-            Collections.sort(names);
+        int length = pNames.length();
+        ArrayList<String> names = new ArrayList<String>(length);
+        for (int i = 0; i < length; i++) {
+            names.add(pNames.getString(i));
         }
+        Collections.sort(names);
         return names;
     }
 }

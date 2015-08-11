@@ -9,11 +9,11 @@ package com.feedhenry.sdk.sync;
 import org.json.fh.JSONObject;
 
 /**
- * The configuration options for the sync framework.
+ * Configuration options for the sync framework.
  */
 public class FHSyncConfig {
 
-    private int mSyncFrequency = 10;
+    private int mSyncFrequencySeconds = 10;
     private boolean mAutoSyncLocalUpdates = false;
     private boolean mNotifySyncStarted = false;
     private boolean mNotifySyncComplete = false;
@@ -44,224 +44,224 @@ public class FHSyncConfig {
     private static final String KEY_RESEND_CRASH = "resendCrashdUpdates";
 
     /**
-     * Set the sync interval. In seconds.
-     * 
-     * @param pFrequency the new sync interval
+     * Sets the sync interval in seconds.
+     *
+     * @param pFrequencySeconds the new sync interval
      */
-    public void setSyncFrequency(int pFrequency) {
-        mSyncFrequency = pFrequency;
+    public void setSyncFrequency(int pFrequencySeconds) {
+        mSyncFrequencySeconds = pFrequencySeconds;
     }
 
     /**
-     * Get the current sync interval
-     * 
+     * Gets the current sync interval.
+     *
      * @return the current sync interval.
      */
     public int getSyncFrequency() {
-        return mSyncFrequency;
+        return mSyncFrequencySeconds;
     }
 
     /**
-     * Does the sync client notify sync start event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on a sync start event.
+     *
+     * @return whether a sync start event will trigger a notification
      */
     public boolean isNotifySyncStarted() {
         return mNotifySyncStarted;
     }
 
     /**
-     * Set if the sync client should notify start event
-     * 
-     * @param pNotifySyncStarted true or false
+     * Sets if the sync client should notify on a sync start event.
+     *
+     * @param pNotifySyncStarted whether to notify on sync start
      */
     public void setNotifySyncStarted(boolean pNotifySyncStarted) {
         this.mNotifySyncStarted = pNotifySyncStarted;
     }
 
     /**
-     * Does the sync client notify sync complete event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on a sync complete event.
+     *
+     * @return whether a sync complete event will trigger a notification
      */
     public boolean isNotifySyncComplete() {
         return mNotifySyncComplete;
     }
 
     /**
-     * Set if the sync client should notify complete event
-     * 
-     * @param pNotifySyncComplete true or false
+     * Sets if the sync client should notify on a sync complete event.
+     *
+     * @param pNotifySyncComplete whether to notify on sync complete
      */
     public void setNotifySyncComplete(boolean pNotifySyncComplete) {
         this.mNotifySyncComplete = pNotifySyncComplete;
     }
 
     /**
-     * Does the sync client notify sync collision event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on a sync collision event.
+     *
+     * @return whether a sync collision event will trigger a notification
      */
     public boolean isNotifySyncCollisions() {
         return mNotifySyncCollisions;
     }
 
     /**
-     * Set if the sync client should notify sync collision event
-     * 
-     * @param pNotifySyncCollsion true or false
+     * Sets if the sync client should notify on a sync collision event.
+     *
+     * @param pNotifySyncCollsion whether to notify on sync collision
      */
     public void setNotifySyncCollisions(boolean pNotifySyncCollsion) {
         this.mNotifySyncCollisions = pNotifySyncCollsion;
     }
 
     /**
-     * Does the sync client notify offline update event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on an offline update event.
+     *
+     * @return whether an offline update event will trigger a notification
      */
     public boolean isNotifyOfflineUpdate() {
         return mNotifyOfflineUpdate;
     }
 
     /**
-     * Set if the sync client notify offline update event.
-     * 
-     * @param pNotifyOfflineUpdate true of false
+     * Sets if the sync client should notify on an offline update event.
+     *
+     * @param pNotifyOfflineUpdate whether to notify on offline update
      */
     public void setNotifyOfflineUpdate(boolean pNotifyOfflineUpdate) {
         this.mNotifyOfflineUpdate = pNotifyOfflineUpdate;
     }
 
     /**
-     * Does the sync client notify update failed event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on an update failed event.
+     *
+     * @return whether an update failed event will trigger a notification
      */
     public boolean isNotifyUpdateFailed() {
         return mNotifyRemoteUpdateFailed;
     }
 
     /**
-     * Set if the sync client should notify update failed event
-     * 
-     * @param pNotifyUpdateFailed true or false
+     * Sets if the sync client should notify on an update failed event.
+     *
+     * @param pNotifyUpdateFailed whether to notify on update failed
      */
     public void setNotifyUpdateFailed(boolean pNotifyUpdateFailed) {
         this.mNotifyRemoteUpdateFailed = pNotifyUpdateFailed;
     }
 
     /**
-     * Does the sync client notify remote updates applied event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on a remote update applied event.
+     *
+     * @return whether a remote update applied event will trigger a notification
      */
     public boolean isNotifyRemoteUpdateApplied() {
         return mNotifyRemoteUpdateApplied;
     }
 
     /**
-     * Set if the sync client should notify remote updates applied event
-     * 
-     * @param pNotifyRemoteUpdateApplied true or false
+     * Sets if the sync client should notify on a remote updates applied event.
+     *
+     * @param pNotifyRemoteUpdateApplied whether to notify on remote updates applied
      */
     public void setNotifyRemoteUpdateApplied(boolean pNotifyRemoteUpdateApplied) {
         this.mNotifyRemoteUpdateApplied = pNotifyRemoteUpdateApplied;
     }
 
     /**
-     * Does the sync client notify local updates applied event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on a local updates applied event.
+     *
+     * @return whether a local updates applied event will trigger a notification
      */
     public boolean isNotifyLocalUpdateApplied() {
         return mNotifyLocalUpdateApplied;
     }
 
     /**
-     * Set if the sync client should notify local updates applied event
-     * 
-     * @param pNotifyLocalUpdateApplied true or false
+     * Sets if the sync client should notify on a local updates applied event.
+     *
+     * @param pNotifyLocalUpdateApplied whether to notify on local updates applied
      */
     public void setNotifyLocalUpdateApplied(boolean pNotifyLocalUpdateApplied) {
         this.mNotifyLocalUpdateApplied = pNotifyLocalUpdateApplied;
     }
 
     /**
-     * Does the sync client notify delta received event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on a delta received event.
+     *
+     * @return whether a delta received event will trigger a notification
      */
     public boolean isNotifyDeltaReceived() {
         return mNotifyDeltaReceived;
     }
 
     /**
-     * Set if the sync client should notify delta received event
-     * 
-     * @param pNotifyDeltaReceived true or false
+     * Sets if the sync client should notify on a delta received event.
+     *
+     * @param pNotifyDeltaReceived whether to notify on delta received
      */
     public void setNotifyDeltaReceived(boolean pNotifyDeltaReceived) {
         this.mNotifyDeltaReceived = pNotifyDeltaReceived;
     }
 
     /**
-     * Does the sync client notify sync failed event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on a sync failed event.
+     *
+     * @return whether a sync failed event will trigger a notification
      */
     public boolean isNotifySyncFailed() {
         return mNotifySyncFailed;
     }
 
     /**
-     * Set if the sync client should notify sync failed event
-     * 
-     * @param pNotifySyncFailed true or false
+     * Sets if the sync client should notify on a sync failed event.
+     *
+     * @param pNotifySyncFailed whether to notify on sync failed
      */
     public void setNotifySyncFailed(boolean pNotifySyncFailed) {
         this.mNotifySyncFailed = pNotifySyncFailed;
     }
 
     /**
-     * Set if the sync client should notify client storage failed event
-     * 
-     * @param pNotifyClientStorageFailed true or false
+     * Sets if the sync client should notify on a client storage failed event.
+     *
+     * @param pNotifyClientStorageFailed whether to notify on client storage failed
      */
     public void setNotifyClientStorageFailed(boolean pNotifyClientStorageFailed) {
         this.mNotifyClientStorageFailed = pNotifyClientStorageFailed;
     }
 
     /**
-     * Does the sync client notify client storage failed event
-     * 
-     * @return true or false
+     * Gets whether the sync client notifies on a client storage failed event.
+     *
+     * @return whether a client storage failed event will trigger a notification
      */
     public boolean isNotifyClientStorageFailed() {
         return this.mNotifyClientStorageFailed;
     }
 
     /**
-     * Does the sync client automatically update local changes
-     * 
-     * @return true or false
+     * Gets whether the sync client automatically updates on local changes.
+     *
+     * @return whether local changes are automatically synced
      */
     public boolean isAutoSyncLocalUpdates() {
         return mAutoSyncLocalUpdates;
     }
 
     /**
-     * Set if the sync client should automatically update local changes
-     * 
-     * @param mAutoSyncLocalUpdates true of false
+     * Sets if the sync client should automatically update on local changes.
+     *
+     * @param mAutoSyncLocalUpdates whether local changes should automatically sync
      */
     public void setAutoSyncLocalUpdates(boolean mAutoSyncLocalUpdates) {
         this.mAutoSyncLocalUpdates = mAutoSyncLocalUpdates;
     }
 
     /**
-     * Get the maximum crash count.
-     * 
+     * Gets the maximum crash count.
+     *
      * @return the maximum crash count number
      */
     public int getCrashCountWait() {
@@ -269,10 +269,10 @@ public class FHSyncConfig {
     }
 
     /**
-     * Set the maximum crash count number. Changes may fail to be applied(crash) due to various
-     * reasons (network issue for example). If the crash count reaches this limit, the changes will be
-     * either re-submitted or abandoned.
-     * 
+     * Sets the maximum crash count number.
+     * Changes may fail to be applied (crash) due to various reasons (e.g., network issues).
+     * If the crash count reaches this limit, the changes will be either re-submitted or abandoned.
+     *
      * @param mCrashCountWait the crash limit
      */
     public void setCrashCountWait(int mCrashCountWait) {
@@ -280,8 +280,8 @@ public class FHSyncConfig {
     }
 
     /**
-     * If the crash limit is reached, should the changes be re-submitted or abandoned.
-     * 
+     * Gets whether changes should be re-submitted or abandoned when the crash limit is reached.
+     *
      * @return true or false
      */
     public boolean isResendCrashedUpdates() {
@@ -289,9 +289,9 @@ public class FHSyncConfig {
     }
 
     /**
-     * If this is set to true, crashed changes will be re-submitted if crash count limit is reached,
-     * otherwise they will be abandoned.
-     * 
+     * Sets whether changes should be re-submitted once the crash limit is reached.
+     * If false, changes will be discarded.
+     *
      * @param mResendCrashedUpdates true or false.
      */
     public void setResendCrashedUpdates(boolean mResendCrashedUpdates) {
@@ -299,13 +299,13 @@ public class FHSyncConfig {
     }
 
     /**
-     * JSON representation of the configuration object
-     * 
+     * Gets a JSON representation of the configuration object.
+     *
      * @return The JSON object
      */
     public JSONObject getJSON() {
         JSONObject ret = new JSONObject();
-        ret.put(KEY_SYNC_FREQUENCY, this.mSyncFrequency);
+        ret.put(KEY_SYNC_FREQUENCY, this.mSyncFrequencySeconds);
         ret.put(KEY_AUTO_SYNC_UPDATES, this.mAutoSyncLocalUpdates);
         ret.put(KEY_NOTIFY_CLIENT_STORAGE_FAILED, this.mNotifyClientStorageFailed);
         ret.put(KEY_NOTIFY_DELTA_RECEIVED, this.mNotifyDeltaReceived);
@@ -323,8 +323,8 @@ public class FHSyncConfig {
     }
 
     /**
-     * Create a new configuration object from JSON.
-     * 
+     * Creates a new configuration object from JSON.
+     *
      * @param pObj the sync config JSON
      * @return the new sync config object
      */
