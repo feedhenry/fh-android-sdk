@@ -29,41 +29,40 @@ public class FHSyncNotificationHandler extends Handler {
     }
 
     public void handleMessage(Message pMsg) {
-        int code = pMsg.what;
         NotificationMessage notification = (NotificationMessage) pMsg.obj;
-        if (null != mSyncListener) {
-            switch (code) {
-            case NotificationMessage.SYNC_STARTED_CODE:
-                mSyncListener.onSyncStarted(notification);
-                break;
-            case NotificationMessage.SYNC_COMPLETE_CODE:
-                mSyncListener.onSyncCompleted(notification);
-                break;
-            case NotificationMessage.OFFLINE_UPDATE_CODE:
-                mSyncListener.onUpdateOffline(notification);
-                break;
-            case NotificationMessage.COLLISION_DETECTED_CDOE:
-                mSyncListener.onCollisionDetected(notification);
-                break;
-            case NotificationMessage.REMOTE_UPDATE_FAILED_CDOE:
-                mSyncListener.onRemoteUpdateFailed(notification);
-                break;
-            case NotificationMessage.REMOTE_UPDATE_APPLIED_CODE:
-                mSyncListener.onRemoteUpdateApplied(notification);
-                break;
-            case NotificationMessage.LOCAL_UPDATE_APPLIED_CODE:
-                mSyncListener.onLocalUpdateApplied(notification);
-                break;
-            case NotificationMessage.DELTA_RECEIVED_CODE:
-                mSyncListener.onDeltaReceived(notification);
-                break;
-            case NotificationMessage.SYNC_FAILED_CODE:
-                mSyncListener.onSyncFailed(notification);
-                break;
-            case NotificationMessage.CLIENT_STORAGE_FAILED_CODE:
-                mSyncListener.onClientStorageFailed(notification);
-            default:
-                break;
+        if (mSyncListener != null) {
+            switch (pMsg.what) {
+                case NotificationMessage.SYNC_STARTED_CODE:
+                    mSyncListener.onSyncStarted(notification);
+                    break;
+                case NotificationMessage.SYNC_COMPLETE_CODE:
+                    mSyncListener.onSyncCompleted(notification);
+                    break;
+                case NotificationMessage.OFFLINE_UPDATE_CODE:
+                    mSyncListener.onUpdateOffline(notification);
+                    break;
+                case NotificationMessage.COLLISION_DETECTED_CODE:
+                    mSyncListener.onCollisionDetected(notification);
+                    break;
+                case NotificationMessage.REMOTE_UPDATE_FAILED_CODE:
+                    mSyncListener.onRemoteUpdateFailed(notification);
+                    break;
+                case NotificationMessage.REMOTE_UPDATE_APPLIED_CODE:
+                    mSyncListener.onRemoteUpdateApplied(notification);
+                    break;
+                case NotificationMessage.LOCAL_UPDATE_APPLIED_CODE:
+                    mSyncListener.onLocalUpdateApplied(notification);
+                    break;
+                case NotificationMessage.DELTA_RECEIVED_CODE:
+                    mSyncListener.onDeltaReceived(notification);
+                    break;
+                case NotificationMessage.SYNC_FAILED_CODE:
+                    mSyncListener.onSyncFailed(notification);
+                    break;
+                case NotificationMessage.CLIENT_STORAGE_FAILED_CODE:
+                    mSyncListener.onClientStorageFailed(notification);
+                default:
+                    break;
             }
         }
     }

@@ -62,13 +62,13 @@ public class FHSyncDataRecord {
 
     public JSONObject getJSON() {
         JSONObject ret = new JSONObject();
-        if (null != this.uid) {
+        if (this.uid != null) {
             ret.put(KEY_UID, this.uid);
         }
-        if (null != this.data) {
+        if (this.data != null) {
             ret.put(KEY_DATA, this.data);
         }
-        if (null != this.hashValue) {
+        if (this.hashValue != null) {
             ret.put(KEY_HASH, this.hashValue);
         }
         return ret;
@@ -79,13 +79,13 @@ public class FHSyncDataRecord {
     }
 
     public boolean equals(Object pThat) {
+        if (this == pThat) {
+            return true;
+        }
+
         if (pThat instanceof FHSyncDataRecord) {
             FHSyncDataRecord that = (FHSyncDataRecord) pThat;
-            if (this.getHashValue().equals(that.getHashValue())) {
-                return true;
-            } else {
-                return false;
-            }
+            return this.getHashValue().equals(that.getHashValue());
         }
         return false;
     }

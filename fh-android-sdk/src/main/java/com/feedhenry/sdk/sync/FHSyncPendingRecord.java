@@ -6,9 +6,9 @@
  */
 package com.feedhenry.sdk.sync;
 
-import java.util.Date;
-
 import org.json.fh.JSONObject;
+
+import java.util.Date;
 
 public class FHSyncPendingRecord {
 
@@ -63,20 +63,20 @@ public class FHSyncPendingRecord {
         ret.put(KEY_INFLIGHT, this.inFight);
         ret.put(KEY_CRASHED, this.crashed);
         ret.put(KEY_TIMESTAMP, this.timestamp);
-        if (null != this.inFlightDate) {
+        if (this.inFlightDate != null) {
             ret.put(KEY_INFLIGHT_DATE, this.inFlightDate.getTime());
         }
-        if (null != this.action) {
+        if (this.action != null) {
             ret.put(KEY_ACTION, this.action);
         }
-        if (null != this.uid) {
+        if (this.uid != null) {
             ret.put(KEY_UID, this.uid);
         }
-        if (null != this.preData) {
+        if (this.preData != null) {
             ret.put(KEY_PRE, this.preData.getData());
             ret.put(KEY_PRE_HASH, this.preData.getHashValue());
         }
-        if (null != this.postData) {
+        if (this.postData != null) {
             ret.put(KEY_POST, this.postData.getData());
             ret.put(KEY_POST_HASH, this.postData.getHashValue());
         }
@@ -86,7 +86,7 @@ public class FHSyncPendingRecord {
     public static FHSyncPendingRecord fromJSON(JSONObject pObj) {
         FHSyncPendingRecord record = new FHSyncPendingRecord();
         if (pObj.has(KEY_INFLIGHT)) {
-            record.setInFight(pObj.getBoolean(KEY_INFLIGHT));
+            record.setInFlight(pObj.getBoolean(KEY_INFLIGHT));
         }
         if (pObj.has(KEY_INFLIGHT_DATE)) {
             record.setInFlightDate(new Date(pObj.getLong(KEY_INFLIGHT_DATE)));
@@ -119,13 +119,13 @@ public class FHSyncPendingRecord {
     }
 
     public boolean equals(Object pThat) {
+        if (this == pThat) {
+            return true;
+        }
+
         if (pThat instanceof FHSyncPendingRecord) {
             FHSyncPendingRecord that = (FHSyncPendingRecord) pThat;
-            if (this.getHashValue().equals(that.getHashValue())) {
-                return true;
-            } else {
-                return false;
-            }
+            return this.getHashValue().equals(that.getHashValue());
         } else {
             return false;
         }
@@ -135,11 +135,11 @@ public class FHSyncPendingRecord {
         return this.getJSON().toString();
     }
 
-    public boolean isInFight() {
+    public boolean isInFlight() {
         return inFight;
     }
 
-    public void setInFight(boolean inFight) {
+    public void setInFlight(boolean inFight) {
         this.inFight = inFight;
     }
 
@@ -200,7 +200,7 @@ public class FHSyncPendingRecord {
     }
 
     public String getHashValue() {
-        if (null == this.hashValue) {
+        if (this.hashValue == null) {
             JSONObject jsonobj = this.getJSON();
             this.hashValue = FHSyncUtils.generateObjectHash(jsonobj);
         }
