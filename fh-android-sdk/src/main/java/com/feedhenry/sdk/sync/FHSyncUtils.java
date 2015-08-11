@@ -93,6 +93,10 @@ public class FHSyncUtils {
     }
 
     private static List<String> sortNames(JSONArray pNames) throws JSONException {
+        if (pNames == null) {
+            return Collections.emptyList();
+        }
+        
         int length = pNames.length();
         ArrayList<String> names = new ArrayList<String>(length);
         for (int i = 0; i < length; i++) {
