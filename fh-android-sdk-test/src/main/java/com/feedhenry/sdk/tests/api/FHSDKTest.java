@@ -94,7 +94,7 @@ public class FHSDKTest extends AndroidTestCase {
         assertEquals("POST", request.getMethod().toUpperCase());
         assertEquals("/cloud/test", request.getPath());
 
-        String requestBody = new String(request.getBody(), "UTF-8");
+        String requestBody = new String(request.getBody().readUtf8());
         JSONObject requestJson = new JSONObject(requestBody);
         assertTrue(requestJson.has("__fh"));
 
@@ -235,7 +235,7 @@ public class FHSDKTest extends AndroidTestCase {
         }
 
         if (null != params) {
-            String requestBody = new String(request.getBody(), "UTF-8");
+            String requestBody = new String(request.getBody().readUtf8());
             assertEquals(requestBody.toString(), params.toString());
         }
 

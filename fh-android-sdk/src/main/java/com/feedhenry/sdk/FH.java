@@ -353,8 +353,8 @@ public class FH {
      * @throws Exception if the app property file is not loaded
      */
     public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders) throws Exception {
-        ArrayList<Header> headers = new ArrayList<Header>();
         JSONObject defaultParams = FH.getDefaultParams();
+        ArrayList<Header> headers = new ArrayList<Header>(defaultParams.length());
 
         for (Iterator<String> it = defaultParams.keys(); it.hasNext(); ) {
             String key = it.next();
