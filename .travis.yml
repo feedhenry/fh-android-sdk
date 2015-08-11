@@ -1,3 +1,5 @@
+sudo: false # See: docs.travis-ci.com/user/migrating-from-legacy
+
 language: android
 jdk:
   - oraclejdk8
@@ -15,15 +17,17 @@ android:
   components:
   - platform-tools
   - tools
-  - build-tools-21.1.1
-  - android-21
-  - android-19
+  - build-tools-22.0.1
+  - android-22
+  - extra-google-m2repository
+  - extra-android-m2repository
+  - sys-img-armeabi-v7a-android-22
 
 env:
   global:
     - RELEASE_VERSION=$(grep "<version>" fh-android-sdk/pom.xml | tr "\n" ":" | cut -d ':' -f1 | sed s/\<version\>//g| sed s/\"//g| sed s/\<\\/version\>//g | tr -d ' ')
   matrix:
-    - ANDROID_SDK=android-21 ANDROID_EMULATOR=android-19 ANDROID_ABI=armeabi-v7a
+    - ANDROID_SDK=android-22 ANDROID_EMULATOR=android-22 ANDROID_ABI=armeabi-v7a
 
 before_install:
   # Checkout maven-android-sdk-deployer
@@ -35,8 +39,8 @@ before_install:
   - cd -
 
   # Install locally google-m2repository (including play services aar)
-  - cd $PWD/maven-android-sdk-deployer/repositories/google-m2repository
-  - mvn install -N --quiet
+  - cd $PWD/maven-android-sdk-deployer/repositories
+  - mvn install --quiet
   - cd -
 
 before_script:
