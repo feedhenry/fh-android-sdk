@@ -35,7 +35,7 @@ before_install:
 
   # Install Android in locally Maven repository
   - cd $PWD/maven-android-sdk-deployer/platforms/$ANDROID_SDK
-  - mvn  install -N --quiet
+  - mvn install -N --quiet
   - cd -
 
   # Install locally google-m2repository (including play services aar)
@@ -48,9 +48,9 @@ before_script:
 
 script:
   - set -ev
-  - mvn install -Drelease
+  - mvn clean install -Drelease
   - cd fh-android-sdk-test
-  - mvn package -DskipTests=true;
+  - mvn clean package -DskipTests=true;
   - emulator -avd test -no-skin -no-audio -no-window&
   - wget https://raw.githubusercontent.com/travis-ci/travis-cookbooks/master/ci_environment/android-sdk/files/default/android-wait-for-emulator
   - chmod a+x ./android-wait-for-emulator
