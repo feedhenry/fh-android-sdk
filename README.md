@@ -7,7 +7,7 @@ This SDK should provide you with all you'll need to start developing cloud-conne
 
 ### Prereqs
 
-* [Java 6](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+* [Java 7](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 * [Maven 3.1.1](http://maven.apache.org/)
 * Latest [Android SDK](https://developer.android.com/sdk/index.html) and [Platform version](http://developer.android.com/tools/revisions/platforms.html)
 * Latest [Maven Android SDK Deployer](https://github.com/mosabua/maven-android-sdk-deployer)
