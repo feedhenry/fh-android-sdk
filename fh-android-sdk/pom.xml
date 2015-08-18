@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>fh-android-sdk</artifactId>
@@ -23,7 +25,7 @@
 
   <properties>
     <loopj.version>1.4.8</loopj.version>
-    <aerogear.android.push.version>2.2.0</aerogear.android.push.version>
+    <aerogear.android.push.version>2.2.1</aerogear.android.push.version>
     <httpcomponents.version>4.3.5.1</httpcomponents.version>
   </properties>
 
@@ -40,14 +42,6 @@
       <artifactId>aerogear-android-push</artifactId>
       <version>${aerogear.android.push.version}</version>
       <scope>provided</scope>
-      <type>jar</type>
-    </dependency>
-
-    <dependency>
-      <groupId>org.jboss.aerogear</groupId>
-      <artifactId>aerogear-android-push</artifactId>
-      <version>${aerogear.android.push.version}</version>
-      <type>aar</type>
     </dependency>
 
     <dependency>
