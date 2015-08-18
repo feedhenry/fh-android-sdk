@@ -50,7 +50,7 @@ script:
   - mvn clean install -Drelease
   - cd fh-android-sdk-test
   - mvn clean package -DskipTests=true;
-  - emulator -avd test -no-skin -no-audio -no-window&
+  - emulator -avd test -no-skin -no-audio -no-boot-anim -no-window&
   - wget https://raw.githubusercontent.com/travis-ci/travis-cookbooks/master/ci_environment/android-sdk/files/default/android-wait-for-emulator
   - chmod a+x ./android-wait-for-emulator
   - "./android-wait-for-emulator"
