@@ -42,6 +42,16 @@
       <artifactId>aerogear-android-push</artifactId>
       <version>${aerogear.android.push.version}</version>
       <scope>provided</scope>
+      <type>aar</type>
+    </dependency>
+
+    <!-- provided for Netbeans support -->
+    <dependency>        
+      <groupId>org.jboss.aerogear</groupId>
+      <artifactId>aerogear-android-push</artifactId>
+      <version>${aerogear.android.push.version}</version>
+      <scope>provided</scope>
+      <type>jar</type>
     </dependency>
 
     <dependency>
