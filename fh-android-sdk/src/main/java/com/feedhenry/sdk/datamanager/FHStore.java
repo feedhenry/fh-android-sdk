@@ -50,7 +50,7 @@ public final class FHStore<T> {
      * @param item Object to save
      */
     public void save(T item) {
-        this.save(item);
+        this.store.save(item);
     }
 
     /**
