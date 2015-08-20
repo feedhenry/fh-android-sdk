@@ -22,15 +22,19 @@
     </scm>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
 
         <!-- Project depencies versions -->
         <android.version>[5.0.0,)</android.version>
 
         <!-- Plugins versions -->
-        <maven.javadoc.plugin.version>2.9.1</maven.javadoc.plugin.version>
-        <maven.android.plugin.version>4.1.1</maven.android.plugin.version>
+        <maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
+        <maven.android.plugin.version>4.3.0</maven.android.plugin.version>
         <builder.helper.plugin.version>1.7</builder.helper.plugin.version>
-        <maven.compiler.plugin.version>2.3.2</maven.compiler.plugin.version>
+        <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
         <java-formatter.plugin.version>0.4</java-formatter.plugin.version>
         <license.plugin.version>1.9.0</license.plugin.version>
         <aerogear-misc.version>0.2.0</aerogear-misc.version>

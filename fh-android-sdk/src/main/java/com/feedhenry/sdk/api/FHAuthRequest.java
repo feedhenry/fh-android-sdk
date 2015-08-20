@@ -16,6 +16,7 @@ import org.apache.http.Header;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -256,9 +257,11 @@ public class FHAuthRequest extends FHRemote {
                             resJson.put(FHAuthSession.SESSION_TOKEN_KEY, sessionToken);
                             resJson.put(
                                 "authResponse",
-                                new JSONObject(URLDecoder.decode(queryMap.get("authResponse"))));
+                                new JSONObject(URLDecoder.decode(queryMap.get("authResponse"), "UTF-8")));
                             res = new FHResponse(resJson, null, null, null);
                         } catch (JSONException e) {
+                            e.printStackTrace();
+                        } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
                         mPresentingActivity.unregisterReceiver(this);
