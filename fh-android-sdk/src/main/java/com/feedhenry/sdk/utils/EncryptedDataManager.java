@@ -21,13 +21,13 @@ public class EncryptedDataManager {
     private final CryptoBox cryptoBox;
     private byte[] iv;
 
-    private EncryptedDataManager(Context context) {
-        cryptoBox = createCryptoBox("aaa");
+    private EncryptedDataManager(String password) {
+        cryptoBox = createCryptoBox(password);
     }
 
-    public static synchronized EncryptedDataManager getInstance(Context context) {
+    public static synchronized EncryptedDataManager getInstance(Context context, String password) {
         if (encryptedDataManager == null) {
-            encryptedDataManager = new EncryptedDataManager(context);
+            encryptedDataManager = new EncryptedDataManager(password);
             dataManager = DataManager.init(context);
         }
         return encryptedDataManager;
