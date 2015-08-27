@@ -90,7 +90,7 @@ public class EncryptedDataManager {
 
     public String read(String key) {
         String data = dataManager.read(key);
-        return (data != null) ? encode(cryptoBox.decrypt(iv, decode(data))) : data;
+        return (data == null) ? null : encode(cryptoBox.decrypt(iv, decode(data)));
     }
 
     public void remove(String key) {
