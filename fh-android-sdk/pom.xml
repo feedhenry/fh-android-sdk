@@ -26,6 +26,7 @@
   <properties>
     <loopj.version>1.4.8</loopj.version>
     <aerogear.android.push.version>2.2.1</aerogear.android.push.version>
+    <aerogear.android.store.version>3.0.0-SNAPSHOT</aerogear.android.store.version>
     <httpcomponents.version>4.3.5.1</httpcomponents.version>
   </properties>
 
@@ -53,6 +54,23 @@
       <scope>provided</scope>
       <type>jar</type>
     </dependency>
+
+    <dependency>
+      <groupId>org.jboss.aerogear</groupId>
+      <artifactId>aerogear-android-store</artifactId>
+      <version>${aerogear.android.store.version}</version>
+      <scope>provided</scope>
+      <type>aar</type>
+    </dependency>    
+
+    <!-- provided for Netbeans support -->
+    <dependency>        
+      <groupId>org.jboss.aerogear</groupId>
+      <artifactId>aerogear-android-store</artifactId>
+      <version>${aerogear.android.store.version}</version>
+      <scope>provided</scope>
+      <type>jar</type>
+    </dependency>    
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -152,7 +170,7 @@
 
     </plugins>
   </build>
-
+  
 </project>
 
 

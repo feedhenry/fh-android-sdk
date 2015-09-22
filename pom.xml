@@ -139,5 +139,18 @@
             <url>https://github.com/feedhenry/fh-android-sdk-repository/raw/master/snapshots</url>
         </snapshotRepository>
     </distributionManagement>
+    <repositories>
+        <repository>
+            <id>JBoss Nexus - SNAPSHOT</id>
+            <name>JBoss Development Snapshot Repository</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>
 
