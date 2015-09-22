@@ -214,12 +214,13 @@ public class FHHttpClient {
             Throwable pError,
             org.json.JSONObject pErrorResponse) {
             FHLog.e(LOG_TAG, pError.getMessage(), pError);
+            String errorResponse = (pErrorResponse != null) ? pErrorResponse.toString() : "{}";
             if (callback != null) {
                 FHResponse fhres = new FHResponse(
-                    new JSONObject(pErrorResponse.toString()),
+                    new JSONObject(errorResponse),
                     null,
                     pError,
-                    pErrorResponse.toString());
+                    errorResponse);
                 callback.fail(fhres);
             }
         }
