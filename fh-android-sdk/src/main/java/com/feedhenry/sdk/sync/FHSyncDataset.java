@@ -764,7 +764,9 @@ public class FHSyncDataset {
         }
 
         if ("create".equalsIgnoreCase(pAction)) {
-            pending.setUid(pending.getPostData().getHashValue());
+            //we use the hash value of the pending record as the temp uid as it will be returned by the cloud app
+            //later on. This way we can link the temp uid and the new uid via the REMOTE_UPDATE_APPLIED_MESSAGE notification.
+            pending.setUid(pending.getHashValue());
             storePendingObj(pending);
         } else {
             FHSyncDataRecord existingData = mDataRecords.get(pUid);
