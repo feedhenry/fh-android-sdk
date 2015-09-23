@@ -45,29 +45,33 @@ Until we don't have it released in Maven Central we are hosting it in a [Github 
 
 To deploy it, you need to follow the instructions below:
 
-For create snapshots
+### Snapshots
 
 ```shell
-mvn -DaltDeploymentRepository=snapshot-repo:default::file:[your repo dir]/snapshots clean deploy
+mvn -DaltDeploymentRepository=snapshot-repo::default::file:[your repo dir]/snapshots clean deploy
 ```
 
-For create releases
+### Releases
 
 ```shell
-mvn -DaltDeploymentRepository=releases-repo:default::file:[your repo dir]/releases clean deploy
+mvn -DaltDeploymentRepository=releases-repo::default::file:[your repo dir]/releases clean deploy
 ```
 
 After that, commit it in the [fh-android-sdk-repository](https://github.com/feedhenry/fh-android-sdk-repository) and send a PR on it
 
 ## Usage
 
-Add our Github host repo in your `gradle.build` project
+Add our Github host repo in your `gradle.build` project file
+
 
 ```
 allprojects {
 	repositories {
    	jcenter()
-		maven { url "https://github.com/danielpassos/fh-android-sdk-repository/raw/master/releases" }
+   		// for snapshots
+		maven { url "https://github.com/feedhenry/fh-android-sdk-repository/raw/master/snapshots" }
+		// for released
+		maven { url "https://github.com/feedhenry/fh-android-sdk-repository/raw/master/releases" }
 	}
 }
 ```
