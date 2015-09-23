@@ -27,6 +27,7 @@ public class FHSyncConfig {
     private boolean mNotifyClientStorageFailed = false;
     private int mCrashCountWait = 10;
     private boolean mResendCrashedUpdates = true;
+    private boolean mUseCustomSync = false;
 
     private static final String KEY_SYNC_FREQUENCY = "syncFrequency";
     private static final String KEY_AUTO_SYNC_UPDATES = "autoSyncLocalUpdates";
@@ -297,6 +298,10 @@ public class FHSyncConfig {
     public void setResendCrashedUpdates(boolean mResendCrashedUpdates) {
         this.mResendCrashedUpdates = mResendCrashedUpdates;
     }
+
+    public void setUseCustomSync(boolean mUseCustomSync) { this.mUseCustomSync = mUseCustomSync; }
+
+    public boolean useCustomSync() { return this.mUseCustomSync; };
 
     /**
      * Gets a JSON representation of the configuration object.

@@ -14,6 +14,7 @@ FHStarterProject/bin/*
 FHStarterProject/gen/*
 *android-support-*.jar
 FHStarterProject/.settings/
+fh-android-sdk-test/gen-external-apklibs/*
 
 ## Maven
 

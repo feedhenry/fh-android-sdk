@@ -9,9 +9,12 @@ package com.feedhenry.sdk.sync;
 import android.content.Context;
 import android.os.Message;
 import com.feedhenry.sdk.FH;
+import com.feedhenry.sdk.FHAct;
 import com.feedhenry.sdk.FHActCallback;
+import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.api.FHActRequest;
+import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONException;
@@ -189,7 +192,7 @@ public class FHSyncDataset {
             FHLog.d(LOG_TAG, "Starting sync loop -global hash = " + mHashvalue + " :: params = " + syncLoopParams);
 
             try {
-                FHActRequest actRequest = FH.buildActRequest(mDatasetId, syncLoopParams);
+                FHRemote actRequest = makeCloudRequest(syncLoopParams);
                 actRequest.executeAsync(
                     new FHActCallback() {
 
@@ -276,7 +279,7 @@ public class FHSyncDataset {
         FHLog.d(LOG_TAG, "syncRecParams :: " + syncRecsParams);
 
         try {
-            FHActRequest request = FH.buildActRequest(mDatasetId, syncRecsParams);
+            FHRemote request = makeCloudRequest(syncRecsParams);
             request.executeAsync(
                 new FHActCallback() {
 
@@ -311,6 +314,16 @@ public class FHSyncDataset {
         }
 
         syncCompleteWithCode("online");
+    }
+
+    private FHRemote makeCloudRequest(JSONObject pSyncLoopParams) throws Exception {
+        FHRemote request = null;
+        if(this.getSyncConfig().useCustomSync()){
+            request = FH.buildActRequest(mDatasetId, pSyncLoopParams);
+        } else {
+            request = FH.buildCloudRequest("/mbaas/sync/" + mDatasetId, "POST", null, pSyncLoopParams);
+        }
+        return request;
     }
 
     private void handleDeleted(JSONObject pData) {
@@ -764,7 +777,7 @@ public class FHSyncDataset {
         }
 
         if ("create".equalsIgnoreCase(pAction)) {
-            pending.setUid(pending.getPostData().getHashValue());
+            pending.setUid(pending.getHashValue());
             storePendingObj(pending);
         } else {
             FHSyncDataRecord existingData = mDataRecords.get(pUid);
