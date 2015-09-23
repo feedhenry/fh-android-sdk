@@ -63,12 +63,13 @@ public class FHSyncDataset {
 
     public FHSyncDataset(
         Context pContext, FHSyncNotificationHandler pHandler, String pDatasetId,
-        FHSyncConfig pConfig, JSONObject pQueryParams) {
+        FHSyncConfig pConfig, JSONObject pQueryParams, JSONObject pMetaData) {
         mContext = pContext;
         mNotificationHandler = pHandler;
         mDatasetId = pDatasetId;
         mSyncConfig = pConfig;
         mQueryParams = pQueryParams;
+        mMetaData = pMetaData;
         readFromFile();
     }
 
@@ -171,6 +172,7 @@ public class FHSyncDataset {
             JSONObject syncLoopParams = new JSONObject();
             syncLoopParams.put("fn", "sync");
             syncLoopParams.put("dataset_id", mDatasetId);
+            syncLoopParams.put("meta_data", mMetaData);
             syncLoopParams.put("query_params", mQueryParams);
             if (mHashvalue != null) {
                 syncLoopParams.put("dataset_hash", mHashvalue);
@@ -250,7 +252,9 @@ public class FHSyncDataset {
             processUpdates(updates.optJSONObject("failed"), NotificationMessage.REMOTE_UPDATE_FAILED_CODE, ack);
             processUpdates(updates.optJSONObject("collisions"), NotificationMessage.COLLISION_DETECTED_CODE, ack);
             mAcknowledgements = ack;
-        } else if (pData.has("hash") && !pData.getString("hash").equals(mHashvalue)) {
+        }
+
+        if (pData.has("hash") && !pData.getString("hash").equals(mHashvalue)) {
             String remoteHash = pData.getString("hash");
             FHLog.d(
                 LOG_TAG,
@@ -274,6 +278,7 @@ public class FHSyncDataset {
         syncRecsParams.put("fn", "syncRecords");
         syncRecsParams.put("dataset_id", mDatasetId);
         syncRecsParams.put("query_params", mQueryParams);
+        syncRecsParams.put("meta_data", mMetaData);
         syncRecsParams.put("clientRecs", clientRecords);
 
         FHLog.d(LOG_TAG, "syncRecParams :: " + syncRecsParams);

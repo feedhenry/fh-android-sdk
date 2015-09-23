@@ -299,8 +299,16 @@ public class FHSyncConfig {
         this.mResendCrashedUpdates = mResendCrashedUpdates;
     }
 
+    /**
+     * Set if legacy mode is used
+     * @param mUseCustomSync
+     */
     public void setUseCustomSync(boolean mUseCustomSync) { this.mUseCustomSync = mUseCustomSync; }
 
+    /**
+     * Check if legacy mode is enabled
+     * @return
+     */
     public boolean useCustomSync() { return this.mUseCustomSync; };
 
     /**
