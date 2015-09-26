@@ -122,7 +122,21 @@ public class FHSyncClient {
      * @param pQueryParams Query parameters for the dataset
      * @throws Exception thrown if FHSyncClient isn't initialised.
      */
-    public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams)
+    public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams) throws Exception {
+        manage(pDataId, pConfig, pQueryParams, new JSONObject());
+    }
+
+    /**
+     * Uses the sync client to manage a dataset.
+     *
+     * @param pDataId The id of the dataset.
+     * @param pConfig The sync configuration for the dataset. If not specified, the sync configuration
+     * passed in the initDev method will be used
+     * @param pQueryParams Query parameters for the dataset
+     * @param pMetaData Meta for the dataset
+     * @throws Exception thrown if FHSyncClient isn't initialised.
+     */
+    public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams, JSONObject pMetaData)
         throws Exception {
         if (!mInitialised) {
             throw new Exception("FHSyncClient isn't initialised. Have you called the initDev function?");
@@ -137,7 +151,7 @@ public class FHSyncClient {
             dataset.setNotificationHandler(mNotificationHandler);
         } else {
             dataset =
-                new FHSyncDataset(mContext, mNotificationHandler, pDataId, syncConfig, pQueryParams);
+                new FHSyncDataset(mContext, mNotificationHandler, pDataId, syncConfig, pQueryParams, pMetaData);
             mDataSets.put(pDataId, dataset);
             dataset.setSyncRunning(false);
             dataset.setInitialised(true);

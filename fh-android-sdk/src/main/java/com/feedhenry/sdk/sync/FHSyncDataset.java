@@ -9,9 +9,12 @@ package com.feedhenry.sdk.sync;
 import android.content.Context;
 import android.os.Message;
 import com.feedhenry.sdk.FH;
+import com.feedhenry.sdk.FHAct;
 import com.feedhenry.sdk.FHActCallback;
+import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.api.FHActRequest;
+import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONException;
@@ -60,12 +63,13 @@ public class FHSyncDataset {
 
     public FHSyncDataset(
         Context pContext, FHSyncNotificationHandler pHandler, String pDatasetId,
-        FHSyncConfig pConfig, JSONObject pQueryParams) {
+        FHSyncConfig pConfig, JSONObject pQueryParams, JSONObject pMetaData) {
         mContext = pContext;
         mNotificationHandler = pHandler;
         mDatasetId = pDatasetId;
         mSyncConfig = pConfig;
         mQueryParams = pQueryParams;
+        mMetaData = pMetaData;
         readFromFile();
     }
 
@@ -168,6 +172,7 @@ public class FHSyncDataset {
             JSONObject syncLoopParams = new JSONObject();
             syncLoopParams.put("fn", "sync");
             syncLoopParams.put("dataset_id", mDatasetId);
+            syncLoopParams.put("meta_data", mMetaData);
             syncLoopParams.put("query_params", mQueryParams);
             if (mHashvalue != null) {
                 syncLoopParams.put("dataset_hash", mHashvalue);
@@ -189,7 +194,7 @@ public class FHSyncDataset {
             FHLog.d(LOG_TAG, "Starting sync loop -global hash = " + mHashvalue + " :: params = " + syncLoopParams);
 
             try {
-                FHActRequest actRequest = FH.buildActRequest(mDatasetId, syncLoopParams);
+                FHRemote actRequest = makeCloudRequest(syncLoopParams);
                 actRequest.executeAsync(
                     new FHActCallback() {
 
@@ -247,7 +252,9 @@ public class FHSyncDataset {
             processUpdates(updates.optJSONObject("failed"), NotificationMessage.REMOTE_UPDATE_FAILED_CODE, ack);
             processUpdates(updates.optJSONObject("collisions"), NotificationMessage.COLLISION_DETECTED_CODE, ack);
             mAcknowledgements = ack;
-        } else if (pData.has("hash") && !pData.getString("hash").equals(mHashvalue)) {
+        }
+
+        if (pData.has("hash") && !pData.getString("hash").equals(mHashvalue)) {
             String remoteHash = pData.getString("hash");
             FHLog.d(
                 LOG_TAG,
@@ -271,12 +278,13 @@ public class FHSyncDataset {
         syncRecsParams.put("fn", "syncRecords");
         syncRecsParams.put("dataset_id", mDatasetId);
         syncRecsParams.put("query_params", mQueryParams);
+        syncRecsParams.put("meta_data", mMetaData);
         syncRecsParams.put("clientRecs", clientRecords);
 
         FHLog.d(LOG_TAG, "syncRecParams :: " + syncRecsParams);
 
         try {
-            FHActRequest request = FH.buildActRequest(mDatasetId, syncRecsParams);
+            FHRemote request = makeCloudRequest(syncRecsParams);
             request.executeAsync(
                 new FHActCallback() {
 
@@ -311,6 +319,16 @@ public class FHSyncDataset {
         }
 
         syncCompleteWithCode("online");
+    }
+
+    private FHRemote makeCloudRequest(JSONObject pSyncLoopParams) throws Exception {
+        FHRemote request = null;
+        if(this.getSyncConfig().useCustomSync()){
+            request = FH.buildActRequest(mDatasetId, pSyncLoopParams);
+        } else {
+            request = FH.buildCloudRequest("/mbaas/sync/" + mDatasetId, "POST", null, pSyncLoopParams);
+        }
+        return request;
     }
 
     private void handleDeleted(JSONObject pData) {
@@ -764,7 +782,7 @@ public class FHSyncDataset {
         }
 
         if ("create".equalsIgnoreCase(pAction)) {
-            pending.setUid(pending.getPostData().getHashValue());
+            pending.setUid(pending.getHashValue());
             storePendingObj(pending);
         } else {
             FHSyncDataRecord existingData = mDataRecords.get(pUid);
