@@ -61,6 +61,8 @@ After that, commit it in the [fh-android-sdk-repository](https://github.com/feed
 
 ## Usage
 
+### Gradle Projects (Recommended)
+
 Add our Github host repo in your `gradle.build` project file
 
 
@@ -85,6 +87,14 @@ dependencies {
 ```
 
 For more detail about our API, See [FH Android SDK Guide](http://docs.feedhenry.com/v3/dev_tools/sdks/android.html).
+
+### Ant Projects
+
+The following files need to be added as the dependencies of the Ant-based Android project:
+
+* The fh-android-sdk jar file (e.g. [2.3.1 Jar File](https://github.com/feedhenry/fh-android-sdk-repository/blob/master/releases/com/feedhenry/fh-android-sdk/2.3.1/fh-android-sdk-2.3.1.jar))
+* All the jar files in the [deps](./deps) directory
+
 
 ## Example
 
