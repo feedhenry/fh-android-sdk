@@ -90,9 +90,9 @@ For more detail about our API, See [FH Android SDK Guide](http://docs.feedhenry.
 
 ### Ant Projects
 
-The following files need to be added as the dependencies of the Ant-based Android project:
+To use the Android SDK in Ant-based Android projects, the following files need to be added as the dependencies:
 
-* The fh-android-sdk jar file (e.g. [2.3.1 Jar File](https://github.com/feedhenry/fh-android-sdk-repository/blob/master/releases/com/feedhenry/fh-android-sdk/2.3.1/fh-android-sdk-2.3.1.jar))
+* The fh-android-sdk jar file (e.g. [2.3.1 Jar File](https://github.com/feedhenry/fh-android-sdk-repository/blob/master/releases/com/feedhenry/fh-android-sdk/2.3.1/))
 * All the jar files in the [deps](./deps) directory
 
 
