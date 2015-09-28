@@ -10,7 +10,7 @@ import android.content.Context;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.utils.FHLog;
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.fh.JSONObject;
 
 /**
