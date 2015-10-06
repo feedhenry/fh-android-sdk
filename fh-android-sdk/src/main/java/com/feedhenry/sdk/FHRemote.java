@@ -9,7 +9,7 @@ package com.feedhenry.sdk;
 import android.content.Context;
 import com.feedhenry.sdk.utils.FHLog;
 import com.feedhenry.sdk.utils.StringUtils;
-import org.apache.http.Header;
+import cz.msebera.android.httpclient.Header;
 import org.json.fh.JSONObject;
 
 /**

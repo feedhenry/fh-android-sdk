@@ -8,8 +8,8 @@ package com.feedhenry.sdk.tests.api;
 
 import com.feedhenry.sdk.api.FHAuthSession;
 import com.feedhenry.sdk.utils.DataManager;
-import org.apache.http.Header;
-import org.apache.http.message.BasicHeader;
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.message.BasicHeader;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
 

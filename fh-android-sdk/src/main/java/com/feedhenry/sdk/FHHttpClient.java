@@ -8,8 +8,8 @@ package com.feedhenry.sdk;
 
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.*;
-import org.apache.http.Header;
-import org.apache.http.entity.StringEntity;
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONObject;
 
