@@ -238,4 +238,17 @@ public class FHHttpClient {
             }
         }
     }
+    
+    /**
+     * Set both the connection and socket timeouts. By default, both are set to
+     * 10 seconds.
+     *
+     * @param milliseconds the connect/socket timeout in milliseconds, at least 1 second
+     */
+    public static void setTimeout(int milliseconds) {
+        mClient.setResponseTimeout(milliseconds);
+        mSyncClient.setResponseTimeout(milliseconds);
+    }
+    
+    
 }
