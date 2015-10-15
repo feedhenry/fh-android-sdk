@@ -36,7 +36,9 @@ public class FHSyncDataset {
     private FHSyncConfig mSyncConfig = new FHSyncConfig();
     private final ConcurrentMap<String, FHSyncPendingRecord> mPendingRecords =
         new ConcurrentHashMap<String, FHSyncPendingRecord>();
+    private ConcurrentMap<String, String> mPendingUidToHash = new ConcurrentHashMap<String, String>();
     private ConcurrentMap<String, FHSyncDataRecord> mDataRecords = new ConcurrentHashMap<String, FHSyncDataRecord>();
+    
     private JSONObject mQueryParams = new JSONObject();
     private JSONObject mMetaData = new JSONObject();
     private String mHashvalue;
@@ -349,13 +351,17 @@ public class FHSyncDataset {
         if (updated != null) {
             for (Iterator<String> it = updated.keys(); it.hasNext(); ) {
                 String key = it.next();
-                JSONObject updatedata = updated.getJSONObject(key);
-                FHSyncDataRecord record = mDataRecords.get(key);
-                if (record != null) {
-                    record.setData(updatedata.getJSONObject("data"));
-                    record.setHashValue(updatedata.getString("hash"));
-                    mDataRecords.put(key, record);
-                    doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "update");
+                String keyHash = mPendingUidToHash.get(key);
+                
+                if (keyHash == null || !mPendingRecords.containsKey(keyHash)) {
+                    JSONObject updatedata = updated.getJSONObject(key);
+                    FHSyncDataRecord record = mDataRecords.get(key);
+                    if (record != null) {
+                        record.setData(updatedata.getJSONObject("data"));
+                        record.setHashValue(updatedata.getString("hash"));
+                        mDataRecords.put(key, record);
+                        doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "update");
+                    }
                 }
             }
         }
@@ -366,11 +372,15 @@ public class FHSyncDataset {
         if (created != null) {
             for (Iterator<String> it = created.keys(); it.hasNext(); ) {
                 String key = it.next();
-                JSONObject data = created.getJSONObject(key);
-                FHSyncDataRecord record = new FHSyncDataRecord(data.getJSONObject("data"));
-                record.setHashValue(data.getString("hash"));
-                mDataRecords.put(key, record);
-                doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "create");
+                String keyHash = mPendingUidToHash.get(key);
+                
+                if (keyHash == null || !mPendingRecords.containsKey(keyHash)) {
+                    JSONObject data = created.getJSONObject(key);
+                    FHSyncDataRecord record = new FHSyncDataRecord(data.getJSONObject("data"));
+                    record.setHashValue(data.getString("hash"));
+                    mDataRecords.put(key, record);
+                    doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "create");
+                }
             }
         }
     }
@@ -383,6 +393,7 @@ public class FHSyncDataset {
                 pAck.put(up);
                 FHSyncPendingRecord pendingRec = mPendingRecords.get(key);
                 if (pendingRec != null && pendingRec.isInFlight() && !pendingRec.isCrashed()) {
+                    mPendingUidToHash.remove(key);
                     mPendingRecords.remove(key);
                     doNotify(up.getString("uid"), pNotification, up.toString());
                 }
@@ -578,7 +589,10 @@ public class FHSyncDataset {
         }
 
         for (String aKeysToRemove : keysToRemove) {
-            mPendingRecords.remove(aKeysToRemove);
+            String removedUid = mPendingRecords.remove(aKeysToRemove).getUid();
+            if (removedUid != null) {
+                mPendingUidToHash.remove(removedUid);
+            }
         }
     }
 
@@ -654,7 +668,10 @@ public class FHSyncDataset {
         }
 
         for (String aKeysToRemove : keysToRemove) {
-            mPendingRecords.remove(aKeysToRemove);
+            String removedUid = mPendingRecords.remove(aKeysToRemove).getUid();
+            if (removedUid != null) {
+                mPendingUidToHash.remove(removedUid);
+            }
         }
 
         keysToRemove.clear();
@@ -798,6 +815,7 @@ public class FHSyncDataset {
     }
 
     private void storePendingObj(FHSyncPendingRecord pPendingObj) {
+        mPendingUidToHash.put(pPendingObj.getUid(), pPendingObj.getHashValue());
         mPendingRecords.put(pPendingObj.getHashValue(), pPendingObj);
         updateDatasetFromLocal(pPendingObj);
         if (mSyncConfig.isAutoSyncLocalUpdates()) {
@@ -832,6 +850,7 @@ public class FHSyncDataset {
                     // Remove the previous pending record and use this one instead
                     previousPendingUid = metadata.optString("pendingUid", null);
                     if (previousPendingUid != null) {
+                        mPendingUidToHash.remove(uid);
                         mPendingRecords.remove(previousPendingUid);
                     }
                 }
@@ -852,6 +871,7 @@ public class FHSyncDataset {
                 // We are trying to perform an update on an existing pending record
                 // modify the original record to have the latest value and delete the pending update
                 previousPendingObj.setPostData(pPendingObj.getPostData());
+                mPendingUidToHash.remove(pPendingObj.getUid());
                 mPendingRecords.remove(pPendingObj.getHashValue());
             }
         }
@@ -868,6 +888,7 @@ public class FHSyncDataset {
                     if ("create".equalsIgnoreCase(previousPendingObj.getAction())) {
                         // We are trying to perform a delete on an existing pending create
                         // These cancel each other out so remove them both
+                        mPendingUidToHash.remove(pPendingObj.getUid());
                         mPendingRecords.remove(pPendingObj.getHashValue());
                         mPendingRecords.remove(previousPendingUid);
                     }
@@ -877,6 +898,7 @@ public class FHSyncDataset {
                         // get rid of the pending update
                         pPendingObj.setPreData(previousPendingObj.getPreData());
                         pPendingObj.setInFlight(false);
+                        mPendingUidToHash.remove(pPendingObj.getUid());
                         mPendingRecords.remove(previousPendingUid);
                     }
                 }
