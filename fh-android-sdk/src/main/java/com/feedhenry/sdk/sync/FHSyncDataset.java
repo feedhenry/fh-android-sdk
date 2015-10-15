@@ -336,8 +336,10 @@ public class FHSyncDataset {
         if (deleted != null) {
             for (Iterator<String> it = deleted.keys(); it.hasNext(); ) {
                 String key = it.next();
-                mDataRecords.remove(key);
-                doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "delete");
+                if (!mPendingRecords.containsKey(key)) {
+                    mDataRecords.remove(key);
+                    doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "delete");
+                }
             }
         }
     }
