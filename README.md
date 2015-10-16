@@ -82,7 +82,7 @@ Add the FH Android `aar` library in your `build.gradle` project
 
 ```
 dependencies {
-	compile 'com.feedhenry:fh-android-sdk:2.3.1'
+	compile 'com.feedhenry:fh-android-sdk:2.4.0'
 }
 ```
 
