@@ -6,10 +6,20 @@
  */
 package com.feedhenry.sdk;
 
+import android.util.Log;
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.*;
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HttpException;
+import cz.msebera.android.httpclient.HttpHost;
+import cz.msebera.android.httpclient.HttpRequest;
+import cz.msebera.android.httpclient.HttpRequestInterceptor;
+import cz.msebera.android.httpclient.client.methods.HttpPut;
+import cz.msebera.android.httpclient.conn.params.ConnRoutePNames;
 import cz.msebera.android.httpclient.entity.StringEntity;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.protocol.HttpContext;
+import java.io.IOException;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONObject;
 
@@ -250,5 +260,9 @@ public class FHHttpClient {
         mSyncClient.setResponseTimeout(milliseconds);
     }
     
+    public static void setHttpProxy(HttpHost proxy) {
+        mClient.getHttpClient().getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,proxy);
+        mSyncClient.getHttpClient().getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,proxy);
+    }
     
 }
