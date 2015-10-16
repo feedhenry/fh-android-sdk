@@ -6,6 +6,7 @@
  */
 package com.feedhenry.sdk;
 
+import android.util.Log;
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.*;
 import org.apache.http.Header;
@@ -250,5 +251,9 @@ public class FHHttpClient {
         mSyncClient.setResponseTimeout(milliseconds);
     }
     
+    public static void setHttpProxy(HttpHost proxy) {
+        mClient.getHttpClient().getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,proxy);
+        mSyncClient.getHttpClient().getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,proxy);
+    }
     
 }

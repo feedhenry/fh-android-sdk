@@ -18,6 +18,8 @@ public class FHSyncPendingRecord {
 
     private boolean crashed;
 
+    private boolean delayed = false;
+    
     private String action;
 
     private long timestamp;
@@ -51,8 +53,12 @@ public class FHSyncPendingRecord {
     private static final String KEY_INFLIGHT_DATE = "inFlightDate";
 
     private static final String KEY_CRASHED = "crashed";
+    private static final String KEY_DELAYED = "delayed";
+    private static final String KEY_WAITING_FOR = "waitingFor";
 
     private static final String KEY_HASH = "hash";
+    private String waitingFor;
+    
 
     public FHSyncPendingRecord() {
         this.timestamp = new Date().getTime();
@@ -62,6 +68,7 @@ public class FHSyncPendingRecord {
         JSONObject ret = new JSONObject();
         ret.put(KEY_INFLIGHT, this.inFight);
         ret.put(KEY_CRASHED, this.crashed);
+        ret.put(KEY_DELAYED, this.delayed);
         ret.put(KEY_TIMESTAMP, this.timestamp);
         if (this.inFlightDate != null) {
             ret.put(KEY_INFLIGHT_DATE, this.inFlightDate.getTime());
@@ -80,6 +87,11 @@ public class FHSyncPendingRecord {
             ret.put(KEY_POST, this.postData.getData());
             ret.put(KEY_POST_HASH, this.postData.getHashValue());
         }
+        
+        if (this.waitingFor != null) {
+            ret.put(KEY_WAITING_FOR, waitingFor);
+        }
+        
         return ret;
     }
 
@@ -115,6 +127,15 @@ public class FHSyncPendingRecord {
             postData.setHashValue(pObj.getString(KEY_POST_HASH));
             record.setPostData(postData);
         }
+        
+        if (pObj.has(KEY_DELAYED)) {
+          record.delayed = pObj.getBoolean(KEY_DELAYED);
+        }
+        
+        if (pObj.has(KEY_WAITING_FOR)) {
+          record.waitingFor = pObj.getString(KEY_WAITING_FOR);
+        }
+        
         return record;
     }
 
@@ -222,4 +243,21 @@ public class FHSyncPendingRecord {
     public void setCrashedCount(int crashedCount) {
         this.crashedCount = crashedCount;
     }
+
+    public boolean isDelayed() {
+        return this.delayed;
+    }
+    
+    public void setDelayed(boolean delayed) {
+        this.delayed = delayed;
+    }
+
+    public String getWaitingFor() {
+        return waitingFor;
+    }
+
+    public void setWaitingFor(String waitingFor) {
+        this.waitingFor = waitingFor;
+    }
+    
 }

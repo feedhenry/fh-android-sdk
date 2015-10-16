@@ -8,6 +8,7 @@ package com.feedhenry.sdk.sync;
 
 import android.content.Context;
 import android.os.Message;
+import android.util.Log;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHRemote;
@@ -26,15 +27,16 @@ public class FHSyncDataset {
 
     private boolean mSyncRunning;
     private boolean mInitialised;
-    private String mDatasetId;
+    private final String mDatasetId;
     private Date mSyncStart;
     private Date mSyncEnd;
     private boolean mSyncPending;
     private FHSyncConfig mSyncConfig = new FHSyncConfig();
     private final ConcurrentMap<String, FHSyncPendingRecord> mPendingRecords =
-        new ConcurrentHashMap<String, FHSyncPendingRecord>();
-    private ConcurrentMap<String, String> mPendingUidToHash = new ConcurrentHashMap<String, String>();
-    private ConcurrentMap<String, FHSyncDataRecord> mDataRecords = new ConcurrentHashMap<String, FHSyncDataRecord>();
+        new ConcurrentHashMap<>();
+    
+    private final ConcurrentMap<String, String> mUidMappings = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, FHSyncDataRecord> mDataRecords = new ConcurrentHashMap<>();
     
     private JSONObject mQueryParams = new JSONObject();
     private JSONObject mMetaData = new JSONObject();
@@ -180,7 +182,7 @@ public class FHSyncDataset {
             JSONArray pendings = new JSONArray();
             for (String key : mPendingRecords.keySet()) {
                 FHSyncPendingRecord pendingRecord = mPendingRecords.get(key);
-                if (!pendingRecord.isInFlight() && !pendingRecord.isCrashed()) {
+                if (!pendingRecord.isInFlight() && !pendingRecord.isCrashed() && !pendingRecord.isDelayed()) {
                     pendingRecord.setInFlight(true);
                     pendingRecord.setInFlightDate(new Date());
                     JSONObject pendingJSON = pendingRecord.getJSON();
@@ -228,26 +230,24 @@ public class FHSyncDataset {
     }
 
     private void syncRequestSuccess(JSONObject pData) {
-        // Check to see if any new pending records need to be updated to reflect the current state of play.
-        updatePendingFromNewData(pData);
-
         // Check to see if any previously crashed inflight records can now be resolved
         updateCrashedInFlightFromNewData(pData);
+        updateDelayedFromNewData(pData);
+        updateMetaFromNewData(pData);
 
-        // Update the new dataset with details of any inflight updates which we have not received a response on
-        updateNewDataFromInFlight(pData);
-
-        // Update the new dataset with details of any pending updates
-        updateNewDataFromPending(pData);
-
+        boolean hasRecords = false;
+        
         if (pData.has("records")) {
+            hasRecords = true;
             resetDataRecords(pData);
         }
 
         if (pData.has("updates")) {
             JSONArray ack = new JSONArray();
             JSONObject updates = pData.getJSONObject("updates");
-            processUpdates(updates.optJSONObject("applied"), NotificationMessage.REMOTE_UPDATE_APPLIED_CODE, ack);
+            JSONObject applied = updates.optJSONObject("applied");
+            checkUidChanges(applied);
+            processUpdates(applied, NotificationMessage.REMOTE_UPDATE_APPLIED_CODE, ack);
             processUpdates(updates.optJSONObject("failed"), NotificationMessage.REMOTE_UPDATE_FAILED_CODE, ack);
             processUpdates(updates.optJSONObject("collisions"), NotificationMessage.COLLISION_DETECTED_CODE, ack);
             mAcknowledgements = ack;
@@ -309,6 +309,7 @@ public class FHSyncDataset {
     }
 
     private void syncRecordsSuccess(JSONObject pData) {
+        applyPendingChangesToRecords(pData);
         handleCreated(pData);
         handleUpdated(pData);
         handleDeleted(pData);
@@ -335,31 +336,26 @@ public class FHSyncDataset {
         if (deleted != null) {
             for (Iterator<String> it = deleted.keys(); it.hasNext(); ) {
                 String key = it.next();
-                if (!mPendingRecords.containsKey(key)) {
-                    mDataRecords.remove(key);
-                    doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "delete");
-                }
+                mDataRecords.remove(key);
+                doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "delete");
             }
         }
     }
 
     private void handleUpdated(JSONObject pData) {
-        JSONObject updated = pData.optJSONObject("update");
-        if (updated != null) {
-            for (Iterator<String> it = updated.keys(); it.hasNext(); ) {
+        JSONObject dataUpdated = pData.optJSONObject("update");
+        if (dataUpdated != null) {
+            for (Iterator<String> it = dataUpdated.keys(); it.hasNext(); ) {
                 String key = it.next();
-                String keyHash = mPendingUidToHash.get(key);
-                
-                if (keyHash == null || !mPendingRecords.containsKey(keyHash)) {
-                    JSONObject updatedata = updated.getJSONObject(key);
-                    FHSyncDataRecord record = mDataRecords.get(key);
-                    if (record != null) {
-                        record.setData(updatedata.getJSONObject("data"));
-                        record.setHashValue(updatedata.getString("hash"));
-                        mDataRecords.put(key, record);
-                        doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "update");
-                    }
+                JSONObject obj = dataUpdated.getJSONObject(key);
+                FHSyncDataRecord rec = mDataRecords.get(key);
+                if (rec != null) {
+                    rec.setData(obj.getJSONObject("data"));
+                    rec.setHashValue(obj.getString("hash"));
+                    mDataRecords.put(key, rec);
+                    doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "update");
                 }
+
             }
         }
     }
@@ -369,15 +365,13 @@ public class FHSyncDataset {
         if (created != null) {
             for (Iterator<String> it = created.keys(); it.hasNext(); ) {
                 String key = it.next();
-                String keyHash = mPendingUidToHash.get(key);
                 
-                if (keyHash == null || !mPendingRecords.containsKey(keyHash)) {
-                    JSONObject data = created.getJSONObject(key);
-                    FHSyncDataRecord record = new FHSyncDataRecord(data.getJSONObject("data"));
-                    record.setHashValue(data.getString("hash"));
-                    mDataRecords.put(key, record);
-                    doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "create");
-                }
+                JSONObject obj = created.getJSONObject(key);
+                FHSyncDataRecord record = new FHSyncDataRecord(obj.getJSONObject("data"));
+                record.setHashValue(obj.getString("hash"));
+                mDataRecords.put(key, record);
+                doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "create");
+
             }
         }
     }
@@ -390,7 +384,6 @@ public class FHSyncDataset {
                 pAck.put(up);
                 FHSyncPendingRecord pendingRec = mPendingRecords.get(key);
                 if (pendingRec != null && pendingRec.isInFlight() && !pendingRec.isCrashed()) {
-                    mPendingUidToHash.remove(key);
                     mPendingRecords.remove(key);
                     doNotify(up.getString("uid"), pNotification, up.toString());
                 }
@@ -412,126 +405,6 @@ public class FHSyncDataset {
         mDataRecords = allrecords;
         mHashvalue = pData.getString("hash");
         doNotify(mHashvalue, NotificationMessage.DELTA_RECEIVED_CODE, "full dataset");
-    }
-
-    private void updatePendingFromNewData(JSONObject pData) {
-        if (mPendingRecords != null && pData.has("records")) {
-            for (Map.Entry<String, FHSyncPendingRecord> entry : mPendingRecords.entrySet()) {
-                FHSyncPendingRecord pendingRecord = entry.getValue();
-                JSONObject metadata = mMetaData.optJSONObject(pendingRecord.getUid());
-                if (metadata == null) {
-                    metadata = new JSONObject();
-                    mMetaData.put(pendingRecord.getUid(), metadata);
-                }
-                if (!pendingRecord.isInFlight()) {
-                    // pending record that has not been submitted
-                    FHLog.d(
-                        LOG_TAG,
-                        "updatePendingFromNewData - Found Non inFlight record -> action = " + pendingRecord.getAction()
-                            + " :: uid = " + pendingRecord.getUid()
-                            + " :: hash = " + pendingRecord.getHashValue());
-                    if ("update".equalsIgnoreCase(pendingRecord.getAction()) ||
-                        "delete".equalsIgnoreCase(pendingRecord.getAction())) {
-                        // Update the pre value of pending record to reflect the latest data returned from sync.
-                        JSONObject remoteRec =
-                            pData.getJSONObject("records").optJSONObject(pendingRecord.getUid());
-                        if (remoteRec != null) {
-                            FHLog.d(
-                                LOG_TAG,
-                                "updatePendingFromNewData - updating pre values for existing pending record " +
-                                    pendingRecord.getUid());
-                            pendingRecord.setPreData(new FHSyncDataRecord(remoteRec));
-                        } else {
-                            //The update/delete may be for a newly created record in which case the uid will be changed
-                            updateUnsentUid(pData, pendingRecord, metadata);
-                        }
-                    }
-                }
-
-                String pendingHash = entry.getKey();
-                if ("create".equalsIgnoreCase(pendingRecord.getAction())) {
-                    updatePendingCreateUid(pData, pendingRecord, pendingHash);
-                }
-            }
-        }
-    }
-
-    private static void updatePendingCreateUid(
-        JSONObject pData,
-        FHSyncPendingRecord pendingRecord,
-        String pendingHash) {
-        JSONObject updates = pData.optJSONObject("updates");
-        if (updates == null) {
-            return;
-        }
-
-        JSONObject applied = updates.optJSONObject("applied");
-        if (applied == null) {
-            return;
-        }
-
-        JSONObject appliedData = applied.optJSONObject(pendingHash);
-        if (appliedData == null) {
-            return;
-        }
-
-        FHLog.d(LOG_TAG, "updatePendingFromNewData - Found an update for a pending create " + appliedData);
-
-        JSONObject remoteRec = pData.optJSONObject(applied.optString("uid", ""));
-        if (remoteRec == null) {
-            return;
-        }
-
-        FHLog.d(
-            LOG_TAG,
-            "updatePendingFromNewData - Changing pending create to an update based on new record " + remoteRec);
-        // setup the pending as an update
-        pendingRecord.setAction("update");
-        FHSyncDataRecord preData = new FHSyncDataRecord(remoteRec);
-        pendingRecord.setPreData(preData);
-        pendingRecord.setUid(applied.optString("uid"));
-    }
-
-    private void updateUnsentUid(JSONObject pData, FHSyncPendingRecord pendingRecord, JSONObject metadata) {
-        JSONObject remoteRec;
-        String previousPendingUid = metadata.optString("previousPendingUid");
-        if (previousPendingUid == null) {
-            return;
-        }
-
-        FHSyncPendingRecord previousPendingRec = mPendingRecords.get(previousPendingUid);
-        if (previousPendingRec == null) {
-            return;
-        }
-
-        JSONObject updates = pData.optJSONObject("updates");
-        if (updates == null) {
-            return;
-        }
-
-        JSONObject applied = updates.optJSONObject("applied");
-        if (applied == null) {
-            return;
-        }
-
-        // There is an update in from a previous pending action
-        String remoteUid = applied.optJSONObject(previousPendingRec.getHashValue()).optString("uid", null);
-        if (remoteUid == null) {
-            return;
-        }
-
-        remoteRec = pData.getJSONObject("records").optJSONObject(remoteUid);
-        if (remoteRec == null) {
-            return;
-        }
-
-        FHLog.d(
-            LOG_TAG,
-            "updatePendingFromNewData - Updating pre values for existing pending record which was previously a create "
-                + pendingRecord.getUid() + " => " + remoteUid);
-        FHSyncDataRecord record = new FHSyncDataRecord(remoteRec);
-        pendingRecord.setPreData(record);
-        pendingRecord.setUid(remoteUid);
     }
 
     private void updateCrashedInFlightFromNewData(JSONObject pData) {
@@ -587,9 +460,6 @@ public class FHSyncDataset {
 
         for (String aKeysToRemove : keysToRemove) {
             String removedUid = mPendingRecords.remove(aKeysToRemove).getUid();
-            if (removedUid != null) {
-                mPendingUidToHash.remove(removedUid);
-            }
         }
     }
 
@@ -666,91 +536,9 @@ public class FHSyncDataset {
 
         for (String aKeysToRemove : keysToRemove) {
             String removedUid = mPendingRecords.remove(aKeysToRemove).getUid();
-            if (removedUid != null) {
-                mPendingUidToHash.remove(removedUid);
-            }
         }
 
         keysToRemove.clear();
-    }
-
-    public void updateNewDataFromInFlight(JSONObject pData) {
-        if (mPendingRecords != null && pData.has("records")) {
-            for (Map.Entry<String, FHSyncPendingRecord> entry : mPendingRecords.entrySet()) {
-                FHSyncPendingRecord pendingRecord = entry.getValue();
-                String pendingHash = entry.getKey();
-
-                if (pendingRecord.isInFlight()) {
-                    boolean updateReceivedForPending = false;
-                    if (pData.has("updates")) {
-                        JSONObject updates = pData.getJSONObject("updates");
-                        if (updates.has("hashes")) {
-                            JSONObject hashes = updates.getJSONObject("hashes");
-                            if (hashes.has(pendingHash)) {
-                                updateReceivedForPending = true;
-                            }
-                        }
-                    }
-                    FHLog.d(
-                        LOG_TAG, "updateNewDataFromInFlight - Found inflight pending Record - action = " +
-                            pendingRecord.getAction() + " :: hash = " + pendingRecord.getHashValue() +
-                            " :: updateReceivedForPending= " + updateReceivedForPending);
-                    if (!updateReceivedForPending) {
-                        JSONObject remoteRecord =
-                            pData.getJSONObject("records").optJSONObject(pendingRecord.getUid());
-                        if ("update".equalsIgnoreCase(pendingRecord.getAction()) && remoteRecord != null) {
-                            // Modify new Record to have updates from pending record so local dataset is consistent
-                            remoteRecord.put("data", pendingRecord.getPostData().getData());
-                            remoteRecord.put("hash", pendingRecord.getPostData().getHashValue());
-                        } else if ("delete".equalsIgnoreCase(pendingRecord.getAction()) && remoteRecord != null) {
-                            // Remove the record from the new dataset so the local dataset is consistent
-                            pData.getJSONObject("records").remove(pendingRecord.getUid());
-                        } else if ("create".equalsIgnoreCase(pendingRecord.getAction())) {
-                            // Add the pending create into the new dataset so it is not lost from the UI
-                            FHLog.d(
-                                LOG_TAG,
-                                "updateNewDataFromInFlight - re adding pending create to incomming dataset");
-                            JSONObject dict = new JSONObject();
-                            dict.put("data", pendingRecord.getPostData().getData());
-                            dict.put("hash", pendingRecord.getPostData().getHashValue());
-                            pData.getJSONObject("records").put(pendingRecord.getUid(), dict);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void updateNewDataFromPending(JSONObject pData) {
-        if (mPendingRecords != null && pData.has("records")) {
-            for (Map.Entry<String, FHSyncPendingRecord> entry : mPendingRecords.entrySet()) {
-                FHSyncPendingRecord pendingRecord = entry.getValue();
-                if (!pendingRecord.isInFlight()) {
-                    FHLog.d(
-                        LOG_TAG, "updateNewDataFromPending - Found Non inFlight record -> action="
-                            + pendingRecord.getAction() + " :: uid=" + pendingRecord.getUid() +
-                            " :: hash=" + pendingRecord.getHashValue());
-                    JSONObject remoteRecord =
-                        pData.getJSONObject("records").optJSONObject(pendingRecord.getUid());
-                    if (remoteRecord != null && "update".equalsIgnoreCase(pendingRecord.getAction())) {
-                        // Modify new Record to have updates from pending record so local dataset is consistent
-                        remoteRecord.put("data", pendingRecord.getPostData().getData());
-                        remoteRecord.put("hash", pendingRecord.getPostData().getHashValue());
-                    } else if (remoteRecord != null && "delete".equalsIgnoreCase(pendingRecord.getAction())) {
-                        pData.getJSONObject("records").remove(pendingRecord.getUid());
-                    } else if ("create".equalsIgnoreCase(pendingRecord.getAction())) {
-                        // Add the pending create into the new dataset so it is not lost from the UI
-                        FHLog.d(
-                            LOG_TAG,
-                            "updateNewDataFromPending - re adding pending create to incomming dataset");
-                        JSONObject dict = new JSONObject();
-                        dict.put("data", pendingRecord.getPostData().getData());
-                        dict.put("hash", pendingRecord.getPostData().getHashValue());
-                        pData.getJSONObject("records").put(pendingRecord.getUid(), dict);
-                    }
-                }
-            }
-        }
     }
 
     private void markInFlightAsCrashed() {
@@ -765,16 +553,6 @@ public class FHSyncDataset {
             }
         }
 
-        // Check for any pending updates that would be modifying a crashed record. These can not go out until the
-        // status of the crashed record is determined
-        for (Map.Entry<String, FHSyncPendingRecord> entry : mPendingRecords.entrySet()) {
-            FHSyncPendingRecord pendingRecord = entry.getValue();
-            if (!pendingRecord.isInFlight()) {
-                if (crashedRecords.containsKey(pendingRecord.getUid())) {
-                    pendingRecord.setCrashed(true);
-                }
-            }
-        }
     }
 
     public void syncCompleteWithCode(String pCode) {
@@ -812,7 +590,6 @@ public class FHSyncDataset {
     }
 
     private void storePendingObj(FHSyncPendingRecord pPendingObj) {
-        mPendingUidToHash.put(pPendingObj.getUid(), pPendingObj.getHashValue());
         mPendingRecords.put(pPendingObj.getHashValue(), pPendingObj);
         updateDatasetFromLocal(pPendingObj);
         if (mSyncConfig.isAutoSyncLocalUpdates()) {
@@ -829,6 +606,7 @@ public class FHSyncDataset {
         String previousPendingUid;
         FHSyncPendingRecord previousPendingObj;
         String uid = pPendingObj.getUid();
+        String uidToSave = null;
         FHLog.d(
             LOG_TAG,
             "updating local dataset for uid " + uid + " - action = " + pPendingObj.getAction());
@@ -847,7 +625,6 @@ public class FHSyncDataset {
                     // Remove the previous pending record and use this one instead
                     previousPendingUid = metadata.optString("pendingUid", null);
                     if (previousPendingUid != null) {
-                        mPendingUidToHash.remove(uid);
                         mPendingRecords.remove(previousPendingUid);
                     }
                 }
@@ -862,14 +639,21 @@ public class FHSyncDataset {
             // We are trying to update an existing pending record
             previousPendingUid = metadata.optString("pendingUid", null);
             metadata.put("previousPendingUid", previousPendingUid);
-            previousPendingObj = mPendingRecords.get(previousPendingUid);
-            if (previousPendingObj != null && !previousPendingObj.isInFlight()) {
-                FHLog.d(LOG_TAG, "existing pre-flight pending record = " + previousPendingObj);
-                // We are trying to perform an update on an existing pending record
-                // modify the original record to have the latest value and delete the pending update
-                previousPendingObj.setPostData(pPendingObj.getPostData());
-                mPendingUidToHash.remove(pPendingObj.getUid());
-                mPendingRecords.remove(pPendingObj.getHashValue());
+            if (previousPendingUid != null) {
+                previousPendingObj = mPendingRecords.get(previousPendingUid);
+                if (previousPendingObj != null) {
+                    if (!previousPendingObj.isInFlight()) {
+                        FHLog.d(LOG_TAG, "existing pre-flight pending record = " + previousPendingObj);
+                        // We are trying to perform an update on an existing pending record
+                        // modify the original record to have the latest value and delete the pending update
+                        previousPendingObj.setPostData(pPendingObj.getPostData());
+                        mPendingRecords.remove(pPendingObj.getHashValue());
+                        uidToSave = previousPendingUid;
+                    } else {
+                        pPendingObj.setDelayed(true);
+                        pPendingObj.setWaitingFor(previousPendingObj.getHashValue());
+                    }
+                }
             }
         }
 
@@ -880,25 +664,29 @@ public class FHSyncDataset {
                 previousPendingUid = metadata.optString("pendingUid", null);
                 metadata.put("previousPendingUid", previousPendingUid);
                 previousPendingObj = mPendingRecords.get(previousPendingUid);
-                if (previousPendingObj != null && !previousPendingObj.isInFlight()) {
-                    FHLog.d(LOG_TAG, "existing pending record = " + previousPendingObj);
-                    if ("create".equalsIgnoreCase(previousPendingObj.getAction())) {
-                        // We are trying to perform a delete on an existing pending create
-                        // These cancel each other out so remove them both
-                        mPendingUidToHash.remove(pPendingObj.getUid());
-                        mPendingRecords.remove(pPendingObj.getHashValue());
-                        mPendingRecords.remove(previousPendingUid);
-                    }
-                    if ("update".equalsIgnoreCase(previousPendingObj.getAction())) {
-                        // We are trying to perform a delete on an existing pending update
-                        // Use the pre value from the pending update for the delete and
-                        // get rid of the pending update
-                        pPendingObj.setPreData(previousPendingObj.getPreData());
-                        pPendingObj.setInFlight(false);
-                        mPendingUidToHash.remove(pPendingObj.getUid());
-                        mPendingRecords.remove(previousPendingUid);
+                if (previousPendingObj != null) {
+                    if (!previousPendingObj.isInFlight()) {
+                        FHLog.d(LOG_TAG, "existing pending record = " + previousPendingObj);
+                        if ("create".equalsIgnoreCase(previousPendingObj.getAction())) {
+                            // We are trying to perform a delete on an existing pending create
+                            // These cancel each other out so remove them both
+                            mPendingRecords.remove(pPendingObj.getHashValue());
+                            mPendingRecords.remove(previousPendingUid);
+                        }
+                        if ("update".equalsIgnoreCase(previousPendingObj.getAction())) {
+                            // We are trying to perform a delete on an existing pending update
+                            // Use the pre value from the pending update for the delete and
+                            // get rid of the pending update
+                            pPendingObj.setPreData(previousPendingObj.getPreData());
+                            pPendingObj.setInFlight(false);
+                            mPendingRecords.remove(previousPendingUid);
+                        } else {
+                            pPendingObj.setDelayed(true);
+                            pPendingObj.setWaitingFor(previousPendingObj.getHashValue());
+                        }
                     }
                 }
+                
             }
             mDataRecords.remove(uid);
         }
@@ -907,7 +695,7 @@ public class FHSyncDataset {
             FHSyncDataRecord record = pPendingObj.getPostData();
             mDataRecords.put(uid, record);
             metadata.put("fromPending", true);
-            metadata.put("pendingUid", pPendingObj.getHashValue());
+            metadata.put("pendingUid", uidToSave);
         }
     }
 
@@ -1058,6 +846,126 @@ public class FHSyncDataset {
         }
     }
 
+    /**
+     * If the records returned from syncRecord request contains elements in pendings,
+     * it means there are local changes that haven't been applied to the cloud yet.
+     * Remove those records from the response to make sure local data will not be
+     * overridden (blinking disappear / reappear effect).
+    */
+    private void applyPendingChangesToRecords(JSONObject resData) {
+        Log.d(LOG_TAG, String.format("SyncRecords result = %s pending = %s", resData.toString(), mPendingRecords.toString()));
+        for (FHSyncPendingRecord pendingRecord : mPendingRecords.values()) {
+            JSONObject resRecord = null;
+            if (resData.has("create")) {
+                resRecord = resData.optJSONObject("create");
+                if (resRecord != null && resRecord.has(pendingRecord.getUid())) {
+                    resRecord.remove(pendingRecord.getUid());
+                }
+            }
+            
+            if (resData.has("update")) {
+                resRecord = resData.optJSONObject("update");
+                if (resRecord != null && resRecord.has(pendingRecord.getUid())) {
+                    resRecord.remove(pendingRecord.getUid());
+                }
+            }
+            
+            if (resData.has("delete")) {
+                resRecord = resData.optJSONObject("delete");
+                if (resRecord != null && resRecord.has(pendingRecord.getUid())) {
+                    resRecord.remove(pendingRecord.getUid());
+                }
+            }
+            Log.d(LOG_TAG, String.format("SyncRecords result after pending removed = %s", resData.toString()));
+        }
+    }
+    
+    private void updateDelayedFromNewData(JSONObject responseData) {
+        for (Map.Entry<String, FHSyncPendingRecord> record : this.mPendingRecords.entrySet()) {
+            
+            FHSyncPendingRecord pendingObject = record.getValue();
+            if (pendingObject.isDelayed() && pendingObject.getWaitingFor() != null) {
+                if( responseData.has("updates")) {
+                    JSONObject updatedHashes = responseData.getJSONObject("updates").optJSONObject("hashes");
+                    if (updatedHashes != null && updatedHashes.has(pendingObject.getWaitingFor())) {
+                        pendingObject.setDelayed(false);
+                        pendingObject.setWaitingFor(null);
+                    }
+                }
+                
+            }
+        }
+    }
+    
+    private void updateMetaFromNewData(JSONObject responseData) {
+        Iterator keysIter = this.mMetaData.keys();
+        Set<String> keysToRemove = new HashSet<>(this.mMetaData.length());
+        while(keysIter.hasNext()) {
+            String key = (String) keysIter.next();
+            JSONObject metaData = this.mMetaData.optJSONObject(key);
+            JSONObject updates = responseData.optJSONObject("updates");
+            if ( updates != null ) {
+                JSONObject updatedHashes = updates.optJSONObject("hashes");
+                String pendingHash = metaData.optString("pendingUid");
+                if (pendingHash != null && updatedHashes != null && updatedHashes.has(pendingHash)) {
+                    keysToRemove.add(key);
+                }
+            }
+            
+        }
+        
+        for (String keyToRemove : keysToRemove) {
+            mMetaData.remove(keyToRemove);
+        }
+        
+    }
+    
+    
+    private void checkUidChanges(JSONObject appliedUpdates) {
+        if (appliedUpdates != null && appliedUpdates.length() > 0) {
+            Iterator keysIterator = appliedUpdates.keys();
+            Map<String, String> newUids = new HashMap<>();
+            List<String> keys = new ArrayList<>();
+            while (keysIterator.hasNext()) {
+                keys.add((String) keysIterator.next());
+            }
+            
+            for (String key : keys ) {
+                JSONObject obj = appliedUpdates.getJSONObject(key);
+                String action = obj.getString("action");
+                if ("create".equalsIgnoreCase(action)) {
+                    String newUid = obj.getString("uid");
+                    String oldUid = obj.getString("hash");
+                    //remember the mapping
+                    this.mUidMappings.put(oldUid, newUid);
+                    newUids.put(oldUid, newUid);
+                    //we should update the data records to make sure they are now using the new UID
+                    FHSyncDataRecord dataRecord = this.mDataRecords.get(oldUid);
+                    if (dataRecord != null) {
+                        this.mDataRecords.put(newUid, dataRecord);
+                        this.mDataRecords.remove(oldUid);
+                    }
+                    
+                }
+                
+                if (newUids.size() > 0) {
+                    //we need to check all existing pendingRecords and update their UIDs if they are still the old values
+                    for (Map.Entry<String, FHSyncPendingRecord> keyRecord : mPendingRecords.entrySet()) {
+                        FHSyncPendingRecord pendingRecord = keyRecord.getValue();
+                        String pendingRecordUid = pendingRecord.getUid();
+                        String newUID = newUids.get(pendingRecordUid);
+                        if (newUID != null) {
+                            pendingRecord.setUid(newUID);
+                        }    
+                    }
+                    
+                }
+                
+            }
+            
+        }
+    }
+    
     public void setSyncRunning(boolean pSyncRunning) {
         this.mSyncRunning = pSyncRunning;
     }
@@ -1113,4 +1021,5 @@ public class FHSyncDataset {
     public void setNotificationHandler(FHSyncNotificationHandler pHandler) {
         mNotificationHandler = pHandler;
     }
+
 }
