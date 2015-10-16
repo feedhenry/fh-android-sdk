@@ -253,7 +253,7 @@ public class FHSyncDataset {
             mAcknowledgements = ack;
         }
 
-        if (pData.has("hash") && !pData.getString("hash").equals(mHashvalue)) {
+        if (!hasRecords && pData.has("hash") && !pData.getString("hash").equals(mHashvalue)) {
             String remoteHash = pData.getString("hash");
             FHLog.d(
                 LOG_TAG,
@@ -337,6 +337,7 @@ public class FHSyncDataset {
             for (Iterator<String> it = deleted.keys(); it.hasNext(); ) {
                 String key = it.next();
                 mDataRecords.remove(key);
+                mMetaData.remove(key);
                 doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "delete");
             }
         }
@@ -407,7 +408,7 @@ public class FHSyncDataset {
         doNotify(mHashvalue, NotificationMessage.DELTA_RECEIVED_CODE, "full dataset");
     }
 
-    private void updateCrashedInFlightFromNewData(JSONObject pData) {
+    private void updateCrashedInFlightFromNewData(JSONObject remoteData) {
         JSONObject updateNotifications = new JSONObject();
         updateNotifications.put("applied", NotificationMessage.REMOTE_UPDATE_APPLIED_CODE);
         updateNotifications.put("failed", NotificationMessage.REMOTE_UPDATE_FAILED_CODE);
@@ -416,130 +417,105 @@ public class FHSyncDataset {
         JSONObject resolvedCrashed = new JSONObject();
         List<String> keysToRemove = new ArrayList<String>();
 
-        removeAndNotifyCrashedPendingInFlightUpdates(pData, updateNotifications, resolvedCrashed, keysToRemove);
-        handleRemainingUpdates(resolvedCrashed, keysToRemove);
-    }
-
-    private void handleRemainingUpdates(JSONObject resolvedCrashed, List<String> keysToRemove) {
-        for (Map.Entry<String, FHSyncPendingRecord> entry : mPendingRecords.entrySet()) {
-            FHSyncPendingRecord pendingRecord = entry.getValue();
-            String pendingHash = entry.getKey();
-            if (pendingRecord.isInFlight() && pendingRecord.isCrashed() &&
-                pendingRecord.getCrashedCount() > mSyncConfig.getCrashCountWait()) {
-                FHLog.d(
-                    LOG_TAG,
-                    "updateCrashedInFlightFromNewData - Crashed inflight pending record has reached " +
-                        "crashed_count_wait limit : " + pendingRecord);
-                if (mSyncConfig.isResendCrashedUpdates()) {
-                    FHLog.d(
-                        LOG_TAG,
-                        "updateCrashedInFlightFromNewData - Retrying crashed inflight pending record");
-                    pendingRecord.setCrashed(false);
-                    pendingRecord.setInFlight(false);
-                } else {
-                    FHLog.d(LOG_TAG, "updateCrashedInFlightFromNewData - Deleting crashed inflight pending record");
-                    keysToRemove.add(pendingHash);
-                }
-            } else if (!pendingRecord.isInFlight() && pendingRecord.isCrashed()) {
-                FHLog.d(
-                    LOG_TAG,
-                    "updateCrashedInFlightFromNewData - Trying to resolve issues with crashed non in flight record - " +
-                        "uid =" + pendingRecord.getUid());
-                // Stalled pending record because a previous pending update on the same record crashed
-                JSONObject data = resolvedCrashed.optJSONObject(pendingRecord.getUid());
-                if (data != null) {
-                    FHLog.d(
-                        LOG_TAG,
-                        "updateCrashedInFlightFromNewData - Found a stalled pending record backed up behind a " +
-                            "resolved crash uid=" + pendingRecord.getUid()
-                            + " :: hash=" + pendingRecord.getHashValue());
-                    pendingRecord.setCrashed(false);
-                }
-            }
-        }
-
-        for (String aKeysToRemove : keysToRemove) {
-            String removedUid = mPendingRecords.remove(aKeysToRemove).getUid();
-        }
-    }
-
-    private void removeAndNotifyCrashedPendingInFlightUpdates(
-        JSONObject pData,
-        JSONObject updateNotifications,
-        JSONObject resolvedCrashed,
-        List<String> keysToRemove) {
-        for (Map.Entry<String, FHSyncPendingRecord> entry : mPendingRecords.entrySet()) {
-            FHSyncPendingRecord pendingRecord = entry.getValue();
-            String pendingHash = entry.getKey();
+        for ( Map.Entry<String, FHSyncPendingRecord> pendingRecordEntry : mPendingRecords.entrySet()) {
+            FHSyncPendingRecord pendingRecord = pendingRecordEntry.getValue();
+            String pendingHash = pendingRecordEntry.getKey();
             if (pendingRecord.isInFlight() && pendingRecord.isCrashed()) {
-                FHLog.d(
-                    LOG_TAG,
-                    "updateCrashedInFlightFromNewData - Found crashed inFlight pending record uid= " +
-                        pendingRecord.getUid() + ":: hash = " + pendingRecord.getHashValue());
-
-                if (pData == null) {
-                    pendingRecord.incrementCrashCount();
-                    continue;
-                }
-
-                JSONObject updates = pData.optJSONObject("updates");
-                if (updates == null) {
-                    continue;
-                }
-
-                JSONObject hashes = updates.optJSONObject("hashes");
-                JSONObject crashedUpdate;
-                // check if the updates received contain any info about the crashed inflight update
-                if (hashes == null || (crashedUpdate = hashes.optJSONObject(pendingHash)) == null) {
-                    // No word on our crashed update - increment a counter to reflect another sync that did not give us
+                Log.d(LOG_TAG, 
+                        String.format("updateCrashedInFlightFromNewData - Found crashed inFlight pending record uid= %s :: hash %s", pendingRecord.getUid(), pendingRecord.getHashValue()));
+                if (remoteData != null && remoteData.has("updates") && remoteData.getJSONObject("updates").has("hashes")) {
+                    JSONObject hashes = remoteData.getJSONObject("updates").getJSONObject("hashes");
+                    JSONObject crashedUpdate = hashes.optJSONObject(pendingHash);
+                    if (crashedUpdate != null) {
+                        resolvedCrashed.put(crashedUpdate.getString("uid"), crashedUpdate);
+                        Log.d(LOG_TAG, "updateCrashedInFlightFromNewData - Resolving status for crashed inflight pending record " + crashedUpdate.toString());
+                        String crashedType = crashedUpdate.optString("type");
+                        String crashedAction = crashedUpdate.optString("action");
+                        
+                        if (crashedType != null && crashedType.equals("failed")) {
+                            // Crashed updated failed - revert local dataset
+                            if (crashedAction != null && crashedAction.equals("create")) {
+                                Log.d(LOG_TAG,"updateCrashedInFlightFromNewData - Deleting failed create from dataset");
+                                this.mDataRecords.remove(crashedUpdate.get("uid"));
+                            } else if (crashedAction != null && (crashedAction.equals("update") ||
+                                                         crashedAction.equals("delete"))) {
+                                Log.d(LOG_TAG,"updateCrashedInFlightFromNewData - Reverting failed %@ in dataset" + crashedAction);
+                                this.mDataRecords.put(crashedUpdate.getString("uid"), pendingRecord.getPreData());
+                            }
+                        }
+                        
+                    keysToRemove.add(pendingHash);
+                    if ("applied".equals(crashedUpdate.opt("type"))) {
+                        doNotify(crashedUpdate.getString("uid"), NotificationMessage.REMOTE_UPDATE_APPLIED_CODE, crashedUpdate.toString());
+                    } else if ("applied".equals(crashedUpdate.opt("type"))) {
+                        doNotify(crashedUpdate.getString("uid"), NotificationMessage.REMOTE_UPDATE_FAILED_CODE, crashedUpdate.toString());
+                    } else if ("collisions".equals(crashedUpdate.opt("type"))) {
+                        doNotify(crashedUpdate.getString("uid"), NotificationMessage.COLLISION_DETECTED_CODE, crashedUpdate.toString());
+                    }
+                    
+                        
+                    } else {
+                        // No word on our crashed update - increment a counter to reflect another sync
+                        // that did not give us
+                        // any update on our crashed record.
+                        pendingRecord.incrementCrashCount();
+                    }
+                } else {
+                    // No word on our crashed update - increment a counter to reflect another sync that
+                    // did not give us
                     // any update on our crashed record.
                     pendingRecord.incrementCrashCount();
-                    continue;
                 }
-
-                String uid = crashedUpdate.optString("uid");
-                if (uid == null) {
-                    continue;
-                }
-
-                resolvedCrashed.put(uid, crashedUpdate);
-                FHLog.d(
-                    LOG_TAG,
-                    "updateCrashedInFlightFromNewData - Resolving status for crashed inflight pending record " +
-                        crashedUpdate);
-                String crashedType = crashedUpdate.optString("type", null);
-                String crashedAction = crashedUpdate.optString("action", null);
-                if ("failed".equalsIgnoreCase(crashedType)) {
-                    // Crashed update failed - revert local dataset
-                    if ("create".equalsIgnoreCase(crashedAction)) {
-                        FHLog.d(
-                            LOG_TAG,
-                            "updateCrashedInFlightFromNewData - Deleting failed create from dataset");
-                        mDataRecords.remove(uid);
-                    } else if ("update".equalsIgnoreCase(crashedAction) || "delete".equalsIgnoreCase(crashedAction)) {
-                        FHLog.d(
-                            LOG_TAG,
-                            "updateCrashedInFlightFromNewData - Reverting failed " + crashedAction + " in dataset");
-                        mDataRecords.put(uid, pendingRecord.getPreData());
+                
+            }
+            
+        }
+        for (String keyToRemove : keysToRemove) {
+            this.mPendingRecords.remove(keyToRemove);
+        }
+        keysToRemove.clear();
+        
+        for ( Map.Entry<String, FHSyncPendingRecord> pendingRecordEntry : mPendingRecords.entrySet()) {
+            FHSyncPendingRecord pendingRecord = pendingRecordEntry.getValue();
+            String pendingHash = pendingRecordEntry.getKey();
+            
+            if (pendingRecord.isInFlight() && pendingRecord.isCrashed()) {
+                if (pendingRecord.getCrashedCount() > mSyncConfig.getCrashCountWait()) {
+                    Log.d(LOG_TAG, "updateCrashedInFlightFromNewData - Crashed inflight pending record has " +
+                          "reached crashed_count_wait limit : " + 
+                          pendingRecord);
+                    if (mSyncConfig.isResendCrashedUpdates()) {
+                        Log.d(LOG_TAG, "updateCrashedInFlightFromNewData - Retryig crashed inflight pending record");
+                        pendingRecord.setCrashed(false);
+                        pendingRecord.setInFlight(false);
+                    } else {
+                        Log.d(LOG_TAG, "updateCrashedInFlightFromNewData - Deleting crashed inflight pending record");
+                        keysToRemove.add(pendingHash);
                     }
                 }
-
-                keysToRemove.add(pendingHash);
-                if (crashedType != null) {
-                    doNotify(
-                        uid,
-                        updateNotifications.getInt(crashedUpdate.getString("type")),
-                        crashedUpdate.toString());
+            } else if (!pendingRecord.isInFlight() && pendingRecord.isCrashed()) {
+                Log.d(LOG_TAG, "updateCrashedInFlightFromNewData - Trying to resolve issues with crashed non in flight record - uid =" + pendingRecord.getUid());
+                // Stalled pending record because a previous pending update on the same record crashed
+                JSONObject dict = resolvedCrashed.optJSONObject(pendingRecord.getUid());
+                if (null != dict) {
+                    Log.d(LOG_TAG, String.format("updateCrashedInFlightFromNewData - Found a stalled pending record backed " +
+                          "up behind a resolved crash uid=%s :: hash=%s",
+                          pendingRecord.getUid(), pendingRecord.getHashValue()));
+                    pendingRecord.setCrashed(false);
                 }
             }
+            
         }
-
-        for (String aKeysToRemove : keysToRemove) {
-            String removedUid = mPendingRecords.remove(aKeysToRemove).getUid();
+        
+        for (String keyToRemove : keysToRemove) {
+            this.mPendingRecords.remove(keyToRemove);
         }
-
+        
         keysToRemove.clear();
     }
+
+
+
 
     private void markInFlightAsCrashed() {
         Map<String, FHSyncPendingRecord> crashedRecords = new HashMap<String, FHSyncPendingRecord>();
@@ -606,7 +582,7 @@ public class FHSyncDataset {
         String previousPendingUid;
         FHSyncPendingRecord previousPendingObj;
         String uid = pPendingObj.getUid();
-        String uidToSave = null;
+        String uidToSave = pPendingObj.getHashValue();
         FHLog.d(
             LOG_TAG,
             "updating local dataset for uid " + uid + " - action = " + pPendingObj.getAction());
@@ -617,6 +593,7 @@ public class FHSyncDataset {
         }
         FHSyncDataRecord existing = mDataRecords.get(uid);
         boolean fromPending = metadata.optBoolean("fromPending");
+        
         if ("create".equalsIgnoreCase(pPendingObj.getAction())) {
             if (existing != null) {
                 FHLog.d(LOG_TAG, "dataset already exists for uid for create :: " + existing.toString());
@@ -632,28 +609,32 @@ public class FHSyncDataset {
             mDataRecords.put(uid, new FHSyncDataRecord());
         }
 
-        if ("update".equalsIgnoreCase(pPendingObj.getAction()) && existing != null && fromPending) {
-            FHLog.d(
-                LOG_TAG,
-                "Updating an existing pending record for dataset :: " + existing.toString());
-            // We are trying to update an existing pending record
-            previousPendingUid = metadata.optString("pendingUid", null);
-            metadata.put("previousPendingUid", previousPendingUid);
-            if (previousPendingUid != null) {
-                previousPendingObj = mPendingRecords.get(previousPendingUid);
-                if (previousPendingObj != null) {
-                    if (!previousPendingObj.isInFlight()) {
-                        FHLog.d(LOG_TAG, "existing pre-flight pending record = " + previousPendingObj);
-                        // We are trying to perform an update on an existing pending record
-                        // modify the original record to have the latest value and delete the pending update
-                        previousPendingObj.setPostData(pPendingObj.getPostData());
-                        mPendingRecords.remove(pPendingObj.getHashValue());
-                        uidToSave = previousPendingUid;
-                    } else {
-                        pPendingObj.setDelayed(true);
-                        pPendingObj.setWaitingFor(previousPendingObj.getHashValue());
+        if ("update".equalsIgnoreCase(pPendingObj.getAction())) {
+            if (existing != null) {
+                if (fromPending) {
+                    FHLog.d(
+                        LOG_TAG,
+                        "Updating an existing pending record for dataset :: " + existing.toString());
+                    // We are trying to update an existing pending record
+                    previousPendingUid = metadata.optString("pendingUid", null);
+                    metadata.put("previousPendingUid", previousPendingUid);
+                        if (previousPendingUid != null) {
+                            previousPendingObj = mPendingRecords.get(previousPendingUid);
+                            if (previousPendingObj != null) {
+                                if (!previousPendingObj.isInFlight()) {
+                                    FHLog.d(LOG_TAG, "existing pre-flight pending record = " + previousPendingObj);
+                                    // We are trying to perform an update on an existing pending record
+                                    // modify the original record to have the latest value and delete the pending update
+                                    previousPendingObj.setPostData(pPendingObj.getPostData());
+                                    mPendingRecords.remove(pPendingObj.getHashValue());
+                                    uidToSave = previousPendingUid;
+                                } else {
+                                    pPendingObj.setDelayed(true);
+                                    pPendingObj.setWaitingFor(previousPendingObj.getHashValue());
+                                }
+                            }
+                        }
                     }
-                }
             }
         }
 
@@ -663,26 +644,28 @@ public class FHSyncDataset {
                 // We are trying to delete an existing pending record
                 previousPendingUid = metadata.optString("pendingUid", null);
                 metadata.put("previousPendingUid", previousPendingUid);
+                if (previousPendingUid != null) {
                 previousPendingObj = mPendingRecords.get(previousPendingUid);
-                if (previousPendingObj != null) {
-                    if (!previousPendingObj.isInFlight()) {
-                        FHLog.d(LOG_TAG, "existing pending record = " + previousPendingObj);
-                        if ("create".equalsIgnoreCase(previousPendingObj.getAction())) {
-                            // We are trying to perform a delete on an existing pending create
-                            // These cancel each other out so remove them both
-                            mPendingRecords.remove(pPendingObj.getHashValue());
-                            mPendingRecords.remove(previousPendingUid);
-                        }
-                        if ("update".equalsIgnoreCase(previousPendingObj.getAction())) {
-                            // We are trying to perform a delete on an existing pending update
-                            // Use the pre value from the pending update for the delete and
-                            // get rid of the pending update
-                            pPendingObj.setPreData(previousPendingObj.getPreData());
-                            pPendingObj.setInFlight(false);
-                            mPendingRecords.remove(previousPendingUid);
-                        } else {
-                            pPendingObj.setDelayed(true);
-                            pPendingObj.setWaitingFor(previousPendingObj.getHashValue());
+                    if (previousPendingObj != null) {
+                        if (!previousPendingObj.isInFlight()) {
+                            FHLog.d(LOG_TAG, "existing pending record = " + previousPendingObj);
+                            if ("create".equalsIgnoreCase(previousPendingObj.getAction())) {
+                                // We are trying to perform a delete on an existing pending create
+                                // These cancel each other out so remove them both
+                                mPendingRecords.remove(pPendingObj.getHashValue());
+                                mPendingRecords.remove(previousPendingUid);
+                            }
+                            if ("update".equalsIgnoreCase(previousPendingObj.getAction())) {
+                                // We are trying to perform a delete on an existing pending update
+                                // Use the pre value from the pending update for the delete and
+                                // get rid of the pending update
+                                pPendingObj.setPreData(previousPendingObj.getPreData());
+                                pPendingObj.setInFlight(false);
+                                mPendingRecords.remove(previousPendingUid);
+                            } else {
+                                pPendingObj.setDelayed(true);
+                                pPendingObj.setWaitingFor(previousPendingObj.getHashValue());
+                            }
                         }
                     }
                 }
