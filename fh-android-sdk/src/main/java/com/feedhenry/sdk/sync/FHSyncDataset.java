@@ -404,6 +404,9 @@ public class FHSyncDataset {
         }
 
         mDataRecords = allrecords;
+        for (FHSyncPendingRecord pendingUpdate : mPendingRecords.values()) {
+            updateDatasetFromLocal(pendingUpdate);
+        }
         mHashvalue = pData.getString("hash");
         doNotify(mHashvalue, NotificationMessage.DELTA_RECEIVED_CODE, "full dataset");
     }
