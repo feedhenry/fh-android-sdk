@@ -6,24 +6,18 @@
  */
 package com.feedhenry.sdk;
 
-import android.util.Log;
 import com.feedhenry.sdk.utils.FHLog;
-import com.loopj.android.http.*;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.SyncHttpClient;
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.HttpException;
 import cz.msebera.android.httpclient.HttpHost;
-import cz.msebera.android.httpclient.HttpRequest;
-import cz.msebera.android.httpclient.HttpRequestInterceptor;
-import cz.msebera.android.httpclient.client.methods.HttpPut;
 import cz.msebera.android.httpclient.conn.params.ConnRoutePNames;
 import cz.msebera.android.httpclient.entity.StringEntity;
-import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
-import cz.msebera.android.httpclient.protocol.HttpContext;
-import java.io.IOException;
+import java.util.Iterator;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONObject;
-
-import java.util.Iterator;
 
 public class FHHttpClient {
 
