@@ -6,9 +6,8 @@
  */
 package com.feedhenry.sdk.sync;
 
-import org.json.fh.JSONObject;
-
 import java.util.Date;
+import org.json.fh.JSONObject;
 
 public class FHSyncPendingRecord {
 

@@ -11,17 +11,14 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
-
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.api.FHActRequest;
 import com.feedhenry.sdk.utils.FHLog;
-
-import org.json.fh.JSONObject;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.fh.JSONObject;
 
 /**
  * The sync client is part of the FeedHenry data sync framework. It provides a mechanism to manage

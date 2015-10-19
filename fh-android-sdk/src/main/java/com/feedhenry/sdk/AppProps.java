@@ -8,7 +8,6 @@ package com.feedhenry.sdk;
 
 import android.content.Context;
 import com.feedhenry.sdk.utils.FHLog;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;

@@ -7,8 +7,12 @@
 package com.feedhenry.sdk;
 
 import android.content.Context;
-import com.feedhenry.sdk.api.*;
+import com.feedhenry.sdk.api.FHActRequest;
+import com.feedhenry.sdk.api.FHAuthRequest;
+import com.feedhenry.sdk.api.FHAuthSession;
+import com.feedhenry.sdk.api.FHCloudRequest;
 import com.feedhenry.sdk.api.FHCloudRequest.Methods;
+import com.feedhenry.sdk.api.FHInitializeRequest;
 import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk.utils.FHLog;
@@ -20,12 +24,6 @@ import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushConfiguration;
 import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushRegistrar;
 import org.jboss.aerogear.android.unifiedpush.metrics.UnifiedPushMetricsMessage;
 import org.json.fh.JSONObject;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 
 /**
  * The FH class provides static methods to initialize the library, create new instances of all the

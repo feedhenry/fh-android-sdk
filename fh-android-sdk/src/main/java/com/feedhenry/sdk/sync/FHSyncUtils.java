@@ -6,14 +6,13 @@
  */
 package com.feedhenry.sdk.sync;
 
-import org.json.fh.JSONArray;
-import org.json.fh.JSONException;
-import org.json.fh.JSONObject;
-
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.json.fh.JSONArray;
+import org.json.fh.JSONException;
+import org.json.fh.JSONObject;
 
 public class FHSyncUtils {
 

@@ -6,15 +6,12 @@
  */
 package com.feedhenry.sdk;
 
-import android.util.Log;
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.*;
 import org.apache.http.Header;
 import org.apache.http.entity.StringEntity;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONObject;
-
-import java.util.Iterator;
 
 public class FHHttpClient {
 
