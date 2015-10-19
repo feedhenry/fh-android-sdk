@@ -635,7 +635,8 @@ public class FHSyncDataset {
                                     previousPendingObj.setPostData(pPendingObj.getPostData());
                                     mPendingRecords.remove(pPendingObj.getHashValue());
                                     uidToSave = previousPendingUid;
-                                } else {
+                                } else if (!previousPendingObj.getHashValue().equals(pPendingObj.getHashValue())) {
+                                    //Don't make a delayed update wait for itself, that is just rude
                                     pPendingObj.setDelayed(true);
                                     pPendingObj.setWaitingFor(previousPendingObj.getHashValue());
                                 }
@@ -669,7 +670,8 @@ public class FHSyncDataset {
                                 pPendingObj.setPreData(previousPendingObj.getPreData());
                                 pPendingObj.setInFlight(false);
                                 mPendingRecords.remove(previousPendingUid);
-                            } else {
+                            } else if (!previousPendingObj.getHashValue().equals(pPendingObj.getHashValue())) {
+                                //Don't make a delayed update wait for itself, that is just rude
                                 pPendingObj.setDelayed(true);
                                 pPendingObj.setWaitingFor(previousPendingObj.getHashValue());
                             }
@@ -882,16 +884,24 @@ public class FHSyncDataset {
                         pendingObject.setWaitingFor(null);
                     } if ( updatedHashes == null ) {
                         boolean waitingForIsStillPending = false; 
-                        for (FHSyncPendingRecord pending : mPendingRecords.values()) {
-                            String waitingFor = pendingObject.getWaitingFor();
-                            if (pending.getHashValue().equals(waitingFor) || pending.getUid().equals(waitingFor)) {
-                                waitingForIsStillPending = true;
-                                break;
-                            }
-                        }
-                        if (!waitingForIsStillPending) {
+                        String waitingFor = pendingObject.getWaitingFor();
+                        if (pendingObject.getWaitingFor().equals(pendingObject.getHashValue())) {
+                            //Somehow a pending object is waiting on itself, lets not do that
                             pendingObject.setDelayed(false);
                             pendingObject.setWaitingFor(null);    
+                        } else {
+                            for (FHSyncPendingRecord pending : mPendingRecords.values()) {
+
+                                if (pending.getHashValue().equals(waitingFor) || pending.getUid().equals(waitingFor)) {
+
+                                    waitingForIsStillPending = true;
+                                    break;
+                                }
+                            }
+                            if (!waitingForIsStillPending) {
+                                pendingObject.setDelayed(false);
+                                pendingObject.setWaitingFor(null);    
+                            }
                         }
                     }
                 } 
