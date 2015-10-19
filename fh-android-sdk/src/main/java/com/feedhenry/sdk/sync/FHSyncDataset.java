@@ -880,6 +880,19 @@ public class FHSyncDataset {
                     if (updatedHashes != null && updatedHashes.has(pendingObject.getWaitingFor())) {
                         pendingObject.setDelayed(false);
                         pendingObject.setWaitingFor(null);
+                    } if ( updatedHashes == null ) {
+                        boolean waitingForIsStillPending = false; 
+                        for (FHSyncPendingRecord pending : mPendingRecords.values()) {
+                            String waitingFor = pendingObject.getWaitingFor();
+                            if (pending.getHashValue().equals(waitingFor) || pending.getUid().equals(waitingFor)) {
+                                waitingForIsStillPending = true;
+                                break;
+                            }
+                        }
+                        if (!waitingForIsStillPending) {
+                            pendingObject.setDelayed(false);
+                            pendingObject.setWaitingFor(null);    
+                        }
                     }
                 } 
             } else if (pendingObject.isDelayed() && pendingObject.getWaitingFor() == null) {
