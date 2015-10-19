@@ -186,7 +186,11 @@ public class FHSyncDataset {
                     pendingRecord.setInFlight(true);
                     pendingRecord.setInFlightDate(new Date());
                     JSONObject pendingJSON = pendingRecord.getJSON();
-                    pendingJSON.put("hash", pendingRecord.getHashValue());
+                    if ("create".equals(pendingRecord.getAction())) {
+                        pendingJSON.put("hash", pendingRecord.getUid());
+                    } else {
+                        pendingJSON.put("hash", pendingRecord.getHashValue());
+                    }
                     pendings.put(pendingJSON);
                 }
             }
@@ -877,8 +881,9 @@ public class FHSyncDataset {
                         pendingObject.setDelayed(false);
                         pendingObject.setWaitingFor(null);
                     }
-                }
-                
+                } 
+            } else if (pendingObject.isDelayed() && pendingObject.getWaitingFor() == null) {
+                pendingObject.setDelayed(false);
             }
         }
     }
