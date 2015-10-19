@@ -181,6 +181,7 @@ public class FHHttpClient {
         return rp;
     }
 
+
     static class FHJsonHttpResponseHandler extends JsonHttpResponseHandler {
 
         private FHActCallback callback = null;
@@ -258,6 +259,15 @@ public class FHHttpClient {
     public static void setTimeout(int milliseconds) {
         mClient.setResponseTimeout(milliseconds);
         mSyncClient.setResponseTimeout(milliseconds);
+    }
+    
+    /**
+     * Returns the current timeout value
+     * 
+     * @return the current timeout in milliseconds
+     */
+    public static int getTimeout() {
+        return mClient.getResponseTimeout();
     }
     
     public static void setHttpProxy(HttpHost proxy) {
