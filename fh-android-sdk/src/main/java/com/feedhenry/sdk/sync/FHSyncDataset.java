@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.Log;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
+import com.feedhenry.sdk.FHHttpClient;
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.utils.FHLog;
@@ -509,6 +510,12 @@ public class FHSyncDataset {
                           "up behind a resolved crash uid=%s :: hash=%s",
                           pendingRecord.getUid(), pendingRecord.getHashValue()));
                     pendingRecord.setCrashed(false);
+                }
+            }  else if (pendingRecord.isInFlight() && !pendingRecord.isCrashed()) {
+                Log.d(LOG_TAG, "updateCrashedInFlightFromNewData - Trying to resolve issues with non crashed still in flight record - uid =" + pendingRecord.getUid());
+                if (new Date().getTime() - pendingRecord.getInFlightDate().getTime() > FHHttpClient.getTimeout() * 2) {
+                    Log.d(LOG_TAG, "updateCrashedInFlightFromNewData - Pending record flight time timeout. Resetting uid =" + pendingRecord.getUid());
+                    pendingRecord.setInFlight(false);
                 }
             }
             
