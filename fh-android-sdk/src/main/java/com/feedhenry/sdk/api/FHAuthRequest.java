@@ -6,20 +6,28 @@
  */
 package com.feedhenry.sdk.api;
 
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import com.feedhenry.sdk.*;
+import com.feedhenry.sdk.AppProps;
+import com.feedhenry.sdk.CloudProps;
+import com.feedhenry.sdk.Device;
+import com.feedhenry.sdk.FH;
+import com.feedhenry.sdk.FHActCallback;
+import com.feedhenry.sdk.FHRemote;
+import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.oauth.FHOAuthIntent;
 import com.feedhenry.sdk.oauth.FHOAuthWebView;
 import com.feedhenry.sdk.utils.FHLog;
 import cz.msebera.android.httpclient.Header;
-import org.json.fh.JSONException;
-import org.json.fh.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import org.json.fh.JSONException;
+import org.json.fh.JSONObject;
 
 /**
  * The request for calling the authentication function.
