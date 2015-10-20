@@ -55,6 +55,7 @@ public class FHSyncDataset {
     
     private JSONObject mQueryParams = new JSONObject();
     private JSONObject mMetaData = new JSONObject();
+    private JSONObject mCustomMetaData = new JSONObject();
     private String mHashvalue;
     private JSONArray mAcknowledgements = new JSONArray();
     private boolean mStopSync;
@@ -85,7 +86,7 @@ public class FHSyncDataset {
         mDatasetId = pDatasetId;
         mSyncConfig = pConfig;
         mQueryParams = pQueryParams;
-        mMetaData = pMetaData;
+        mCustomMetaData = pMetaData;
         readFromFile();
     }
 
@@ -188,7 +189,7 @@ public class FHSyncDataset {
             JSONObject syncLoopParams = new JSONObject();
             syncLoopParams.put("fn", "sync");
             syncLoopParams.put("dataset_id", mDatasetId);
-            syncLoopParams.put("meta_data", mMetaData);
+            syncLoopParams.put("meta_data", mCustomMetaData);
             syncLoopParams.put("query_params", mQueryParams);
             if (mHashvalue != null) {
                 syncLoopParams.put("dataset_hash", mHashvalue);
@@ -295,7 +296,7 @@ public class FHSyncDataset {
         syncRecsParams.put("fn", "syncRecords");
         syncRecsParams.put("dataset_id", mDatasetId);
         syncRecsParams.put("query_params", mQueryParams);
-        syncRecsParams.put("meta_data", mMetaData);
+        syncRecsParams.put("meta_data", mCustomMetaData);
         syncRecsParams.put("clientRecs", clientRecords);
 
         FHLog.d(LOG_TAG, "syncRecParams :: " + syncRecsParams);
