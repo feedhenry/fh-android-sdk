@@ -8,12 +8,13 @@ package com.feedhenry.sdk;
 
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.*;
+import java.util.Iterator;
 import org.apache.http.Header;
+import org.apache.http.HttpHost;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.StringEntity;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONObject;
-
-import java.util.Iterator;
 
 public class FHHttpClient {
 
@@ -238,4 +239,21 @@ public class FHHttpClient {
             }
         }
     }
+    
+    /**
+     * Set both the connection and socket timeouts. By default, both are set to
+     * 10 seconds.
+     *
+     * @param milliseconds the connect/socket timeout in milliseconds, at least 1 second
+     */
+    public static void setTimeout(int milliseconds) {
+        mClient.setResponseTimeout(milliseconds);
+        mSyncClient.setResponseTimeout(milliseconds);
+    }
+    
+    public static void setHttpProxy(HttpHost proxy) {
+        mClient.getHttpClient().getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,proxy);
+        mSyncClient.getHttpClient().getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,proxy);
+    }
+    
 }

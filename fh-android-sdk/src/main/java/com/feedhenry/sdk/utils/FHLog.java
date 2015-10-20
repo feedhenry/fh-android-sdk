@@ -7,7 +7,6 @@
 package com.feedhenry.sdk.utils;
 
 import android.util.Log;
-
 import com.feedhenry.sdk.FH;
 
 public class FHLog {
