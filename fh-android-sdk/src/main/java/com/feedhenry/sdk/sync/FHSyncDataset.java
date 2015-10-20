@@ -258,7 +258,6 @@ public class FHSyncDataset {
         
         if (pData.has("records")) {
             hasRecords = true;
-            resetDataRecords(pData);
         }
 
         if (pData.has("updates")) {
@@ -356,7 +355,6 @@ public class FHSyncDataset {
             for (Iterator<String> it = deleted.keys(); it.hasNext(); ) {
                 String key = it.next();
                 mDataRecords.remove(key);
-                mMetaData.remove(key);
                 doNotify(key, NotificationMessage.DELTA_RECEIVED_CODE, "delete");
             }
         }
@@ -410,26 +408,7 @@ public class FHSyncDataset {
             }
         }
     }
-
-    private void resetDataRecords(JSONObject pData) {
-        JSONObject records = pData.getJSONObject("records");
-        ConcurrentMap<String, FHSyncDataRecord> allrecords = new ConcurrentHashMap<String, FHSyncDataRecord>();
-
-        for (Iterator<String> it = records.keys(); it.hasNext(); ) {
-            String key = it.next();
-            JSONObject data = records.getJSONObject(key);
-            FHSyncDataRecord record = new FHSyncDataRecord(data.getJSONObject("data"));
-            allrecords.put(key, record);
-        }
-
-        mDataRecords = allrecords;
-        for (FHSyncPendingRecord pendingUpdate : mPendingRecords.values()) {
-            updateDatasetFromLocal(pendingUpdate);
-        }
-        mHashvalue = pData.getString("hash");
-        doNotify(mHashvalue, NotificationMessage.DELTA_RECEIVED_CODE, "full dataset");
-    }
-
+    
     private void updateCrashedInFlightFromNewData(JSONObject remoteData) {
         JSONObject updateNotifications = new JSONObject();
         updateNotifications.put("applied", NotificationMessage.REMOTE_UPDATE_APPLIED_CODE);
