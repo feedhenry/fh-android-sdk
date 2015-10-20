@@ -8,7 +8,10 @@ package com.feedhenry.sdk;
 
 import com.feedhenry.sdk.utils.FHLog;
 import com.loopj.android.http.*;
+import java.util.Iterator;
 import org.apache.http.Header;
+import org.apache.http.HttpHost;
+import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.StringEntity;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONObject;
