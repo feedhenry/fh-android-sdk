@@ -28,7 +28,7 @@
         <maven.compiler.target>1.7</maven.compiler.target>
 
         <!-- Project depencies versions -->
-        <android.version>[5.0.0,)</android.version>
+        <android.version>[5.0.0,6.0.0)</android.version>
 
         <!-- Plugins versions -->
         <maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
