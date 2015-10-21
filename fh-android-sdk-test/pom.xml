@@ -16,6 +16,9 @@
 
     <properties>
         <mockwebserver.version>2.4.0</mockwebserver.version>
+        <mockito.version>1.9.5</mockito.version>
+        <dexmaker.version>1.0</dexmaker.version>
+        <dexmaker.mockito.version>1.0</dexmaker.mockito.version>
     </properties>
 
     <dependencies>
@@ -30,6 +33,47 @@
             <artifactId>fh-android-sdk</artifactId>
             <version>${project.version}</version>
             <type>aar</type>
+        </dependency>
+        
+        
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hamcrest-core</artifactId>
+                    <groupId>org.hamcrest</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.dexmaker</groupId>
+            <artifactId>dexmaker</artifactId>
+            <version>${dexmaker.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hamcrest-core</artifactId>
+                    <groupId>org.hamcrest</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.dexmaker</groupId>
+            <artifactId>dexmaker-mockito</artifactId>
+            <version>${dexmaker.mockito.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>hamcrest-core</artifactId>
+                    <groupId>org.hamcrest</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>
