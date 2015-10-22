@@ -247,6 +247,7 @@ public class FHAuthRequest extends FHRemote {
                 mCallback.fail(res);
             } else {
                 if (data.contains("status=complete")) {
+                    data = data.split("#")[0];//Remove everything after an anchor
                     String query = data.split("\\?")[1];
                     String[] parts = query.split("&");
                     Map<String, String> queryMap = new HashMap<String, String>();
