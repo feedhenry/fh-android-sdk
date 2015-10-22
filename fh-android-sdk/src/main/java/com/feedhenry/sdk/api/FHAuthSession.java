@@ -20,8 +20,8 @@ public class FHAuthSession {
     public static final String SESSION_TOKEN_KEY = "sessionToken";
     private static final String LOG_TAG = "com.feedhenry.sdk.api.FHAuthSession";
 
-    private static final String VERIFY_SESSION_ENDPOINT = "verifysession";
-    private static final String REVOKE_SESSION_ENDPOINT = "revokesession";
+    private static final String VERIFY_SESSION_ENDPOINT = "admin/authpolicy/verifysession";
+    private static final String REVOKE_SESSION_ENDPOINT = "admin/authpolicy/revokesession";
 
     private FHAuthSession() {
 
