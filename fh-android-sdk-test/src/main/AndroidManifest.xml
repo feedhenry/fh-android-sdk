@@ -24,6 +24,16 @@
         android:theme="@style/AppTheme" >
 
         <uses-library android:name="android.test.runner"/>
+        
+        <activity
+            android:name="com.feedhenry.sdk.tests.MainActivity"
+            android:label="@string/title_activity_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>	
+        </activity>
+        
     </application>
 
 </manifest>
