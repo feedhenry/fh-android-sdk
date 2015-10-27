@@ -7,6 +7,7 @@
 package com.feedhenry.sdk.tests.sync;
 
 import android.util.Log;
+import com.feedhenry.sdk.api2.FHAuthRequest;
 import java.util.Date;
 import java.util.Random;
 
@@ -15,7 +16,9 @@ import org.json.fh.JSONObject;
 
 import com.feedhenry.sdk.sync.FHSyncDataRecord;
 import com.feedhenry.sdk.sync.FHSyncPendingRecord;
+import com.feedhenry.sdk2.FHHttpClient;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -132,6 +135,36 @@ public class FHTestUtils {
             paramsList.add(param);
         }
         return paramsList.toArray(params);
+    }
+
+    /**
+     * 
+     * Will scan source and its super classes for fields with a type of value.  
+     * All instances will be replaced by value
+     * 
+     * @param source the target object to have value injected into
+     * @param value the value to override
+     */
+    public static void injectInto(Object source, Object value) {
+        injectInto(source, source.getClass(), value);
+    }
+
+    private static void injectInto(Object source, Class<? extends Object> sourceClass, Object value) {
+        Field[] fields = sourceClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getType().isAssignableFrom(value.getClass())) {
+                try {
+                    field.setAccessible(true);
+                    field.set(source, value);
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Log.e(TAG, ex.getMessage(), ex);
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        if (sourceClass.getSuperclass() != Object.class) {
+            injectInto(source,sourceClass.getSuperclass(), value);
+        }
     }
     
 }
