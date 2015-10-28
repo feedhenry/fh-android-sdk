@@ -12,6 +12,7 @@ import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk2.FHHttpClient;
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
+import com.feedhenry.sdk.api.FHAuthSession.Callback;
 import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk.utils.FHLog;
 import com.feedhenry.sdk.utils.StringUtils;
@@ -61,7 +62,7 @@ public class FHAuthSession {
      *
      * @param sessionToken Session token
      */
-    protected void save(String sessionToken) {
+    public void save(String sessionToken) {
         mDataManager.save(SESSION_TOKEN_KEY, sessionToken);
     }
 
@@ -131,10 +132,4 @@ public class FHAuthSession {
         }
     }
 
-    public interface Callback {
-
-        void handleSuccess(boolean isValid);
-
-        void handleError(FHResponse pRes);
-    }
 }

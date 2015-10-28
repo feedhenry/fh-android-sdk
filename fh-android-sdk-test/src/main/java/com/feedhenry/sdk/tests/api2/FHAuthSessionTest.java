@@ -60,7 +60,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
         
         doAnswer(verifyTrue()).when(mFHHttpClient).post(matches("http://localhost:9000/box/srv/1.1/admin/authpolicy/verifysession"), any(Header[].class), eq(new JSONObject().put(SESSION_TOKEN_KEY, TEST_TOKEN)), any(FHActCallback.class), eq(true));
         
-        session.verify(new FHAuthSession.Callback() {
+        session.verify(new com.feedhenry.sdk.api.FHAuthSession.Callback() {
             private String TAG = "Callback";
             @Override
             public void handleSuccess(final boolean isValid) {
