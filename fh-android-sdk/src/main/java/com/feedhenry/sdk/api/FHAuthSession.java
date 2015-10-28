@@ -22,7 +22,10 @@ public class FHAuthSession {
 
     private static final String VERIFY_SESSION_ENDPOINT = "admin/authpolicy/verifysession";
     private static final String REVOKE_SESSION_ENDPOINT = "admin/authpolicy/revokesession";
+    private static com.feedhenry.sdk.api2.FHAuthSession instance;
 
+    
+    
     private FHAuthSession() {
 
     }
@@ -31,27 +34,33 @@ public class FHAuthSession {
      * Checks if a sessionToken value exists on the device.
      *
      * @return if the sessionToken exists
+     * @deprecated please use com.feedhenry.sdk.api2.FHAuthSession.exists instead
      */
+    @Deprecated
     public static boolean exists() {
-        return DataManager.getInstance().read(SESSION_TOKEN_KEY) != null;
+        return getInstance(DataManager.getInstance()).exists();
     }
 
     /**
      * Gets the value of the current session token.
      *
      * @return the current session token value
+     * @deprecated please use com.feedhenry.sdk.api2.FHAuthSession.getToken instead
      */
+    @Deprecated
     public static String getToken() {
-        return DataManager.getInstance().read(SESSION_TOKEN_KEY);
+        return getInstance(DataManager.getInstance()).getToken();
     }
 
     /**
      * Saves the seesionToken value on the device.
      *
      * @param sessionToken Session token
+     * @deprecated please use com.feedhenry.sdk.api2.FHAuthSession.save instead
      */
+    @Deprecated
     protected static void save(String sessionToken) {
-        DataManager.getInstance().save(SESSION_TOKEN_KEY, sessionToken);
+        getInstance(DataManager.getInstance()).save(sessionToken);
     }
 
     /**
@@ -60,12 +69,11 @@ public class FHAuthSession {
      * @param pCallback a callback to be executed when remote call is completed
      * @param pSync     A flag to call it sync
      * @throws Exception An exception will be thrown when callRemote fail
+     * @deprecated please use com.feedhenry.sdk.api2.FHAuthSession.verify instead
      */
+    @Deprecated
     public static void verify(Callback pCallback, boolean pSync) throws Exception {
-        String sessionToken = DataManager.getInstance().read(SESSION_TOKEN_KEY);
-        if (sessionToken != null) {
-            callRemote(VERIFY_SESSION_ENDPOINT, sessionToken, pCallback, pSync);
-        }
+        getInstance(DataManager.getInstance()).verify(pCallback, pSync);
     }
 
     /**
@@ -73,53 +81,20 @@ public class FHAuthSession {
      *
      * @param pSync     A flag to call it sync
      * @throws Exception An exception will be thrown when callRemote fail
+     * @deprecated please use com.feedhenry.sdk.api2.FHAuthSession.clear instead 
      */
+    @Deprecated
     public static void clear(boolean pSync) throws Exception {
-        String sessionToken = DataManager.getInstance().read(SESSION_TOKEN_KEY);
-        if (sessionToken != null) {
-            DataManager.getInstance().remove(SESSION_TOKEN_KEY);
-            try {
-                callRemote(REVOKE_SESSION_ENDPOINT, sessionToken, null, pSync);
-            } catch (Exception e) {
-                FHLog.w(LOG_TAG, e.getMessage());
-            }
-        }
+        getInstance(DataManager.getInstance()).clear(pSync);
     }
 
-    private static void callRemote(String pPath, String pSessionToken, final Callback pCallback, boolean pUseSync)
-        throws Exception {
-        String host = AppProps.getInstance().getHost();
-        String url = StringUtils.removeTrailingSlash(host) + FHRemote.PATH_PREFIX + pPath;
-        JSONObject params = new JSONObject().put(SESSION_TOKEN_KEY, pSessionToken);
-        try {
-            FHHttpClient.post(
-                url,
-                null,
-                params,
-                new FHActCallback() {
-                    @Override
-                    public void success(FHResponse pResponse) {
-                        JSONObject res = pResponse.getJson();
-                        if (pCallback != null) {
-                            pCallback.handleSuccess(res.getBoolean("isValid"));
-                        }
-                    }
-
-                    @Override
-                    public void fail(FHResponse pResponse) {
-                        FHLog.w(LOG_TAG, pResponse.getRawResponse());
-                        if (pCallback != null) {
-                            pCallback.handleError(pResponse);
-                        }
-                    }
-                },
-                pUseSync);
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
+    private static synchronized com.feedhenry.sdk.api2.FHAuthSession getInstance(DataManager dataManager) {
+        if (instance == null) {
+            instance = new com.feedhenry.sdk.api2.FHAuthSession(dataManager, new com.feedhenry.sdk2.FHHttpClient());
         }
+        return instance;
     }
-
+    
     public interface Callback {
 
         void handleSuccess(boolean isValid);
