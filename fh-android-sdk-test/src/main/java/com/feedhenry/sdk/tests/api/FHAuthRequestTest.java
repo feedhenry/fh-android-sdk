@@ -6,24 +6,19 @@
  */
 package com.feedhenry.sdk.tests.api;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.AndroidTestCase;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.api.FHAuthRequest;
-import com.feedhenry.sdk.api.FHAuthSession;
 import static com.feedhenry.sdk.api.FHAuthSession.SESSION_TOKEN_KEY;
 import com.feedhenry.sdk.tests.MainActivity;
 import com.feedhenry.sdk.tests.sync.FHTestUtils;
 import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk2.FHHttpClient;
-import com.squareup.okhttp.mockwebserver.MockResponse;
-import com.squareup.okhttp.mockwebserver.MockWebServer;
 import cz.msebera.android.httpclient.Header;
 import java.util.concurrent.atomic.AtomicBoolean;
 import static junit.framework.Assert.assertEquals;
@@ -51,6 +46,7 @@ public class FHAuthRequestTest  extends ActivityInstrumentationTestCase2 {
     public void setUp() throws Exception {
         super.setUp();
         mContext = getActivity().getApplicationContext();
+        FH.init(mContext, null);
         System.setProperty("dexmaker.dexcache", mContext.getCacheDir().getPath());
         mDataManager = DataManager.init(mContext);
         if (mDataManager.read(SESSION_TOKEN_KEY) != null) {
