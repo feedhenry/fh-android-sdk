@@ -7,7 +7,6 @@
 package com.feedhenry.sdk.tests.sync;
 
 import android.util.Log;
-import com.feedhenry.sdk.api2.FHAuthRequest;
 import java.util.Date;
 import java.util.Random;
 
@@ -16,15 +15,10 @@ import org.json.fh.JSONObject;
 
 import com.feedhenry.sdk.sync.FHSyncDataRecord;
 import com.feedhenry.sdk.sync.FHSyncPendingRecord;
-import com.feedhenry.sdk2.FHHttpClient;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class FHTestUtils {
     private static final String TAG = FHTestUtils.class.getSimpleName();
