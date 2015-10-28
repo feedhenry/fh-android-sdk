@@ -21,11 +21,24 @@ import org.json.fh.JSONObject;
 
 public class FHHttpClient {
 
-    private static AsyncHttpClient mClient = new AsyncHttpClient();
-    private static SyncHttpClient mSyncClient = new SyncHttpClient();
-
+    private static final AsyncHttpClient mClient = new AsyncHttpClient();
+    private static final SyncHttpClient mSyncClient = new SyncHttpClient();
+    private static final com.feedhenry.sdk2.FHHttpClient instance = new com.feedhenry.sdk2.FHHttpClient();
     private static final String LOG_TAG = "com.feedhenry.sdk.FHHttpClient";
 
+    /**
+     * 
+     * This method executes an HTTP PUT Command
+     * 
+     * @param pUrl url to PUT to
+     * @param pHeaders HTTP headers for the request
+     * @param pParams The Body of the Request
+     * @param pCallback A callback to be handed the responses of the call
+     * @param pUseSync whether or not to make the call synchronously
+     * @throws Exception thrown if any exception occurs
+     * @deprecated please use com.feedhenry.sdk2.FHHttpClient.put instead
+     */
+    @Deprecated
     public static void put(
         String pUrl,
         Header[] pHeaders,
@@ -33,36 +46,22 @@ public class FHHttpClient {
         FHActCallback pCallback,
         boolean pUseSync)
         throws Exception {
-        if (FH.isOnline()) {
-            StringEntity entity = new StringEntity(new JSONObject().toString());
-            if (pParams != null) {
-                entity = new StringEntity(pParams.toString(), "UTF-8");
-            }
-            if (pUseSync) {
-                mSyncClient.setUserAgent(FH.getUserAgent());
-                mSyncClient.put(
-                    null,
-                    pUrl,
-                    pHeaders,
-                    entity,
-                    "application/json",
-                    new FHJsonHttpResponseHandler(pCallback));
-            } else {
-                mClient.setUserAgent(FH.getUserAgent());
-                mClient.put(
-                    null,
-                    pUrl,
-                    pHeaders,
-                    entity,
-                    "application/json",
-                    new FHJsonHttpResponseHandler(pCallback));
-            }
-        } else {
-            FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
-            pCallback.fail(res);
-        }
+        instance.put(pUrl, pHeaders, pParams, pCallback, pUseSync);
     }
 
+    /**
+     * 
+     * This method executes an HTTP GET Command
+     * 
+     * @param pUrl url to GET 
+     * @param pHeaders HTTP headers for the request
+     * @param pParams Addition parameters to send with the get request
+     * @param pCallback A callback to be handed the responses of the call
+     * @param pUseSync whether or not to make the call synchronously
+     * @throws Exception thrown if any exception occurs
+     * @deprecated please use com.feedhenry.sdk2.FHHttpClient.get instead
+     */
+    @Deprecated
     public static void get(
         String pUrl,
         Header[] pHeaders,
@@ -70,30 +69,22 @@ public class FHHttpClient {
         FHActCallback pCallback,
         boolean pUseSync)
         throws Exception {
-        if (FH.isOnline()) {
-            if (pUseSync) {
-                mSyncClient.setUserAgent(FH.getUserAgent());
-                mSyncClient.get(
-                    null,
-                    pUrl,
-                    pHeaders,
-                    convertToRequestParams(pParams),
-                    new FHJsonHttpResponseHandler(pCallback));
-            } else {
-                mClient.setUserAgent(FH.getUserAgent());
-                mClient.get(
-                    null,
-                    pUrl,
-                    pHeaders,
-                    convertToRequestParams(pParams),
-                    new FHJsonHttpResponseHandler(pCallback));
-            }
-        } else {
-            FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
-            pCallback.fail(res);
-        }
+        instance.get(pUrl, pHeaders, pParams, pCallback, pUseSync);
     }
 
+    /**
+     * 
+     * This method executes an HTTP POST Command
+     * 
+     * @param pUrl url to POST to
+     * @param pHeaders HTTP headers for the request
+     * @param pParams The Body of the Request
+     * @param pCallback A callback to be handed the responses of the call
+     * @param pUseSync whether or not to make the call synchronously
+     * @throws Exception thrown if any exception occurs
+     * @deprecated please use com.feedhenry.sdk2.FHHttpClient.post instead
+     */
+    @Deprecated
     public static void post(
         String pUrl,
         Header[] pHeaders,
@@ -101,37 +92,22 @@ public class FHHttpClient {
         FHActCallback pCallback,
         boolean pUseSync)
         throws Exception {
-        if (FH.isOnline()) {
-
-            StringEntity entity = new StringEntity(new JSONObject().toString());
-            if (pParams != null) {
-                entity = new StringEntity(pParams.toString(), "UTF-8");
-            }
-            if (pUseSync) {
-                mSyncClient.setUserAgent(FH.getUserAgent());
-                mSyncClient.post(
-                    null,
-                    pUrl,
-                    pHeaders,
-                    entity,
-                    "application/json",
-                    new FHJsonHttpResponseHandler(pCallback));
-            } else {
-                mClient.setUserAgent(FH.getUserAgent());
-                mClient.post(
-                    null,
-                    pUrl,
-                    pHeaders,
-                    entity,
-                    "application/json",
-                    new FHJsonHttpResponseHandler(pCallback));
-            }
-        } else {
-            FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
-            pCallback.fail(res);
-        }
+        instance.post(pUrl, pHeaders, pParams, pCallback, pUseSync);
     }
 
+    /**
+     * 
+     * This method executes an HTTP DELETE Command
+     * 
+     * @param pUrl url to DELETE 
+     * @param pHeaders HTTP headers for the request
+     * @param pParams Addition parameters to send with the DELETE request
+     * @param pCallback A callback to be handed the responses of the call
+     * @param pUseSync whether or not to make the call synchronously
+     * @throws Exception thrown if any exception occurs
+     * @deprecated please use com.feedhenry.sdk2.FHHttpClient.delete instead
+     */
+    @Deprecated
     public static void delete(
         String pUrl,
         Header[] pHeaders,
@@ -139,40 +115,7 @@ public class FHHttpClient {
         FHActCallback pCallback,
         boolean pUseSync)
         throws Exception {
-        if (FH.isOnline()) {
-            if (pUseSync) {
-                mSyncClient.setUserAgent(FH.getUserAgent());
-                mSyncClient.delete(
-                    null,
-                    pUrl,
-                    pHeaders,
-                    convertToRequestParams(pParams),
-                    new FHJsonHttpResponseHandler(pCallback));
-            } else {
-                mClient.setUserAgent(FH.getUserAgent());
-                mClient.delete(
-                    null,
-                    pUrl,
-                    pHeaders,
-                    convertToRequestParams(pParams),
-                    new FHJsonHttpResponseHandler(pCallback));
-            }
-        } else {
-            FHResponse res = new FHResponse(null, null, new Exception("offline"), "offline");
-            pCallback.fail(res);
-        }
-    }
-
-    private static RequestParams convertToRequestParams(JSONObject pIn) {
-        RequestParams rp = null;
-        if (pIn != null) {
-            rp = new RequestParams();
-            for (Iterator<String> it = pIn.keys(); it.hasNext(); ) {
-                String key = it.next();
-                rp.put(key, pIn.get(key));
-            }
-        }
-        return rp;
+        instance.delete(pUrl, pHeaders, pParams, pCallback, pUseSync);
     }
 
     static class FHJsonHttpResponseHandler extends JsonHttpResponseHandler {
@@ -248,15 +191,23 @@ public class FHHttpClient {
      * 10 seconds.
      *
      * @param milliseconds the connect/socket timeout in milliseconds, at least 1 second
+     * @deprecated please use com.feedhenry.sdk2.FHHttpClient.setTimeout instead
      */
+    @Deprecated
     public static void setTimeout(int milliseconds) {
-        mClient.setResponseTimeout(milliseconds);
-        mSyncClient.setResponseTimeout(milliseconds);
+        instance.setTimeout(milliseconds);
     }
     
+    /**
+     * Setups a proxy to use for HTTP requests in the application.  This is 
+     * primarily useful for debugging.
+     * 
+     * @param proxy a proxy to use.
+     * @deprecated please use com.feedhenry.sdk2.FHHttpClient.setHttpProxy instead
+     */
+    @Deprecated
     public static void setHttpProxy(HttpHost proxy) {
-        mClient.getHttpClient().getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,proxy);
-        mSyncClient.getHttpClient().getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,proxy);
+        instance.setHttpProxy(proxy);
     }
     
 }
