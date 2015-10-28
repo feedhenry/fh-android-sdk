@@ -21,6 +21,8 @@ public abstract class FHRemote implements FHAct {
 
     protected static String LOG_TAG = "com.feedhenry.sdk.FHRemote";
 
+    private final com.feedhenry.sdk2.FHHttpClient mHttpClient = new com.feedhenry.sdk2.FHHttpClient();
+    
     protected FHActCallback mCallback;
     protected Context mContext;
 
@@ -36,7 +38,7 @@ public abstract class FHRemote implements FHAct {
     @Override
     public void executeAsync(FHActCallback pCallback) throws Exception {
         try {
-            FHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
+            mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
         } catch (Exception e) {
             FHLog.e(LOG_TAG, e.getMessage(), e);
             throw e;
@@ -46,7 +48,7 @@ public abstract class FHRemote implements FHAct {
     @Override
     public void execute(FHActCallback pCallback) throws Exception {
         try {
-            FHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
+            mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
         } catch (Exception e) {
             FHLog.e(LOG_TAG, e.getMessage(), e);
             throw e;
