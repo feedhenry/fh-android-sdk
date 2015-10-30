@@ -304,7 +304,7 @@ public class FHSyncClient {
             }
             mSyncListener = null;
             mNotificationHandler = null;
-            mDataSets = null;
+            mDataSets = new HashMap<String, FHSyncDataset>();
             mInitialised = false;
         }
     }
