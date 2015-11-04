@@ -4,8 +4,9 @@
  * Please refer to your contract with FeedHenry for the software license agreement.
  * If you do not have a contract, you do not have a license to use this software.
  */
-package com.feedhenry.sdk;
+package com.feedhenry.sdk2;
 
+import com.feedhenry.sdk.*;
 import android.content.Context;
 import com.feedhenry.sdk.utils.FHLog;
 import com.feedhenry.sdk.utils.StringUtils;
@@ -21,10 +22,9 @@ public abstract class FHRemote implements FHAct {
 
     protected static String LOG_TAG = "com.feedhenry.sdk.FHRemote";
 
-    private final com.feedhenry.sdk2.FHHttpClient mHttpClient = new com.feedhenry.sdk2.FHHttpClient();
-    
     protected FHActCallback mCallback;
     protected Context mContext;
+    private final FHHttpClient mFHHttpClient = new FHHttpClient();
 
     public FHRemote(Context context) {
         mContext = context;
@@ -38,7 +38,7 @@ public abstract class FHRemote implements FHAct {
     @Override
     public void executeAsync(FHActCallback pCallback) throws Exception {
         try {
-            mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
+            mFHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
         } catch (Exception e) {
             FHLog.e(LOG_TAG, e.getMessage(), e);
             throw e;
@@ -48,7 +48,7 @@ public abstract class FHRemote implements FHAct {
     @Override
     public void execute(FHActCallback pCallback) throws Exception {
         try {
-            mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
+            mFHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
         } catch (Exception e) {
             FHLog.e(LOG_TAG, e.getMessage(), e);
             throw e;
