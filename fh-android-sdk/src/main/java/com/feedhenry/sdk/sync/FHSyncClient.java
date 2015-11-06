@@ -161,6 +161,19 @@ public class FHSyncClient {
     }
 
     /**
+     * Causes the sync framework to schedule for immediate execution a sync.
+     * 
+     * @param pDataId The id of the dataset
+     */
+    public void forceSync(String pDataId) {
+        FHSyncDataset dataset = mDataSets.get(pDataId);
+        
+        if (null != dataset) {
+            dataset.setSyncPending(true);
+        }
+    }
+    
+    /**
      * Lists all the data in the dataset with pDataId.
      *
      * @param pDataId The id of the dataset
