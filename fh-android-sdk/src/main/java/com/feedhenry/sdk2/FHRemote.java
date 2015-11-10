@@ -6,8 +6,9 @@
  */
 package com.feedhenry.sdk2;
 
-import com.feedhenry.sdk.*;
 import android.content.Context;
+import com.feedhenry.sdk.AppProps;
+import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.utils.FHLog;
 import com.feedhenry.sdk.utils.StringUtils;
 import cz.msebera.android.httpclient.Header;
@@ -31,12 +32,12 @@ public abstract class FHRemote implements FHAct {
     }
 
     @Override
-    public void executeAsync() throws Exception {
-        executeAsync(mCallback);
+    public void execute() throws Exception {
+        execute(mCallback);
     }
 
     @Override
-    public void executeAsync(FHActCallback pCallback) throws Exception {
+    public void execute(FHActCallback pCallback) throws Exception {
         try {
             mFHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
         } catch (Exception e) {
@@ -46,15 +47,6 @@ public abstract class FHRemote implements FHAct {
     }
 
     @Override
-    public void execute(FHActCallback pCallback) throws Exception {
-        try {
-            mFHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
-        }
-    }
-
     public void setCallback(FHActCallback pCallback) {
         mCallback = pCallback;
     }
