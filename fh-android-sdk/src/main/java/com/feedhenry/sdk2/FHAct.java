@@ -7,7 +7,7 @@
  */
 package com.feedhenry.sdk2;
 
-import com.feedhenry.sdk.*;
+import com.feedhenry.sdk.FHActCallback;
 
 /**
  * Represents a request call to FeedHenry.
