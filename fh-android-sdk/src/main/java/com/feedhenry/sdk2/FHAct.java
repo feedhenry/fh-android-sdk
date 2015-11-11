@@ -5,24 +5,20 @@
  * agreement. If you do not have a contract, you do not have a license to use
  * this software.
  */
-package com.feedhenry.sdk;
+package com.feedhenry.sdk2;
+
+import com.feedhenry.sdk.FHActCallback;
 
 /**
  * Represents a request call to FeedHenry.
  *
- * When asynchronous mode is used, the request will be executed on a separate
- * thread and the calling thread will be returned immediately. When the request
- * is completed, the callback to process the response will be executed on the
- * calling thread using the Looper class. The calling thread needs to be alive
- * for the callback to be processed properly.
+ * The request will be executed on a separate thread and the calling thread will
+ * be returned immediately. When the request is completed, the callback to
+ * process the response will be executed on the calling thread using the Looper
+ * class. The calling thread needs to be alive for the callback to be processed
+ * properly.
  *
- * If you are making API calls on short-lived threads, consider using
- * synchronous mode instead.
- *
- * @deprecated the execute method will become an asynchronous method and the
- * executeAsync methods will be removed in fh-android-sdk:3.0.0/Platform 3.7.0
  */
-@Deprecated
 public interface FHAct {
 
     /**
@@ -39,7 +35,7 @@ public interface FHAct {
      *
      * @throws Exception this method is allowed to throw an exception
      */
-    void executeAsync() throws Exception;
+    void execute() throws Exception;
 
     /**
      * Executes the request asynchronously. Executes the pCallback function when
@@ -48,13 +44,6 @@ public interface FHAct {
      * @param pCallback the callback function
      * @throws Exception this method is allowed to throw an exception
      */
-    void executeAsync(FHActCallback pCallback) throws Exception;
-
-    /**
-     * Executes the request synchronously.
-     *
-     * @param pCallback the callback function
-     * @throws Exception this method is allowed to throw an exception
-     */
     void execute(FHActCallback pCallback) throws Exception;
+
 }
