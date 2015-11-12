@@ -255,11 +255,6 @@ public class FHSyncDataset {
         updateDelayedFromNewData(pData);
         updateMetaFromNewData(pData);
 
-        boolean hasRecords = false;
-        
-        if (pData.has("records")) {
-            hasRecords = true;
-        }
 
         if (pData.has("updates")) {
             JSONArray ack = new JSONArray();
@@ -272,7 +267,7 @@ public class FHSyncDataset {
             mAcknowledgements = ack;
         }
 
-        if (!hasRecords && pData.has("hash") && !pData.getString("hash").equals(mHashvalue)) {
+        if (pData.has("hash") && !pData.getString("hash").equals(mHashvalue)) {
             String remoteHash = pData.getString("hash");
             FHLog.d(
                 LOG_TAG,
