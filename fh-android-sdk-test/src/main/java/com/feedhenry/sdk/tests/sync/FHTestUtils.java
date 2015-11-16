@@ -160,5 +160,18 @@ public class FHTestUtils {
             injectInto(source,sourceClass.getSuperclass(), value);
         }
     }
+
+    static Object getPrivateField(Object client, String fieldName) {
+        try {
+            Class<? extends Object> klass = client.getClass();
+            Field field = klass.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(client);
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
+            Log.e(FHTestUtils.class.getName(), ex.getMessage(), ex);
+            throw new RuntimeException(ex);
+        }
+        
+    }
     
 }
