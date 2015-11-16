@@ -8,12 +8,10 @@ package com.feedhenry.sdk.tests.sync;
 
 import android.test.AndroidTestCase;
 import com.feedhenry.sdk.FH;
-import com.feedhenry.sdk.api.FHAuthSession;
 import com.feedhenry.sdk.sync.FHSyncClient;
 import com.feedhenry.sdk.sync.FHSyncConfig;
 import com.feedhenry.sdk.sync.FHSyncListener;
 import com.feedhenry.sdk.sync.NotificationMessage;
-import com.feedhenry.sdk.utils.DataManager;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
