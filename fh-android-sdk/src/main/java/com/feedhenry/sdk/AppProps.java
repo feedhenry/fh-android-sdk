@@ -24,8 +24,8 @@ public class AppProps {
     private static final String APP_APIKEY_KEY = "appkey";
     private static final String APP_MODE_KEY = "mode";
 
-    // UnifiedPush properties
-    private static final String PUSH_SERVER_URL = "PUSH_SERVER_URL";
+    // AeroGear UnifiedPush properties
+    private static final String PUSH_SERVER_URL_ENDPOINT = "/api/v2/ag-push";
     private static final String PUSH_SENDER_ID = "PUSH_SENDER_ID";
     private static final String PUSH_VARIANT = "PUSH_VARIANT";
     private static final String PUSH_SECRET = "PUSH_SECRET";
@@ -118,7 +118,7 @@ public class AppProps {
      * @return UnifiedPush server URL
      */
     public String getPushServerUrl() {
-        return this.mProps.getProperty(PUSH_SERVER_URL);
+        return this.mProps.getProperty(APP_HOST_KEY) + PUSH_SERVER_URL_ENDPOINT;
     }
 
     /**
