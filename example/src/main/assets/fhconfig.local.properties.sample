@@ -1,3 +1,0 @@
-# To support local development, rename this file to fhconfig.local.properties. Then the android SDK will load this file and use the host value as the cloud host. e.g 
-# host = http://192.168.28.34:9000
-# This file should not be checked into your project's repo!
