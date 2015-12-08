@@ -10,6 +10,8 @@ import android.content.Context;
 import com.feedhenry.sdk.utils.FHLog;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -36,8 +38,8 @@ public class AppProps {
 
     private static final String LOG_TAG = "com.feedhenry.sdk.AppProps";
 
-    private Properties mProps;
-    private boolean isLocalDev;
+    private final Properties mProps;
+    private final boolean isLocalDev;
 
     private static AppProps mInstance;
 
@@ -165,58 +167,61 @@ public class AppProps {
      *
      * @param context Application context
      * @return the AppProps after read the properties file
-     * @throws IOException thrown if an error occurred while reading the properties file
      */
     public static AppProps load(Context context) throws IOException {
         if (mInstance == null) {
-            InputStream in;
-            boolean isLocalDev;
-            Properties props = new Properties();
 
-            // support local development
-            in = getAssetInputStream(context, DEBUG_PROPERTY_FILE);
-            isLocalDev = in != null;
-            if (!isLocalDev) { //in == null
-                in = getAssetInputStream(context, NEW_PROPERTY_FILE);
-                if (in == null) {
-                    in = getAssetInputStream(context, OLD_PROPERTY_FILE);
-                }
-            }
+            List<String> assetFiles = Arrays.asList(context.getAssets().list(""));
 
-            if (in == null) {
-                FHLog.e(LOG_TAG, "Can not load property file.", null);
+            if(assetFiles.contains(DEBUG_PROPERTY_FILE)) {
+                createNewInstanceFromPropertyFile(context, DEBUG_PROPERTY_FILE, true);
+            } else if (assetFiles.contains(NEW_PROPERTY_FILE)) {
+                createNewInstanceFromPropertyFile(context, NEW_PROPERTY_FILE, false);
+            } else if (assetFiles.contains(OLD_PROPERTY_FILE)) {
+                createNewInstanceFromPropertyFile(context, OLD_PROPERTY_FILE, false);
             } else {
-                try {
-                    props.load(in);
-                } catch (IOException e) {
-                    FHLog.e(LOG_TAG, "Can not load property file.", e);
-                }
+                throw new IOException("No config file was found");
             }
 
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException ex) {
-                    FHLog.e(LOG_TAG, "Failed to close stream", ex);
-                }
-            }
-
-            mInstance = new AppProps(props, isLocalDev);
         }
+
         return mInstance;
     }
 
     /**
-     * Attempts to open an asset and return an InputStream associated with it.
      *
-     * @return an InputStream if opening the asset was successful, null otherwise.
+     * Attempts to open and load property file in a new AppProps instance.
+     *
+     * @param context Application context
+     * @param fileName Property file name to be loaded
+     * @param isLocalDev Flag if it's a debug (local developer) property file
+     * @return the AppProps after read the properties file
      */
-    private static InputStream getAssetInputStream(Context context, String path) {
+    private static AppProps createNewInstanceFromPropertyFile(Context context, String fileName,
+                                                              boolean isLocalDev) throws IOException {
+        InputStream in = null;
+
         try {
-            return context.getAssets().open(path);
+            in = context.getAssets().open(fileName);
+            Properties props = new Properties();
+            props.load(in);
+
+            mInstance = new AppProps(props, isLocalDev);
         } catch (IOException e) {
-            FHLog.e(LOG_TAG, "Could not find asset " + path, e);
-            return null;
+            FHLog.e(LOG_TAG, "Could not find asset " + fileName, e);
+            throw e;
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+            } catch (IOException ex) {
+                FHLog.e(LOG_TAG, "Failed to close stream", ex);
+                throw ex;
+            }
         }
+
+        return mInstance;
     }
+
 }
