@@ -16,12 +16,9 @@ import org.json.fh.JSONObject;
 import com.feedhenry.sdk.sync.FHSyncDataRecord;
 import com.feedhenry.sdk.sync.FHSyncPendingRecord;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class FHTestUtils {
     private static final String TAG = FHTestUtils.class.getSimpleName();
@@ -132,6 +129,49 @@ public class FHTestUtils {
             paramsList.add(param);
         }
         return paramsList.toArray(params);
+    }
+
+    /**
+     * 
+     * Will scan source and its super classes for fields with a type of value.  
+     * All instances will be replaced by value
+     * 
+     * @param source the target object to have value injected into
+     * @param value the value to override
+     */
+    public static void injectInto(Object source, Object value) {
+        injectInto(source, source.getClass(), value);
+    }
+
+    private static void injectInto(Object source, Class<? extends Object> sourceClass, Object value) {
+        Field[] fields = sourceClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (field.getType().isAssignableFrom(value.getClass())) {
+                try {
+                    field.setAccessible(true);
+                    field.set(source, value);
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Log.e(TAG, ex.getMessage(), ex);
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+        if (sourceClass.getSuperclass() != Object.class) {
+            injectInto(source,sourceClass.getSuperclass(), value);
+        }
+    }
+
+    static Object getPrivateField(Object client, String fieldName) {
+        try {
+            Class<? extends Object> klass = client.getClass();
+            Field field = klass.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(client);
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchFieldException | SecurityException ex) {
+            Log.e(FHTestUtils.class.getName(), ex.getMessage(), ex);
+            throw new RuntimeException(ex);
+        }
+        
     }
     
 }

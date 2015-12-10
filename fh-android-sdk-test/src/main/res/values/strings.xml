@@ -9,5 +9,5 @@
 <resources>
 
     <string name="app_name">FHAndroidSDKTest</string>
-
+    <string name="title_activity_main">FH Android SDK Tests</string>
 </resources>
