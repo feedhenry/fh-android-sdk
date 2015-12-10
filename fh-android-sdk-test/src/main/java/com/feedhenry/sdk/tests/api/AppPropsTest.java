@@ -27,10 +27,10 @@ public class AppPropsTest extends AndroidTestCase {
         assertNotNull(appProps.getPushSenderId());
         assertEquals("MY_SENDER_ID", appProps.getPushSenderId());
 
-        assertNotNull(appProps.getPushSenderId());
+        assertNotNull(appProps.getPushVariant());
         assertEquals("123456789", appProps.getPushVariant());
 
-        assertNotNull(appProps.getPushSenderId());
+        assertNotNull(appProps.getPushSecret());
         assertEquals("987654321", appProps.getPushSecret());
     }
 }
