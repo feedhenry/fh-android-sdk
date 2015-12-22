@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
- *
- * Please refer to your contract with FeedHenry for the software license agreement.
- * If you do not have a contract, you do not have a license to use this software.
- */
 package org.json.fh;
 
 /*
@@ -33,7 +27,7 @@ package org.json.fh;
 /**
  * The XMLTokener extends the JSONTokener to provide additional methods
  * for the parsing of XML texts.
- * 
+ *
  * @author JSON.org
  * @version 2
  */
@@ -56,7 +50,7 @@ public class XMLTokener extends JSONTokener {
 
     /**
      * Construct an XMLTokener from a string.
-     * 
+     *
      * @param s A source string.
      */
     public XMLTokener(String s) {
@@ -65,7 +59,7 @@ public class XMLTokener extends JSONTokener {
 
     /**
      * Get the text in the CDATA block.
-     * 
+     *
      * @return The string up to the <code>]]&gt;</code>.
      * @throws JSONException If the <code>]]&gt;</code> is not found.
      */
@@ -92,7 +86,7 @@ public class XMLTokener extends JSONTokener {
      * Get the next XML outer token, trimming whitespace. There are two kinds
      * of tokens: the '&lt;' character which begins a markup tag, and the content
      * text between markup tags.
-     * 
+     *
      * @return A string, or a '&lt;' Character, or null if there is no more
      *         source text.
      * @throws JSONException this will be thrown if there is an error parsing the JSON
@@ -126,7 +120,7 @@ public class XMLTokener extends JSONTokener {
 
     /**
      * Return the next entity. These entities are translated to Characters: <code>&amp;  &#39;  &gt;  &lt;  &quot;</code>.
-     * 
+     *
      * @param a An ampersand character.
      * @return A Character or an entity String if the entity is not recognized.
      * @throws JSONException If missing ';' in XML entity.
@@ -151,7 +145,7 @@ public class XMLTokener extends JSONTokener {
     /**
      * Returns the next XML meta token. This is used for skipping over &lt;!...&gt;
      * and &lt;?...?&gt; structures.
-     * 
+     *
      * @return Syntax characters (<code>&lt; &gt; / = ! ?</code>) are returned as
      *         Character, and strings and names are returned as Boolean. We don't care
      *         what the values actually are.
@@ -219,7 +213,7 @@ public class XMLTokener extends JSONTokener {
      * brackets. It may be one of these characters: <code>/ &gt; = ! ?</code> or it
      * may be a string wrapped in single quotes or double quotes, or it may be a
      * name.
-     * 
+     *
      * @return a String or a Character.
      * @throws JSONException If the XML is not well formed.
      */

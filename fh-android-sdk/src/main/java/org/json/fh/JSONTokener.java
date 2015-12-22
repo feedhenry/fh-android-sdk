@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
- *
- * Please refer to your contract with FeedHenry for the software license agreement.
- * If you do not have a contract, you do not have a license to use this software.
- */
 package org.json.fh;
 
 /*
@@ -34,7 +28,7 @@ package org.json.fh;
  * A JSONTokener takes a source string and extracts characters and tokens from
  * it. It is used by the JSONObject and JSONArray constructors to parse
  * JSON source strings.
- * 
+ *
  * @author JSON.org
  * @version 2
  */
@@ -52,7 +46,7 @@ public class JSONTokener {
 
     /**
      * Construct a JSONTokener from a string.
-     * 
+     *
      * @param s A source string.
      */
     public JSONTokener(String s) {
@@ -73,7 +67,7 @@ public class JSONTokener {
 
     /**
      * Get the hex value of a character (base16).
-     * 
+     *
      * @param c A character between '0' and '9' or between 'A' and 'F' or
      *            between 'a' and 'f'.
      * @return An int between 0 and 15, or -1 if c was not a hex digit.
@@ -94,7 +88,7 @@ public class JSONTokener {
     /**
      * Determine if the source string still contains characters that next()
      * can consume.
-     * 
+     *
      * @return true if not yet at the end of the source.
      */
     public boolean more() {
@@ -103,7 +97,7 @@ public class JSONTokener {
 
     /**
      * Get the next character in the source string.
-     * 
+     *
      * @return The next character, or 0 if past the end of the source string.
      */
     public char next() {
@@ -118,7 +112,7 @@ public class JSONTokener {
     /**
      * Consume the next character, and check that it matches a specified
      * character.
-     * 
+     *
      * @param c The character to match.
      * @return The character.
      * @throws JSONException this will be thrown if there is an error parsing the JSON if the character does not match.
@@ -134,7 +128,7 @@ public class JSONTokener {
 
     /**
      * Get the next n characters.
-     * 
+     *
      * @param n The number of characters to take.
      * @return A string of n characters.
      * @throws JSONException this will be thrown if there is an error parsing the JSON
@@ -154,7 +148,7 @@ public class JSONTokener {
     /**
      * Get the next char in the string, skipping whitespace
      * and comments (slashslash, slashstar, and hash).
-     * 
+     *
      * @throws JSONException this will be thrown if there is an error parsing the JSON
      * @return A character, or 0 if there are no more characters.
      */
@@ -201,7 +195,7 @@ public class JSONTokener {
      * Backslash processing is done. The formal JSON format does not
      * allow strings in single quotes, but an implementation is allowed to
      * accept them.
-     * 
+     *
      * @param quote The quoting character, either <code>"</code>&nbsp;<small>(double quote)</small> or <code>'</code>&nbsp;<small>(single quote)</small>.
      * @return A String.
      * @throws JSONException this will be thrown if there is an error parsing the JSON Unterminated string.
@@ -256,7 +250,7 @@ public class JSONTokener {
     /**
      * Get the text up but not including the specified character or the
      * end of line, whichever comes first.
-     * 
+     *
      * @param d A delimiter character.
      * @return A string.
      */
@@ -277,7 +271,7 @@ public class JSONTokener {
     /**
      * Get the text up but not including one of the specified delimeter
      * characters or the end of line, whichever comes first.
-     * 
+     *
      * @param delimiters A set of delimiter characters.
      * @return A string, trimmed.
      */
@@ -300,9 +294,9 @@ public class JSONTokener {
     /**
      * Get the next value. The value can be a Boolean, Double, Integer,
      * JSONArray, JSONObject, Long, or String, or the JSONObject.NULL object.
-     * 
+     *
      * @throws JSONException this will be thrown if there is an error parsing the JSON If syntax error.
-     * 
+     *
      * @return An object.
      */
     public Object nextValue() throws JSONException {
@@ -325,7 +319,7 @@ public class JSONTokener {
          * Handle unquoted text. This could be the values true, false, or
          * null, or it can be a number. An implementation (such as this one)
          * is allowed to also accept non-standard forms.
-         * 
+         *
          * Accumulate characters until we reach the end of the text or a
          * formatting character.
          */
@@ -402,7 +396,7 @@ public class JSONTokener {
     /**
      * Skip characters until the next character is the requested character.
      * If the requested character is not found, no characters are skipped.
-     * 
+     *
      * @param to A character to skip to.
      * @return The requested character, or zero if the requested character
      *         is not found.
@@ -424,7 +418,7 @@ public class JSONTokener {
     /**
      * Skip characters until past the requested string.
      * If it is not found, we are left at the end of the source.
-     * 
+     *
      * @param to A string to skip past.
      */
     public void skipPast(String to) {
@@ -438,7 +432,7 @@ public class JSONTokener {
 
     /**
      * Make a JSONException to signal a syntax error.
-     * 
+     *
      * @param message The error message.
      * @return A JSONException object, suitable for throwing
      */
@@ -448,7 +442,7 @@ public class JSONTokener {
 
     /**
      * Make a printable string of this JSONTokener.
-     * 
+     *
      * @return " at character [this.myIndex] of [this.mySource]"
      */
     public String toString() {

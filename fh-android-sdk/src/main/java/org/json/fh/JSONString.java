@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
- *
- * Please refer to your contract with FeedHenry for the software license agreement.
- * If you do not have a contract, you do not have a license to use this software.
- */
 package org.json.fh;
 
 /**
@@ -15,7 +9,7 @@ public interface JSONString {
     /**
      * The <code>toJSONString</code> method allows a class to produce its own JSON
      * serialization.
-     * 
+     *
      * @return A strictly syntactically correct JSON text.
      */
     public String toJSONString();

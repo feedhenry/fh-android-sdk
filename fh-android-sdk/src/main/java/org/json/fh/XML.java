@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
- *
- * Please refer to your contract with FeedHenry for the software license agreement.
- * If you do not have a contract, you do not have a license to use this software.
- */
 package org.json.fh;
 
 /*
@@ -35,7 +29,7 @@ import java.util.Iterator;
 /**
  * This provides static methods to convert an XML text into a JSONObject,
  * and to covert a JSONObject into an XML text.
- * 
+ *
  * @author JSON.org
  * @version 2
  */
@@ -76,7 +70,7 @@ public class XML {
      * &gt; <small>(greater than)</small> is replaced by &amp;gt;<br>
      * &quot; <small>(double quote)</small> is replaced by &amp;quot;<br>
      * </p>
-     * 
+     *
      * @param string The string to be escaped.
      * @return The escaped string.
      */
@@ -106,7 +100,7 @@ public class XML {
 
     /**
      * Scan the content following the named tag, attaching it to the context.
-     * 
+     *
      * @param x The XMLTokener containing the source string.
      * @param context The JSONObject that will include the new material.
      * @param name The tag name.
@@ -274,7 +268,7 @@ public class XML {
      * does not like to distinguish between elements and attributes.
      * Sequences of similar elements are represented as JSONArrays. Content
      * text may be placed in a "content" member. Comments, prologs, DTDs, and <code>&lt;[ [ ]]&gt;</code> are ignored.
-     * 
+     *
      * @param string The source string.
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException this will be thrown if there is an error parsing the JSON
@@ -291,7 +285,7 @@ public class XML {
 
     /**
      * Convert a JSONObject into a well-formed, element-normal XML string.
-     * 
+     *
      * @param o A JSONObject.
      * @return A string.
      * @throws JSONException this will be thrown if there is an error parsing the JSON
@@ -302,12 +296,12 @@ public class XML {
 
     /**
      * Convert a JSONObject into a well-formed, element-normal XML string.
-     * 
+     *
      * @param o A JSONObject.
      * @param tagName The optional name of the enclosing tag.
      * @return A string.
      * @throws JSONException this will be thrown if there is an error parsing the JSON38
-     * 
+     *
      */
     public static String toString(Object o, String tagName)
             throws JSONException {
