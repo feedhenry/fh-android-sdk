@@ -1,0 +1,8 @@
+Red Hat Mobile Android SDK - Copyright 2015 Red Hat
+
+This product includes/uses software, Android Async Http Client library (https://loopj.com/android-async-http/)
+Copyright (c) 2011-2015 James Smith <james@loopj.com>
+License: The Apache Software License, Version 2.0  (http://www.apache.org/licenses/LICENSE-2.0.txt)
+
+This product includes/uses org.json (http://www.json.org/java/index.html), See: fh-android-sdk/src/main/java/org/json/fh
+Copyright (c) 2002 JSON.org
