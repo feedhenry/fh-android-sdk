@@ -21,7 +21,7 @@ Run the following commands outside the FeedHenry Android SDK directory to avoid 
 
 ```
 git clone git://github.com/mosabua/maven-android-sdk-deployer.git
-cd $PWD/maven-android-sdk-deployer/platforms/android-21
+cd $PWD/maven-android-sdk-deployer/platforms/android-23
 mvn install -N --quiet
 cd -
 cd $PWD/maven-android-sdk-deployer/repositories/google-m2repository
