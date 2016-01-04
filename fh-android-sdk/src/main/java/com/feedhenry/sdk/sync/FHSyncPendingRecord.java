@@ -151,6 +151,7 @@ public class FHSyncPendingRecord {
         }
     }
 
+    @Override
     public String toString() {
         return this.getJSON().toString();
     }
