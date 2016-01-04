@@ -30,10 +30,12 @@ package org.json.fh;
  SOFTWARE.
  */
 
+import java.util.HashMap;
+
 /**
  * The XMLTokener extends the JSONTokener to provide additional methods
  * for the parsing of XML texts.
- * 
+ *
  * @author JSON.org
  * @version 2
  */
@@ -43,10 +45,10 @@ public class XMLTokener extends JSONTokener {
      * The table of entity values. It initially contains Character values for
      * amp, apos, gt, lt, quot.
      */
-    public static final java.util.HashMap entity;
+    public static final HashMap<String, Character> entity;
 
     static {
-        entity = new java.util.HashMap(8);
+        entity = new HashMap<String, Character>(8);
         entity.put("amp", XML.AMP);
         entity.put("apos", XML.APOS);
         entity.put("gt", XML.GT);
@@ -56,7 +58,7 @@ public class XMLTokener extends JSONTokener {
 
     /**
      * Construct an XMLTokener from a string.
-     * 
+     *
      * @param s A source string.
      */
     public XMLTokener(String s) {
@@ -65,23 +67,20 @@ public class XMLTokener extends JSONTokener {
 
     /**
      * Get the text in the CDATA block.
-     * 
+     *
      * @return The string up to the <code>]]&gt;</code>.
      * @throws JSONException If the <code>]]&gt;</code> is not found.
      */
     public String nextCDATA() throws JSONException {
-        char c;
-        int i;
-        StringBuffer sb = new StringBuffer();
-        for (;;) {
-            c = next();
+        StringBuilder sb = new StringBuilder();
+        while (true) {
+            char c = next();
             if (c == 0) {
                 throw syntaxError("Unclosed CDATA.");
             }
             sb.append(c);
-            i = sb.length() - 3;
-            if (i >= 0 && sb.charAt(i) == ']' &&
-                    sb.charAt(i + 1) == ']' && sb.charAt(i + 2) == '>') {
+            int i = sb.length() - 3;
+            if (i >= 0 && sb.charAt(i) == ']' && sb.charAt(i + 1) == ']' && sb.charAt(i + 2) == '>') {
                 sb.setLength(i);
                 return sb.toString();
             }
@@ -92,14 +91,13 @@ public class XMLTokener extends JSONTokener {
      * Get the next XML outer token, trimming whitespace. There are two kinds
      * of tokens: the '&lt;' character which begins a markup tag, and the content
      * text between markup tags.
-     * 
+     *
      * @return A string, or a '&lt;' Character, or null if there is no more
-     *         source text.
-     * @throws JSONException this will be thrown if there is an error parsing the JSON
+     * source text.
+     * @throws JSONException if there is an error parsing the JSON
      */
     public Object nextContent() throws JSONException {
         char c;
-        StringBuffer sb;
         do {
             c = next();
         } while (Character.isWhitespace(c));
@@ -109,8 +107,8 @@ public class XMLTokener extends JSONTokener {
         if (c == '<') {
             return XML.LT;
         }
-        sb = new StringBuffer();
-        for (;;) {
+        StringBuilder sb = new StringBuilder();
+        while (true) {
             if (c == '<' || c == 0) {
                 back();
                 return sb.toString().trim();
@@ -126,14 +124,14 @@ public class XMLTokener extends JSONTokener {
 
     /**
      * Return the next entity. These entities are translated to Characters: <code>&amp;  &#39;  &gt;  &lt;  &quot;</code>.
-     * 
+     *
      * @param a An ampersand character.
      * @return A Character or an entity String if the entity is not recognized.
      * @throws JSONException If missing ';' in XML entity.
      */
     public Object nextEntity(char a) throws JSONException {
-        StringBuffer sb = new StringBuffer();
-        for (;;) {
+        StringBuilder sb = new StringBuilder();
+        while (true) {
             char c = next();
             if (Character.isLetterOrDigit(c) || c == '#') {
                 sb.append(Character.toLowerCase(c));
@@ -145,72 +143,71 @@ public class XMLTokener extends JSONTokener {
         }
         String s = sb.toString();
         Object e = entity.get(s);
-        return e != null ? e : a + s + ";";
+        return e == null ? a + s + ';' : e;
     }
 
     /**
      * Returns the next XML meta token. This is used for skipping over &lt;!...&gt;
      * and &lt;?...?&gt; structures.
-     * 
+     *
      * @return Syntax characters (<code>&lt; &gt; / = ! ?</code>) are returned as
-     *         Character, and strings and names are returned as Boolean. We don't care
-     *         what the values actually are.
+     * Character, and strings and names are returned as Boolean. We don't care
+     * what the values actually are.
      * @throws JSONException If a string is not properly closed or if the XML
-     *             is badly structured.
+     *                       is badly structured.
      */
     public Object nextMeta() throws JSONException {
         char c;
-        char q;
         do {
             c = next();
         } while (Character.isWhitespace(c));
         switch (c) {
-        case 0:
-            throw syntaxError("Misshaped meta tag.");
-        case '<':
-            return XML.LT;
-        case '>':
-            return XML.GT;
-        case '/':
-            return XML.SLASH;
-        case '=':
-            return XML.EQ;
-        case '!':
-            return XML.BANG;
-        case '?':
-            return XML.QUEST;
-        case '"':
-        case '\'':
-            q = c;
-            for (;;) {
-                c = next();
-                if (c == 0) {
-                    throw syntaxError("Unterminated string.");
+            case 0:
+                throw syntaxError("Misshaped meta tag.");
+            case '<':
+                return XML.LT;
+            case '>':
+                return XML.GT;
+            case '/':
+                return XML.SLASH;
+            case '=':
+                return XML.EQ;
+            case '!':
+                return XML.BANG;
+            case '?':
+                return XML.QUEST;
+            case '"':
+            case '\'':
+                char q = c;
+                while (true) {
+                    c = next();
+                    if (c == 0) {
+                        throw syntaxError("Unterminated string.");
+                    }
+                    if (c == q) {
+                        return Boolean.TRUE;
+                    }
                 }
-                if (c == q) {
-                    return Boolean.TRUE;
+            default:
+                while (true) {
+                    c = next();
+                    if (Character.isWhitespace(c)) {
+                        return Boolean.TRUE;
+                    }
+                    switch (c) {
+                        case 0:
+                        case '<':
+                        case '>':
+                        case '/':
+                        case '=':
+                        case '!':
+                        case '?':
+                        case '"':
+                        case '\'':
+                            back();
+                            return Boolean.TRUE;
+                    }
                 }
-            }
-        default:
-            for (;;) {
-                c = next();
-                if (Character.isWhitespace(c)) {
-                    return Boolean.TRUE;
-                }
-                switch (c) {
-                case 0:
-                case '<':
-                case '>':
-                case '/':
-                case '=':
-                case '!':
-                case '?':
-                case '"':
-                case '\'':
-                    back();
-                    return Boolean.TRUE;
-                }
-            }
         }
     }
 
@@ -219,80 +216,151 @@ public class XMLTokener extends JSONTokener {
      * brackets. It may be one of these characters: <code>/ &gt; = ! ?</code> or it
      * may be a string wrapped in single quotes or double quotes, or it may be a
      * name.
-     * 
+     *
      * @return a String or a Character.
      * @throws JSONException If the XML is not well formed.
      */
     public Object nextToken() throws JSONException {
         char c;
-        char q;
-        StringBuffer sb;
+        StringBuilder sb;
         do {
             c = next();
         } while (Character.isWhitespace(c));
         switch (c) {
-        case 0:
-            throw syntaxError("Misshaped element.");
-        case '<':
-            throw syntaxError("Misplaced '<'.");
-        case '>':
-            return XML.GT;
-        case '/':
-            return XML.SLASH;
-        case '=':
-            return XML.EQ;
-        case '!':
-            return XML.BANG;
-        case '?':
-            return XML.QUEST;
+            case 0:
+                throw syntaxError("Misshaped element.");
+            case '<':
+                throw syntaxError("Misplaced '<'.");
+            case '>':
+                return XML.GT;
+            case '/':
+                return XML.SLASH;
+            case '=':
+                return XML.EQ;
+            case '!':
+                return XML.BANG;
+            case '?':
+                return XML.QUEST;
 
             // Quoted string
 
-        case '"':
-        case '\'':
-            q = c;
-            sb = new StringBuffer();
-            for (;;) {
-                c = next();
-                if (c == 0) {
-                    throw syntaxError("Unterminated string.");
+            case '"':
+            case '\'':
+                char q = c;
+                sb = new StringBuilder();
+                while (true) {
+                    c = next();
+                    if (c == 0) {
+                        throw syntaxError("Unterminated string.");
+                    }
+                    if (c == q) {
+                        return sb.toString();
+                    }
+                    if (c == '&') {
+                        sb.append(nextEntity(c));
+                    } else {
+                        sb.append(c);
+                    }
                 }
-                if (c == q) {
-                    return sb.toString();
-                }
-                if (c == '&') {
-                    sb.append(nextEntity(c));
-                } else {
+            default:
+
+                // Name
+
+                sb = new StringBuilder();
+                while (true) {
                     sb.append(c);
+                    c = next();
+                    if (Character.isWhitespace(c)) {
+                        return sb.toString();
+                    }
+                    switch (c) {
+                        case 0:
+                        case '>':
+                        case '/':
+                        case '=':
+                        case '!':
+                        case '?':
+                        case '[':
+                        case ']':
+                            back();
+                            return sb.toString();
+                        case '<':
+                        case '"':
+                        case '\'':
+                            throw syntaxError("Bad character in a name.");
+                    }
+                }
+        }
+    }
+
+    /**
+     * Skip characters until past the requested string.
+     * If it is not found, we are left at the end of the source with a result of false.
+     *
+     * @param to A string to skip past.
+     * @throws JSONException
+     */
+    public boolean skipPast(String to) throws JSONException {
+        boolean b;
+        char c;
+        int i;
+        int j;
+        int offset = 0;
+        int length = to.length();
+        char[] circle = new char[length];
+
+        /*
+         * First fill the circle buffer with as many characters as are in the
+         * to string. If we reach an early end, bail.
+         */
+
+        for (i = 0; i < length; i++) {
+            c = next();
+            if (c == 0) {
+                return false;
+            }
+            circle[i] = c;
+        }
+
+        /* We will loop, possibly for all of the remaining characters. */
+
+        while (true) {
+            j = offset;
+            b = true;
+
+            /* Compare the circle buffer with the to string. */
+
+            for (i = 0; i < length; i++) {
+                if (circle[j] != to.charAt(i)) {
+                    b = false;
+                    break;
+                }
+                j++;
+                if (j >= length) {
+                    j -= length;
                 }
             }
-        default:
 
-            // Name
+            /* If we exit the loop with b intact, then victory is ours. */
 
-            sb = new StringBuffer();
-            for (;;) {
-                sb.append(c);
-                c = next();
-                if (Character.isWhitespace(c)) {
-                    return sb.toString();
-                }
-                switch (c) {
-                case 0:
-                case '>':
-                case '/':
-                case '=':
-                case '!':
-                case '?':
-                case '[':
-                case ']':
-                    back();
-                    return sb.toString();
-                case '<':
-                case '"':
-                case '\'':
-                    throw syntaxError("Bad character in a name.");
-                }
+            if (b) {
+                return true;
+            }
+
+            /* Get the next character. If there isn't one, then defeat is ours. */
+
+            c = next();
+            if (c == 0) {
+                return false;
+            }
+            /*
+             * Shove the character in the circle buffer and advance the
+             * circle offset. The offset is mod n.
+             */
+            circle[offset] = c;
+            offset++;
+            if (offset >= length) {
+                offset -= length;
             }
         }
     }
