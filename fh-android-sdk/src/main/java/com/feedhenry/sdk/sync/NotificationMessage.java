@@ -99,6 +99,7 @@ public class NotificationMessage {
         return mExtraMessage;
     }
 
+    @Override
     public String toString() {
         return "DataId:"
             + mDataId
