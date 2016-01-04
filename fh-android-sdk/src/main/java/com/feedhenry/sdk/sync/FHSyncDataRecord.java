@@ -83,10 +83,12 @@ public class FHSyncDataRecord {
         return ret;
     }
 
+    @Override
     public String toString() {
         return this.getJSON().toString();
     }
 
+    @Override
     public boolean equals(Object pThat) {
         if (this == pThat) {
             return true;
@@ -99,6 +101,7 @@ public class FHSyncDataRecord {
         return false;
     }
 
+    @Override
     public FHSyncDataRecord clone() {
         JSONObject jsonObj = this.getJSON();
         return FHSyncDataRecord.fromJSON(jsonObj);
