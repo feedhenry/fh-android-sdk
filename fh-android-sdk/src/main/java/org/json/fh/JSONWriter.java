@@ -81,7 +81,7 @@ public class JSONWriter {
     /**
      * The object/array stack.
      */
-    private char stack[];
+    private final char[] stack;
 
     /**
      * The stack top index. A value of 0 indicates that the stack is empty.
@@ -140,8 +140,8 @@ public class JSONWriter {
      *
      * @return this
      * @throws JSONException If the nesting is too deep, or if the object is
-     *             started in the wrong place (for example as a key or after the end of the
-     *             outermost array or object).
+     *                       started in the wrong place (for example as a key or after the end of the
+     *                       outermost array or object).
      */
     public JSONWriter array() throws JSONException {
         if (this.mode == 'i' || this.mode == 'o' || this.mode == 'a') {
@@ -163,8 +163,7 @@ public class JSONWriter {
      */
     private JSONWriter end(char m, char c) throws JSONException {
         if (this.mode != m) {
-            throw new JSONException(m == 'o' ? "Misplaced endObject." :
-                    "Misplaced endArray.");
+            throw new JSONException(m == 'o' ? "Misplaced endObject." : "Misplaced endArray.");
         }
         this.pop(m);
         try {
@@ -203,7 +202,7 @@ public class JSONWriter {
      * @param s A key string.
      * @return this
      * @throws JSONException If the key is out of place. For example, keys
-     *             do not belong in arrays or if the key is null.
+     *                       do not belong in arrays or if the key is null.
      */
     public JSONWriter key(String s) throws JSONException {
         if (s == null) {
@@ -232,8 +231,8 @@ public class JSONWriter {
      *
      * @return this
      * @throws JSONException If the nesting is too deep, or if the object is
-     *             started in the wrong place (for example as a key or after the end of the
-     *             outermost array or object).
+     *                       started in the wrong place (for example as a key or after the end of the
+     *                       outermost array or object).
      */
     public JSONWriter object() throws JSONException {
         if (this.mode == 'i') {
@@ -246,7 +245,6 @@ public class JSONWriter {
             return this;
         }
         throw new JSONException("Misplaced object.");
-
     }
 
     /**
@@ -315,8 +313,8 @@ public class JSONWriter {
      * Append an object value.
      *
      * @param o The object to append. It can be null, or a Boolean, Number,
-     *            String, JSONObject, or JSONArray, or an object with a toJSONString()
-     *            method.
+     *          String, JSONObject, or JSONArray, or an object with a toJSONString()
+     *          method.
      * @return this
      * @throws JSONException If the value is out of sequence.
      */

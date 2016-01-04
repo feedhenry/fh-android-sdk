@@ -46,12 +46,11 @@ public class CookieList {
      *
      * @param string A cookie list string
      * @return A JSONObject
-     * @throws JSONException this will be thrown if there is an error parsing the JSON
+     * @throws JSONException if there is an error parsing the JSON
      */
     public static JSONObject toJSONObject(String string) throws JSONException {
         JSONObject o = new JSONObject();
-        JSONTokener x = new JSONTokener(string);
-        while (x.more()) {
+        for (JSONTokener x = new JSONTokener(string); x.more(); ) {
             String name = Cookie.unescape(x.nextTo('='));
             x.next('=');
             o.put(name, Cookie.unescape(x.nextTo(';')));
@@ -68,21 +67,19 @@ public class CookieList {
      *
      * @param o A JSONObject
      * @return A cookie list string
-     * @throws JSONException this will be thrown if there is an error parsing the JSON
+     * @throws JSONException if there is an error parsing the JSON
      */
     public static String toString(JSONObject o) throws JSONException {
         boolean b = false;
-        Iterator keys = o.keys();
-        String s;
-        StringBuffer sb = new StringBuffer();
-        while (keys.hasNext()) {
-            s = keys.next().toString();
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<String> keys = o.keys(); keys.hasNext(); ) {
+            String s = keys.next();
             if (!o.isNull(s)) {
                 if (b) {
                     sb.append(';');
                 }
                 sb.append(Cookie.escape(s));
-                sb.append("=");
+                sb.append('=');
                 sb.append(Cookie.escape(o.getString(s)));
                 b = true;
             }
