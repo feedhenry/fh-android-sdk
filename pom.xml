@@ -99,11 +99,14 @@
                 <groupId>com.mycila.maven-license-plugin</groupId>
                 <artifactId>maven-license-plugin</artifactId>
                 <configuration>
-                    <header>LICENSE</header>
+                    <header>rht_mobile_license_header.txt</header>
                     <includes>
                         <include>src/**</include>
                         <include>test/**</include>
                     </includes>
+                    <excludes>
+                      <exclude>src/main/**/org/json/**</exclude>
+                    </excludes>
                     <strictCheck>true</strictCheck>
                 </configuration>
                 <dependencies>
@@ -140,4 +143,3 @@
         </snapshotRepository>
     </distributionManagement>
 </project>
-

@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
- *
- * Please refer to your contract with FeedHenry for the software license agreement.
- * If you do not have a contract, you do not have a license to use this software.
- */
 package org.json.fh;
 
 /*
@@ -34,7 +28,7 @@ import java.util.Iterator;
 
 /**
  * Convert a web browser cookie list string to a JSONObject and back.
- * 
+ *
  * @author JSON.org
  * @version 2
  */
@@ -45,11 +39,11 @@ public class CookieList {
      * of name/value pairs. The names are separated from the values by '='.
      * The pairs are separated by ';'. The names and the values
      * will be unescaped, possibly converting '+' and '%' sequences.
-     * 
+     *
      * To add a cookie to a cooklist,
      * cookielistJSONObject.put(cookieJSONObject.getString("name"),
      * cookieJSONObject.getString("value"));
-     * 
+     *
      * @param string A cookie list string
      * @return A JSONObject
      * @throws JSONException this will be thrown if there is an error parsing the JSON
@@ -71,7 +65,7 @@ public class CookieList {
      * of name/value pairs. The names are separated from the values by '='.
      * The pairs are separated by ';'. The characters '%', '+', '=', and ';'
      * in the names and values are replaced by "%hh".
-     * 
+     *
      * @param o A JSONObject
      * @return A cookie list string
      * @throws JSONException this will be thrown if there is an error parsing the JSON

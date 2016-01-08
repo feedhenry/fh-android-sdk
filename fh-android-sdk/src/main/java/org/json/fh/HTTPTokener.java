@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2015 FeedHenry Ltd, All Rights Reserved.
- *
- * Please refer to your contract with FeedHenry for the software license agreement.
- * If you do not have a contract, you do not have a license to use this software.
- */
 package org.json.fh;
 
 /*
@@ -33,7 +27,7 @@ package org.json.fh;
 /**
  * The HTTPTokener extends the JSONTokener to provide additional methods
  * for the parsing of HTTP headers.
- * 
+ *
  * @author JSON.org
  * @version 2
  */
@@ -41,7 +35,7 @@ public class HTTPTokener extends JSONTokener {
 
     /**
      * Construct an XMLTokener from a string.
-     * 
+     *
      * @param s A source string.
      */
     public HTTPTokener(String s) {
@@ -50,7 +44,7 @@ public class HTTPTokener extends JSONTokener {
 
     /**
      * Get the next token or string. This is used in parsing HTTP headers.
-     * 
+     *
      * @throws JSONException this will be thrown if there is an error parsing the JSON
      * @return A String.
      */
