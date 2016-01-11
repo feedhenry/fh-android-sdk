@@ -294,11 +294,9 @@ public class FHSyncClient {
      * @param pDataId the id of the dataset
      * @param pCollisionHash the hash value of the collision record
      * @param pCallback the callback function
-     * @throws Exception thrown if building the remove request or executing the
-     * remove request fails
+     * @throws FHNotReadyException thrown if FH is not initialized.
      */
-    public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback)
-            throws Exception {
+    public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback) throws FHNotReadyException {
         JSONObject params = new JSONObject();
         params.put("fn", "removeCollision");
         params.put("hash", pCollisionHash);
