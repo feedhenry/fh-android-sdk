@@ -324,7 +324,7 @@ public class FHAuthRequest extends FHRemote {
     }
 
     @Override
-    protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    protected Header[] buildHeaders(Header[] pHeaders) {
         return null;
     }
 }
