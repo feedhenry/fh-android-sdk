@@ -52,7 +52,7 @@ public class FHInitializeRequest extends FHRemote {
     }
 
     @Override
-    protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    protected Header[] buildHeaders(Header[] pHeaders) {
         return null;
     }
 }
