@@ -292,10 +292,11 @@ public class FH {
      * @param pParams  the request params, can be null
      * @return an instance of FHCloudRequest
      * @throws FHNotReadyException if init has not been called
-     * @throws Exception           if pMethod is not one of GET, POST, PUT and DELETE
+     * @throws IllegalArgumentException if pMethod is not one of GET, POST, PUT or DELETE
      */
-    public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams)
-        throws Exception {
+    public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams) 
+            throws FHNotReadyException
+         {
         FHCloudRequest request = (FHCloudRequest) buildAction(FH_API_CLOUD);
         request.setPath(pPath);
         request.setHeaders(pHeaders);
