@@ -77,11 +77,11 @@ public class FHAuthSession {
      *
      * @param pCallback a callback to be executed when remote call is completed
      * @param pSync     A flag to call it sync
-     * @throws Exception An exception will be thrown when callRemote fail
+     * 
      * @deprecated please use com.feedhenry.sdk.api2.FHAuthSession.verify instead
      */
     @Deprecated
-    public static void verify(Callback pCallback, boolean pSync) throws Exception {
+    public static void verify(Callback pCallback, boolean pSync) {
         getInstance(DataManager.getInstance()).verify(pCallback, pSync);
     }
 
@@ -89,11 +89,11 @@ public class FHAuthSession {
      * Removes the session token on the device and tries to remove it remotely as well.
      *
      * @param pSync     A flag to call it sync
-     * @throws Exception An exception will be thrown when callRemote fail
+     * 
      * @deprecated please use com.feedhenry.sdk.api2.FHAuthSession.clear instead 
      */
     @Deprecated
-    public static void clear(boolean pSync) throws Exception {
+    public static void clear(boolean pSync) {
         getInstance(DataManager.getInstance()).clear(pSync);
     }
 
