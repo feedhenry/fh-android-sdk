@@ -70,8 +70,8 @@ public class FH {
 
     private static Context mContext;
 
-    private FH() throws Exception {
-        throw new Exception("Not Supported");
+    private FH()  {
+        throw new UnsupportedOperationException("Not Supported");
     }
 
     /**
