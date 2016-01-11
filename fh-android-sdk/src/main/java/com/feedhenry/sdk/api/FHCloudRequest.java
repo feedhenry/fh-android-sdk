@@ -84,8 +84,7 @@ public class FHCloudRequest extends FHRemote {
     }
 
     @Override
-    public void executeAsync(FHActCallback pCallback) throws Exception {
-        try {
+    public void executeAsync(FHActCallback pCallback)  {
             switch (mMethod) {
                 case GET:
                     FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
@@ -102,10 +101,7 @@ public class FHCloudRequest extends FHRemote {
                 default:
                     break;
             }
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
-        }
+        
     }
 
     @Override
@@ -136,7 +132,8 @@ public class FHCloudRequest extends FHRemote {
         return host + (getPath().startsWith("/") ? getPath() : '/' + getPath());
     }
 
-    protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    @Override
+    protected Header[] buildHeaders(Header[] pHeaders) {
         return FH.getDefaultParamsAsHeaders(pHeaders);
     }
 }
