@@ -44,7 +44,7 @@ public class FHHttpClient {
      * @param pParams The Body of the Request
      * @param pCallback A callback to be handed the responses of the call
      * @param pUseSync whether or not to make the call synchronously
-     * @throws Exception thrown if any exception occurs
+     * 
      * @deprecated please use com.feedhenry.sdk2.FHHttpClient.put instead
      */
     @Deprecated
@@ -53,8 +53,7 @@ public class FHHttpClient {
         Header[] pHeaders,
         JSONObject pParams,
         FHActCallback pCallback,
-        boolean pUseSync)
-        throws Exception {
+        boolean pUseSync) {
         instance.put(pUrl, pHeaders, pParams, pCallback, pUseSync);
     }
 
@@ -67,7 +66,7 @@ public class FHHttpClient {
      * @param pParams Addition parameters to send with the get request
      * @param pCallback A callback to be handed the responses of the call
      * @param pUseSync whether or not to make the call synchronously
-     * @throws Exception thrown if any exception occurs
+     * 
      * @deprecated please use com.feedhenry.sdk2.FHHttpClient.get instead
      */
     @Deprecated
@@ -76,8 +75,7 @@ public class FHHttpClient {
         Header[] pHeaders,
         JSONObject pParams,
         FHActCallback pCallback,
-        boolean pUseSync)
-        throws Exception {
+        boolean pUseSync) {
         instance.get(pUrl, pHeaders, pParams, pCallback, pUseSync);
     }
 
@@ -90,7 +88,7 @@ public class FHHttpClient {
      * @param pParams The Body of the Request
      * @param pCallback A callback to be handed the responses of the call
      * @param pUseSync whether or not to make the call synchronously
-     * @throws Exception thrown if any exception occurs
+     * 
      * @deprecated please use com.feedhenry.sdk2.FHHttpClient.post instead
      */
     @Deprecated
@@ -99,8 +97,7 @@ public class FHHttpClient {
         Header[] pHeaders,
         JSONObject pParams,
         FHActCallback pCallback,
-        boolean pUseSync)
-        throws Exception {
+        boolean pUseSync) {
         instance.post(pUrl, pHeaders, pParams, pCallback, pUseSync);
     }
 
@@ -113,7 +110,7 @@ public class FHHttpClient {
      * @param pParams Addition parameters to send with the DELETE request
      * @param pCallback A callback to be handed the responses of the call
      * @param pUseSync whether or not to make the call synchronously
-     * @throws Exception thrown if any exception occurs
+     * 
      * @deprecated please use com.feedhenry.sdk2.FHHttpClient.delete instead
      */
     @Deprecated
@@ -122,8 +119,7 @@ public class FHHttpClient {
         Header[] pHeaders,
         JSONObject pParams,
         FHActCallback pCallback,
-        boolean pUseSync)
-        throws Exception {
+        boolean pUseSync) {
         instance.delete(pUrl, pHeaders, pParams, pCallback, pUseSync);
     }
 
