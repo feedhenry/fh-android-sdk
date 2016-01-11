@@ -72,5 +72,5 @@ public abstract class FHRemote implements FHAct {
 
     protected abstract JSONObject getRequestArgs();
 
-    protected abstract Header[] buildHeaders(Header[] pHeaders) throws Exception;
+    protected abstract Header[] buildHeaders(Header[] pHeaders);
 }
