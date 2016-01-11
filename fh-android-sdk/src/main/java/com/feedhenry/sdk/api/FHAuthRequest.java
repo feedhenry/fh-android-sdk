@@ -171,7 +171,7 @@ public class FHAuthRequest extends FHRemote {
     }
 
     @Override
-    public void executeAsync(FHActCallback pCallback) throws Exception {
+    public void executeAsync(FHActCallback pCallback) {
         if (mPresentingActivity == null) {
             // the app didn't provide an activity to presenting the webview, let the app handle the oauth process
             super.executeAsync(pCallback);
@@ -210,7 +210,7 @@ public class FHAuthRequest extends FHRemote {
     }
 
     @Override
-    public void execute(FHActCallback pCallback) throws Exception {
+    public void execute(FHActCallback pCallback) {
         if (mPresentingActivity == null) {
             super.execute(pCallback);
         } else {
