@@ -41,17 +41,16 @@ public interface FHAct {
      * by {@link #setCallback(FHActCallback pCallback)} when the request
      * finishes.
      *
-     * @throws Exception this method is allowed to throw an exception
      */
-    void execute() throws Exception;
+    void execute();
 
     /**
      * Executes the request asynchronously. Executes the pCallback function when
      * it finishes.
      *
      * @param pCallback the callback function
-     * @throws Exception this method is allowed to throw an exception
+     * 
      */
-    void execute(FHActCallback pCallback) throws Exception;
+    void execute(FHActCallback pCallback);
 
 }
