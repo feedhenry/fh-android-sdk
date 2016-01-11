@@ -30,11 +30,18 @@ public class FHCloudRequest extends FHRemote {
     public enum Methods {
         GET, POST, PUT, DELETE;
 
-        public static Methods parse(String pMethod) throws Exception {
+        /**
+         * Casts a HTTP Method name to a Methods enum.
+         * 
+         * @param pMethod the HTTP method to retrieve the enumerated value of.
+         * @return a Methods enum value
+         * @throws IllegalArgumentException if pMethod is not one of GET, POST, PUT, or DELETE
+         */
+        public static Methods parse(String pMethod)  {
             try {
                 return Methods.valueOf(pMethod.toUpperCase());
             } catch (Exception e) {
-                throw new Exception("Unsupported HTTP method: " + pMethod);
+                throw new IllegalArgumentException("Unsupported HTTP method: " + pMethod);
             }
         }
     }
