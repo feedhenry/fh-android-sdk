@@ -24,6 +24,7 @@ import android.util.Log;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.api.FHActRequest;
+import com.feedhenry.sdk.exceptions.DataSetNotFound;
 import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
 import java.util.Date;
@@ -224,14 +225,14 @@ public class FHSyncClient {
      * @param pData the actual data
      * @return the created data record. Each record contains a key "uid" with
      * the id value and a key "data" with the JSON data.
-     * @throws Exception if the dataId is not known
+     * @throws DataSetNotFound if the dataId is not known
      */
-    public JSONObject create(String pDataId, JSONObject pData) throws Exception {
+    public JSONObject create(String pDataId, JSONObject pData) throws DataSetNotFound {
         FHSyncDataset dataset = mDataSets.get(pDataId);
         if (null != dataset) {
             return dataset.createData(pData);
         } else {
-            throw new Exception("Unknown dataId : " + pDataId);
+            throw new DataSetNotFound("Unknown dataId : " + pDataId);
         }
     }
 
@@ -243,14 +244,14 @@ public class FHSyncClient {
      * @param pData the new content of the data record
      * @return the updated data record. Each record contains a key "uid" with
      * the id value and a key "data" with the JSON data.
-     * @throws Exception if the dataId is not known
+     * @throws DataSetNotFound if the dataId is not known
      */
-    public JSONObject update(String pDataId, String pUID, JSONObject pData) throws Exception {
+    public JSONObject update(String pDataId, String pUID, JSONObject pData) throws DataSetNotFound {
         FHSyncDataset dataset = mDataSets.get(pDataId);
         if (null != dataset) {
             return dataset.updateData(pUID, pData);
         } else {
-            throw new Exception("Unknown dataId : " + pDataId);
+            throw new DataSetNotFound("Unknown dataId : " + pDataId);
         }
     }
 
@@ -261,14 +262,14 @@ public class FHSyncClient {
      * @param pUID the id of the data record
      * @return the deleted data record. Each record contains a key "uid" with
      * the id value and a key "data" with the JSON data.
-     * @throws Exception if the dataId is not known
+     * @throws DataSetNotFound if the dataId is not known
      */
-    public JSONObject delete(String pDataId, String pUID) throws Exception {
+    public JSONObject delete(String pDataId, String pUID) throws DataSetNotFound {
         FHSyncDataset dataset = mDataSets.get(pDataId);
         if (null != dataset) {
             return dataset.deleteData(pUID);
         } else {
-            throw new Exception("Unknown dataId : " + pDataId);
+            throw new DataSetNotFound("Unknown dataId : " + pDataId);
         }
     }
 
