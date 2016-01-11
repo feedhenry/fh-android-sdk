@@ -326,9 +326,9 @@ public class FH {
      * headers.
      *
      * @return a JSONObject contains the default params
-     * @throws Exception if the app property file is not loaded
+     * @throws IllegalStateException if the app property file is not loaded
      */
-    public static JSONObject getDefaultParams() throws Exception {
+    public static JSONObject getDefaultParams()  {
         AppProps appProps = AppProps.getInstance();
         JSONObject defaultParams = new JSONObject();
         defaultParams.put("appid", appProps.getAppId());
