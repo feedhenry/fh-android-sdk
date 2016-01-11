@@ -105,26 +105,22 @@ public class FHCloudRequest extends FHRemote {
     }
 
     @Override
-    public void execute(FHActCallback pCallback) throws Exception {
-        try {
-            switch (mMethod) {
-                case GET:
-                    FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                    break;
-                case PUT:
-                    FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                    break;
-                case POST:
-                    FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                    break;
-                case DELETE:
-                    FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                    break;
-            }
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
+    public void execute(FHActCallback pCallback) {
+        switch (mMethod) {
+            case GET:
+                FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
+                break;
+            case PUT:
+                FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
+                break;
+            case POST:
+                FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
+                break;
+            case DELETE:
+                FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
+                break;
         }
+
     }
 
     private String getURL() {
