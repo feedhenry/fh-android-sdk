@@ -163,10 +163,11 @@ public class AppProps {
      * A method to retrieve the singleton instance of AppProps.
      *
      * @return The singleton instance of AppProps
+     * @throws IllegalStateException if the application is not initialized.
      */
     public static AppProps getInstance() {
         if (mInstance == null) {
-            throw new RuntimeException("AppProps is not initialised");
+            throw new IllegalStateException("AppProps is not initialised");
         }
         return mInstance;
     }

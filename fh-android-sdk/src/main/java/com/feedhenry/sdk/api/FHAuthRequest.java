@@ -171,7 +171,7 @@ public class FHAuthRequest extends FHRemote {
     }
 
     @Override
-    public void executeAsync(FHActCallback pCallback) throws Exception {
+    public void executeAsync(FHActCallback pCallback) {
         if (mPresentingActivity == null) {
             // the app didn't provide an activity to presenting the webview, let the app handle the oauth process
             super.executeAsync(pCallback);
@@ -197,6 +197,7 @@ public class FHAuthRequest extends FHRemote {
                         }
                     } catch (Exception e) {
                         FHLog.e(LOG_TAG, "Error handling response", e);
+                        callback.fail(new FHResponse(null, null, e, e.getMessage()));
                     }
                 }
 
@@ -210,7 +211,7 @@ public class FHAuthRequest extends FHRemote {
     }
 
     @Override
-    public void execute(FHActCallback pCallback) throws Exception {
+    public void execute(FHActCallback pCallback) {
         if (mPresentingActivity == null) {
             super.execute(pCallback);
         } else {
@@ -233,8 +234,9 @@ public class FHAuthRequest extends FHRemote {
                         } else {
                             callback.fail(pResponse);
                         }
-                    } catch (Exception e) {
-                        FHLog.e(LOG_TAG, "Error handling response", e);
+                    }catch (Exception e) {
+                     FHLog.e(LOG_TAG, "Error handling response", e);
+                     callback.fail(new FHResponse(null, null, e, e.getMessage()));   
                     }
                 }
 
@@ -247,7 +249,7 @@ public class FHAuthRequest extends FHRemote {
         }
     }
 
-    private void startAuthIntent(final JSONObject pJsonRes, final FHActCallback pCallback) throws Exception {
+    private void startAuthIntent(final JSONObject pJsonRes, final FHActCallback pCallback) {
         String url = pJsonRes.getString("url");
         FHLog.v(LOG_TAG, "Got oAuth url back, url = " + url + ". Open it in new intent.");
         Bundle data = new Bundle();
@@ -324,7 +326,7 @@ public class FHAuthRequest extends FHRemote {
     }
 
     @Override
-    protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    protected Header[] buildHeaders(Header[] pHeaders) {
         return null;
     }
 }
