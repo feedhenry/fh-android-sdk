@@ -30,7 +30,7 @@ import org.json.fh.JSONObject;
  *   //calling a cloud side function called "getTweets" and pass in the keywords
  *   FHActRequest request = FH.buildActRequest("getTweets", new JSONObject().put("keyword",
  * "FeedHenry"));
- *   reqeust.executeAsync(new FHActCallback(){
+ *   reqeust.execute(new FHActCallback(){
  *     public void success(FHResponse pResp){
  *       JSONObject tweetsObj = pResp.getJson();
  *       ...

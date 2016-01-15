@@ -129,8 +129,7 @@ public class FHAuthSession {
                     pCallback.handleError(pResponse);
                 }
             }
-        },
-                pUseSync);
+        });
     }
 
     public interface Callback {

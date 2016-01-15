@@ -89,16 +89,16 @@ public class FHCloudRequest extends FHRemote {
     public void execute(FHActCallback pCallback)  {
             switch (mMethod) {
                 case GET:
-                    fhHTTPClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
                     break;
                 case PUT:
-                    fhHTTPClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
                     break;
                 case POST:
-                    fhHTTPClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
                     break;
                 case DELETE:
-                    fhHTTPClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
                     break;
                 default:
                     break;
@@ -111,6 +111,7 @@ public class FHCloudRequest extends FHRemote {
         return host + (getPath().startsWith("/") ? getPath() : '/' + getPath());
     }
 
+    @Override
     protected Header[] buildHeaders(Header[] pHeaders) {
         return FH.getDefaultParamsAsHeaders(pHeaders);
     }

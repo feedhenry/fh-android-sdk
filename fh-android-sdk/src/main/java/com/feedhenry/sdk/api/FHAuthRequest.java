@@ -54,7 +54,7 @@ import org.json.fh.JSONObject;
  *  // <activity android:name="com.feedhenry.sdk.oauth.FHOAuthIntent" />;
  *  authRequest.setPresentingActivity(this);
  *  authRequest.setAuthPolicyId("MyGooglePolicy");
- *  authRequest.executeAsync(new FHActCallback() {
+ *  authRequest.execute(new FHActCallback() {
  *    public void success(FHResponse resp) {
  *      Log.d("FHAuthActivity", "user sessionToken = "+ resp.getJson().getString("sessionToken"));
  *    }
