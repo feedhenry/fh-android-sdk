@@ -226,7 +226,7 @@ public class FHSyncDataset {
 
             try {
                 FHRemote actRequest = makeCloudRequest(syncLoopParams);
-                actRequest.executeAsync(
+                actRequest.execute(
                     new FHActCallback() {
 
                         @Override
@@ -308,7 +308,7 @@ public class FHSyncDataset {
 
         try {
             FHRemote request = makeCloudRequest(syncRecsParams);
-            request.executeAsync(
+            request.execute(
                 new FHActCallback() {
 
                     @Override

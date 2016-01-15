@@ -20,9 +20,9 @@ import android.util.Log;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHResponse;
 import static com.feedhenry.sdk.api.FHAuthSession.SESSION_TOKEN_KEY;
-import com.feedhenry.sdk.api2.FHAuthSession;
+import com.feedhenry.sdk.api.FHAuthSession;
 import com.feedhenry.sdk.utils.DataManager;
-import com.feedhenry.sdk2.FHHttpClient;
+import com.feedhenry.sdk.FHHttpClient;
 import cz.msebera.android.httpclient.Header;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.fh.JSONObject;
@@ -41,7 +41,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
     
     private static final String TEST_TOKEN = "testSessionToken";
     private DataManager mDataManager;
-    private com.feedhenry.sdk.api2.FHAuthSession session;
+    private FHAuthSession session;
     private FHHttpClient mFHHttpClient;
     @Override
     public void setUp() throws Exception {

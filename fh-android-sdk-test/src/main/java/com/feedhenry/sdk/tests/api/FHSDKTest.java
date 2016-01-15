@@ -55,15 +55,11 @@ public class FHSDKTest extends AndroidTestCase {
         FH.stop();
     }
 
-    public void testFHActASync() throws Exception {
-        actTest(true);
+    public void testFHAct() throws Exception {
+        actTest();
     }
 
-    public void testFhActSync() throws Exception {
-        actTest(false);
-    }
-
-    private void actTest(boolean async) throws Exception {
+    private void actTest() throws Exception {
         String cloudHost = FH.getCloudHost();
         System.out.println("cloud host is " + cloudHost);
 
@@ -91,11 +87,9 @@ public class FHSDKTest extends AndroidTestCase {
             }
         };
 
-        if (async) {
-            runAsyncRequest(actCall, callback);
-        } else {
-            actCall.execute(callback);
-        }
+        
+        runRequest(actCall, callback);
+        
 
         assertEquals(resJson.getString("type"), "act");
         // verify request object
@@ -112,83 +106,42 @@ public class FHSDKTest extends AndroidTestCase {
         assertEquals(getDeviceId(), deviceId);
     }
 
-    public void testCloudGetSync() throws Exception {
-
+    public void testCloudGet() throws Exception {
         enqueueCloudResponse();
-
         JSONObject p = new JSONObject();
         p.put("test", "true");
-        makeCloudRequest("GET", null, p, false);
+        makeCloudRequest("GET", null, p);
         verifyCloudRequest("/v1/cloud/test?test=true", "GET", null, null);
     }
 
-    public void testCloudGetAsync() throws Exception {
+    public void testCloudDelete() throws Exception {
         enqueueCloudResponse();
         JSONObject p = new JSONObject();
         p.put("test", "true");
-        makeCloudRequest("GET", null, p, true);
-        verifyCloudRequest("/v1/cloud/test?test=true", "GET", null, null);
-    }
-
-    public void testCloudDeleteSync() throws Exception {
-
-        enqueueCloudResponse();
-
-        JSONObject p = new JSONObject();
-        p.put("test", "true");
-        makeCloudRequest("DELETE", null, p, false);
+        makeCloudRequest("DELETE", null, p);
         verifyCloudRequest("/v1/cloud/test?test=true", "DELETE", null, null);
     }
 
-    public void testCloudDeleteAsync() throws Exception {
-        enqueueCloudResponse();
-        JSONObject p = new JSONObject();
-        p.put("test", "true");
-        makeCloudRequest("DELETE", null, p, true);
-        verifyCloudRequest("/v1/cloud/test?test=true", "DELETE", null, null);
-    }
-
-    public void testCloudPostSync() throws Exception {
+    public void testCloudPost() throws Exception {
         enqueueCloudResponse();
         JSONObject p = new JSONObject();
         p.put("test", "true");
         Header[] headers = new Header[1];
         headers[0] = new BasicHeader("testHeader", "testValue");
 
-        makeCloudRequest("POST", headers, p, false);
+        makeCloudRequest("POST", headers, p);
         verifyCloudRequest("/v1/cloud/test", "POST", headers, p);
     }
 
-    public void testCloudPostASync() throws Exception {
+
+    public void testCloudPut() throws Exception {
         enqueueCloudResponse();
         JSONObject p = new JSONObject();
         p.put("test", "true");
         Header[] headers = new Header[1];
         headers[0] = new BasicHeader("testHeader", "testValue");
 
-        makeCloudRequest("POST", headers, p, true);
-        verifyCloudRequest("/v1/cloud/test", "POST", headers, p);
-    }
-
-    public void testCloudPutSync() throws Exception {
-        enqueueCloudResponse();
-        JSONObject p = new JSONObject();
-        p.put("test", "true");
-        Header[] headers = new Header[1];
-        headers[0] = new BasicHeader("testHeader", "testValue");
-
-        makeCloudRequest("PUT", headers, p, false);
-        verifyCloudRequest("/v1/cloud/test", "PUT", headers, p);
-    }
-
-    public void testCloudPutASync() throws Exception {
-        enqueueCloudResponse();
-        JSONObject p = new JSONObject();
-        p.put("test", "true");
-        Header[] headers = new Header[1];
-        headers[0] = new BasicHeader("testHeader", "testValue");
-
-        makeCloudRequest("PUT", headers, p, true);
+        makeCloudRequest("PUT", headers, p);
         verifyCloudRequest("/v1/cloud/test", "PUT", headers, p);
     }
 
@@ -205,7 +158,7 @@ public class FHSDKTest extends AndroidTestCase {
         mockWebServer.enqueue(cloudSuccessResponse);
     }
 
-    private void makeCloudRequest(String method, Header[] headers, JSONObject params, boolean pAsync) throws JSONException, Exception {
+    private void makeCloudRequest(String method, Header[] headers, JSONObject params) throws JSONException, Exception {
         FHCloudRequest cloudRequest = FH.buildCloudRequest("/v1/cloud/test", method, headers, params);
         FHActCallback callback = new FHActCallback() {
 
@@ -219,12 +172,9 @@ public class FHSDKTest extends AndroidTestCase {
                 resJson = null;
             }
         };
-        if (pAsync) {
-            runAsyncRequest(cloudRequest, callback);
-        } else {
-            cloudRequest.execute(callback);
-        }
-
+        
+        runRequest(cloudRequest, callback);
+        
         assertNotNull(resJson);
         assertEquals("cloud", resJson.getString("type"));
     }
@@ -255,7 +205,7 @@ public class FHSDKTest extends AndroidTestCase {
                 .getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
     }
 
-    private void runAsyncRequest(final FHAct pRequest,
+    private void runRequest(final FHAct pRequest,
             final FHActCallback pCallback) throws Exception {
         // The AsyncHttpClient uses Looper & Handlers to implement async http calls.
         // It requires the calling thread to have a looper attached to it.
@@ -270,7 +220,7 @@ public class FHSDKTest extends AndroidTestCase {
             public void run() {
                 try {
                     Looper.prepare();
-                    pRequest.executeAsync(new FHActCallback() {
+                    pRequest.execute(new FHActCallback() {
 
                         @Override
                         public void success(FHResponse pResponse) {

@@ -21,11 +21,12 @@ import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHHttpClient;
 import com.feedhenry.sdk.FHRemote;
-import com.feedhenry.sdk.utils.FHLog;
 import cz.msebera.android.httpclient.Header;
 import org.json.fh.JSONObject;
 
 public class FHCloudRequest extends FHRemote {
+
+    private final FHHttpClient fhHTTPClient;
 
     public enum Methods {
         GET, POST, PUT, DELETE;
@@ -55,6 +56,7 @@ public class FHCloudRequest extends FHRemote {
 
     public FHCloudRequest(Context context) {
         super(context);
+        this.fhHTTPClient = new FHHttpClient();
     }
 
     public void setPath(String pPath) {
@@ -84,19 +86,19 @@ public class FHCloudRequest extends FHRemote {
     }
 
     @Override
-    public void executeAsync(FHActCallback pCallback)  {
+    public void execute(FHActCallback pCallback)  {
             switch (mMethod) {
                 case GET:
-                    FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
                     break;
                 case PUT:
-                    FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
                     break;
                 case POST:
-                    FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
                     break;
                 case DELETE:
-                    FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
                     break;
                 default:
                     break;
@@ -104,31 +106,11 @@ public class FHCloudRequest extends FHRemote {
         
     }
 
-    @Override
-    public void execute(FHActCallback pCallback) {
-        switch (mMethod) {
-            case GET:
-                FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                break;
-            case PUT:
-                FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                break;
-            case POST:
-                FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                break;
-            case DELETE:
-                FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                break;
-        }
-
-    }
-
     private String getURL() {
         String host = CloudProps.getInstance().getCloudHost();
         return host + (getPath().startsWith("/") ? getPath() : '/' + getPath());
     }
 
-    @Override
     protected Header[] buildHeaders(Header[] pHeaders) {
         return FH.getDefaultParamsAsHeaders(pHeaders);
     }

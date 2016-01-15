@@ -144,7 +144,7 @@ public class FH {
         }
         FHInitializeRequest initRequest = new FHInitializeRequest(mContext);
         try {
-            initRequest.executeAsync(
+            initRequest.execute(
                 new FHActCallback() {
                     @Override
                     public void success(FHResponse pResponse) {
@@ -194,11 +194,11 @@ public class FH {
         }
     }
 
-    private static FHAct buildAction(String pAction) throws FHNotReadyException {
+    private static com.feedhenry.sdk.FHAct buildAction(String pAction) throws FHNotReadyException {
         if (!mInitCalled) {
             throw new FHNotReadyException();
         }
-        FHAct action = null;
+        com.feedhenry.sdk.FHAct action = null;
         if (FH_API_ACT.equalsIgnoreCase(pAction)) {
             action = new FHActRequest(mContext);
         } else if (FH_API_AUTH.equalsIgnoreCase(pAction)) {
@@ -351,8 +351,10 @@ public class FH {
             defaultParams.put("init", initObj);
         }
 
-        if (FHAuthSession.exists()) {
-            defaultParams.put(FHAuthSession.SESSION_TOKEN_KEY, FHAuthSession.getToken());
+        final FHAuthSession fhAuthSession = new FHAuthSession(DataManager.getInstance(), new FHHttpClient());
+        
+        if (fhAuthSession.exists()) {
+            defaultParams.put(FHAuthSession.SESSION_TOKEN_KEY, fhAuthSession.getToken());
         }
 
         return defaultParams;
@@ -365,7 +367,7 @@ public class FH {
      * @return new headers by combining existing headers and default headers
      * @throws IllegalStateException if the app property file is not loaded
      */
-    public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders)  {
+    public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders) {
         JSONObject defaultParams = FH.getDefaultParams();
         ArrayList<Header> headers = new ArrayList<Header>(defaultParams.length());
 
@@ -399,7 +401,7 @@ public class FH {
         JSONObject pParams,
         FHActCallback pCallback) throws FHNotReadyException {
         FHCloudRequest cloudRequest = buildCloudRequest(pPath, pMethod, pHeaders, pParams);
-        cloudRequest.executeAsync(pCallback);
+        cloudRequest.execute(pCallback);
     }
 
     /**

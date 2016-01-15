@@ -285,7 +285,7 @@ public class FHSyncClient {
         JSONObject params = new JSONObject();
         params.put("fn", "listCollisions");
         FHActRequest request = FH.buildActRequest(pDataId, params);
-        request.executeAsync(pCallback);
+        request.execute(pCallback);
     }
 
     /**
@@ -301,7 +301,7 @@ public class FHSyncClient {
         params.put("fn", "removeCollision");
         params.put("hash", pCollisionHash);
         FHActRequest request = FH.buildActRequest(pDataId, params);
-        request.executeAsync(pCallback);
+        request.execute(pCallback);
     }
 
     /**

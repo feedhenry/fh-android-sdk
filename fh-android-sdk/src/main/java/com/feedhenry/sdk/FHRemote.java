@@ -16,6 +16,9 @@
 package com.feedhenry.sdk;
 
 import android.content.Context;
+import com.feedhenry.sdk.AppProps;
+import com.feedhenry.sdk.FHActCallback;
+import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.utils.FHLog;
 import com.feedhenry.sdk.utils.StringUtils;
 import cz.msebera.android.httpclient.Header;
@@ -30,30 +33,32 @@ public abstract class FHRemote implements FHAct {
 
     protected static String LOG_TAG = "com.feedhenry.sdk.FHRemote";
 
-    private final com.feedhenry.sdk2.FHHttpClient mHttpClient = new com.feedhenry.sdk2.FHHttpClient();
-    
     protected FHActCallback mCallback;
     protected Context mContext;
+    private final FHHttpClient mFHHttpClient = new FHHttpClient();
 
     public FHRemote(Context context) {
         mContext = context;
     }
 
     @Override
-    public void executeAsync() {
-        executeAsync(mCallback);
-    }
-
-    @Override
-    public void executeAsync(FHActCallback pCallback) {
-        mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
+    public void execute()  {
+        execute(mCallback);
     }
 
     @Override
     public void execute(FHActCallback pCallback) {
-        mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
+        try {
+            mFHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
+        } catch (Exception e) {
+            FHLog.e(LOG_TAG, e.getMessage(), e);
+            if (pCallback != null) {
+                pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
+            }
+        }
     }
 
+    @Override
     public void setCallback(FHActCallback pCallback) {
         mCallback = pCallback;
     }
