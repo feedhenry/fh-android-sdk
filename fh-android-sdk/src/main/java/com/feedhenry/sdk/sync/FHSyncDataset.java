@@ -415,11 +415,7 @@ public class FHSyncDataset {
     }
     
     private void updateCrashedInFlightFromNewData(JSONObject remoteData) {
-        JSONObject updateNotifications = new JSONObject();
-        updateNotifications.put("applied", NotificationMessage.REMOTE_UPDATE_APPLIED_CODE);
-        updateNotifications.put("failed", NotificationMessage.REMOTE_UPDATE_FAILED_CODE);
-        updateNotifications.put("collisions", NotificationMessage.COLLISION_DETECTED_CODE);
-
+        
         JSONObject resolvedCrashed = new JSONObject();
         List<String> keysToRemove = new ArrayList<String>();
 
@@ -453,7 +449,7 @@ public class FHSyncDataset {
                     keysToRemove.add(pendingHash);
                     if ("applied".equals(crashedUpdate.opt("type"))) {
                         doNotify(crashedUpdate.getString("uid"), NotificationMessage.REMOTE_UPDATE_APPLIED_CODE, crashedUpdate.toString());
-                    } else if ("applied".equals(crashedUpdate.opt("type"))) {
+                    } else if ("failed".equals(crashedUpdate.opt("type"))) {
                         doNotify(crashedUpdate.getString("uid"), NotificationMessage.REMOTE_UPDATE_FAILED_CODE, crashedUpdate.toString());
                     } else if ("collisions".equals(crashedUpdate.opt("type"))) {
                         doNotify(crashedUpdate.getString("uid"), NotificationMessage.COLLISION_DETECTED_CODE, crashedUpdate.toString());
