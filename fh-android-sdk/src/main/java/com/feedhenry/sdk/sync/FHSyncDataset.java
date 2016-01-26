@@ -754,10 +754,10 @@ public class FHSyncDataset {
             writeStream(bis, fos);
         } catch (FileNotFoundException ex) {
             FHLog.e(LOG_TAG, "File not found for writing: " + filePath, ex);
-            doNotify(null, NotificationMessage.CLIENT_STORAGE_FAILED_CODE, null);
+            doNotify(null, NotificationMessage.CLIENT_STORAGE_FAILED_CODE, ex.getMessage());
         } catch (IOException e) {
             FHLog.e(LOG_TAG, "Error writing file: " + filePath, e);
-            doNotify(null, NotificationMessage.CLIENT_STORAGE_FAILED_CODE, null);
+            doNotify(null, NotificationMessage.CLIENT_STORAGE_FAILED_CODE, e.getMessage());
         }
     }
 
