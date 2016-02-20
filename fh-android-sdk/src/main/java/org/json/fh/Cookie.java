@@ -49,13 +49,12 @@ public class Cookie {
     public static String escape(String string) {
         char c;
         String s = string.trim();
-        StringBuffer sb = new StringBuffer();
-        int len = s.length();
-        for (int i = 0; i < len; i += 1) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0, len = s.length(); i < len; i += 1) {
             c = s.charAt(i);
             if (c < ' ' || c == '+' || c == '%' || c == '=' || c == ';') {
                 sb.append('%');
-                sb.append(Character.forDigit((char) ((c >>> 4) & 0x0f), 16));
+                sb.append(Character.forDigit((char) (c >>> 4 & 0x0f), 16));
                 sb.append(Character.forDigit((char) (c & 0x0f), 16));
             } else {
                 sb.append(c);
@@ -77,22 +76,21 @@ public class Cookie {
      *
      * @param string The cookie specification string.
      * @return A JSONObject containing "name", "value", and possibly other
-     *         members.
-     * @throws JSONException this will be thrown if there is an error parsing the JSON
+     * members.
+     * @throws JSONException if there is an error parsing the JSON
      */
     public static JSONObject toJSONObject(String string) throws JSONException {
-        String n;
         JSONObject o = new JSONObject();
-        Object v;
         JSONTokener x = new JSONTokener(string);
         o.put("name", x.nextTo('='));
         x.next('=');
         o.put("value", x.nextTo(';'));
         x.next();
         while (x.more()) {
-            n = unescape(x.nextTo("=;"));
+            Object v;
+            String name = unescape(x.nextTo("=;"));
             if (x.next() != '=') {
-                if (n.equals("secure")) {
+                if (name.equals("secure")) {
                     v = Boolean.TRUE;
                 } else {
                     throw x.syntaxError("Missing '=' in cookie parameter.");
@@ -101,7 +99,7 @@ public class Cookie {
                 v = unescape(x.nextTo(';'));
                 x.next();
             }
-            o.put(n, v);
+            o.put(name, v);
         }
         return o;
     }
@@ -115,13 +113,13 @@ public class Cookie {
      *
      * @param o A JSONObject
      * @return A cookie specification string
-     * @throws JSONException this will be thrown if there is an error parsing the JSON
+     * @throws JSONException if there is an error parsing the JSON
      */
     public static String toString(JSONObject o) throws JSONException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         sb.append(escape(o.getString("name")));
-        sb.append("=");
+        sb.append('=');
         sb.append(escape(o.getString("value")));
         if (o.has("expires")) {
             sb.append(";expires=");
@@ -145,13 +143,13 @@ public class Cookie {
      * Convert <code>%</code><i>hh</i> sequences to single characters, and
      * convert plus to space.
      *
-     * @param s A string that may contain <code>+</code>&nbsp;<small>(plus)</small> and <code>%</code><i>hh</i> sequences.
+     * @param s A string that may contain <code>+</code>&nbsp;<small>(plus)</small> and <code>%</code><i>hh</i>
+     *          sequences.
      * @return The unescaped string.
      */
     public static String unescape(String s) {
-        int len = s.length();
-        StringBuffer b = new StringBuffer();
-        for (int i = 0; i < len; ++i) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0, len = s.length(); i < len; ++i) {
             char c = s.charAt(i);
             if (c == '+') {
                 c = ' ';

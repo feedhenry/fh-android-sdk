@@ -34,7 +34,7 @@ package org.json.fh;
 public class HTTPTokener extends JSONTokener {
 
     /**
-     * Construct an XMLTokener from a string.
+     * Constructs an HTTPTokener from a string.
      *
      * @param s A source string.
      */
@@ -43,21 +43,22 @@ public class HTTPTokener extends JSONTokener {
     }
 
     /**
-     * Get the next token or string. This is used in parsing HTTP headers.
+     * Gets the next token or string.
+     * This is used in parsing HTTP headers.
      *
-     * @throws JSONException this will be thrown if there is an error parsing the JSON
      * @return A String.
+     * @throws JSONException if there is an error parsing the JSON
      */
     public String nextToken() throws JSONException {
         char c;
-        char q;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         do {
             c = next();
         } while (Character.isWhitespace(c));
+        char q;
         if (c == '"' || c == '\'') {
             q = c;
-            for (;;) {
+            while (true) {
                 c = next();
                 if (c < ' ') {
                     throw syntaxError("Unterminated string.");
@@ -68,7 +69,7 @@ public class HTTPTokener extends JSONTokener {
                 sb.append(c);
             }
         }
-        for (;;) {
+        while (true) {
             if (c == 0 || Character.isWhitespace(c)) {
                 return sb.toString();
             }

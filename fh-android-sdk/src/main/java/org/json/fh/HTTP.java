@@ -34,7 +34,9 @@ import java.util.Iterator;
  */
 public class HTTP {
 
-    /** Carriage return/line feed. */
+    /**
+     * Carriage return/line feed.
+     */
     public static final String CRLF = "\r\n";
 
     /**
@@ -83,15 +85,14 @@ public class HTTP {
      *
      * @param string An HTTP header string.
      * @return A JSONObject containing the elements and attributes
-     *         of the XML string.
-     * @throws JSONException this will be thrown if there is an error parsing the JSON
+     * of the XML string.
+     * @throws JSONException if there is an error parsing the JSON
      */
     public static JSONObject toJSONObject(String string) throws JSONException {
         JSONObject o = new JSONObject();
         HTTPTokener x = new HTTPTokener(string);
-        String t;
 
-        t = x.nextToken();
+        String t = x.nextToken();
         if (t.toUpperCase().startsWith("HTTP")) {
 
             // Response
@@ -100,7 +101,6 @@ public class HTTP {
             o.put("Status-Code", x.nextToken());
             o.put("Reason-Phrase", x.nextTo('\0'));
             x.next();
-
         } else {
 
             // Request
@@ -147,13 +147,11 @@ public class HTTP {
      *
      * @param o A JSONObject
      * @return An HTTP header string.
-     * @throws JSONException this will be thrown if there is an error parsing the JSON if the object does not contain enough
-     *             information.
+     * @throws JSONException if there is an error parsing the JSON or if the object does not contain
+     *                       enough information.
      */
     public static String toString(JSONObject o) throws JSONException {
-        Iterator keys = o.keys();
-        String s;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (o.has("Status-Code") && o.has("Reason-Phrase")) {
             sb.append(o.getString("HTTP-Version"));
             sb.append(' ');
@@ -172,11 +170,11 @@ public class HTTP {
             throw new JSONException("Not enough material for an HTTP header.");
         }
         sb.append(CRLF);
-        while (keys.hasNext()) {
-            s = keys.next().toString();
+        for (Iterator keys = o.keys(); keys.hasNext(); ) {
+            String s = keys.next().toString();
             if (!s.equals("HTTP-Version") && !s.equals("Status-Code") &&
-                    !s.equals("Reason-Phrase") && !s.equals("Method") &&
-                    !s.equals("Request-URI") && !o.isNull(s)) {
+                !s.equals("Reason-Phrase") && !s.equals("Method") &&
+                !s.equals("Request-URI") && !o.isNull(s)) {
                 sb.append(s);
                 sb.append(": ");
                 sb.append(o.getString(s));
