@@ -54,7 +54,7 @@ public class FHActRequest extends FHRemote {
     /**
      * Constructor
      * 
-     * @param context the applicaiton context
+     * @param context the application context
      */
     public FHActRequest(Context context) {
         super(context);
@@ -103,7 +103,7 @@ public class FHActRequest extends FHRemote {
     }
 
     @Override
-    protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    protected Header[] buildHeaders(Header[] pHeaders) {
         return FH.getDefaultParamsAsHeaders(pHeaders);
     }
 }

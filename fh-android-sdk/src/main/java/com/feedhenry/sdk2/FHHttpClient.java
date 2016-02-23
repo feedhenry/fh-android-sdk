@@ -21,6 +21,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.SyncHttpClient;
+import cz.msebera.android.httpclient.Consts;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpHost;
 import cz.msebera.android.httpclient.conn.params.ConnRoutePNames;
@@ -41,12 +42,11 @@ public class FHHttpClient {
         Header[] pHeaders,
         JSONObject pParams,
         FHActCallback pCallback,
-        boolean pUseSync)
-        throws Exception {
+        boolean pUseSync) {
         if (FH.isOnline()) {
-            StringEntity entity = new StringEntity(new JSONObject().toString());
+            StringEntity entity = new StringEntity(new JSONObject().toString(), Consts.UTF_8);
             if (pParams != null) {
-                entity = new StringEntity(pParams.toString(), "UTF-8");
+                entity = new StringEntity(pParams.toString(), Consts.UTF_8);
             }
             if (pUseSync) {
                 mSyncClient.setUserAgent(FH.getUserAgent());
@@ -78,8 +78,7 @@ public class FHHttpClient {
         Header[] pHeaders,
         JSONObject pParams,
         FHActCallback pCallback,
-        boolean pUseSync)
-        throws Exception {
+        boolean pUseSync) {
         if (FH.isOnline()) {
             if (pUseSync) {
                 mSyncClient.setUserAgent(FH.getUserAgent());
@@ -109,13 +108,12 @@ public class FHHttpClient {
         Header[] pHeaders,
         JSONObject pParams,
         FHActCallback pCallback,
-        boolean pUseSync)
-        throws Exception {
+        boolean pUseSync) {
         if (FH.isOnline()) {
 
-            StringEntity entity = new StringEntity(new JSONObject().toString());
+            StringEntity entity = new StringEntity(new JSONObject().toString(), Consts.UTF_8);
             if (pParams != null) {
-                entity = new StringEntity(pParams.toString(), "UTF-8");
+                entity = new StringEntity(pParams.toString(), Consts.UTF_8);
             }
             if (pUseSync) {
                 mSyncClient.setUserAgent(FH.getUserAgent());
@@ -147,8 +145,7 @@ public class FHHttpClient {
         Header[] pHeaders,
         JSONObject pParams,
         FHActCallback pCallback,
-        boolean pUseSync)
-        throws Exception {
+        boolean pUseSync) {
         if (FH.isOnline()) {
             if (pUseSync) {
                 mSyncClient.setUserAgent(FH.getUserAgent());

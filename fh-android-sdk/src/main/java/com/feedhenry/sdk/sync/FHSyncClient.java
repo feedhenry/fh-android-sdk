@@ -24,6 +24,8 @@ import android.util.Log;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.api.FHActRequest;
+import com.feedhenry.sdk.exceptions.DataSetNotFound;
+import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
 import java.util.Date;
 import java.util.HashMap;
@@ -128,9 +130,9 @@ public class FHSyncClient {
      * @param pConfig The sync configuration for the dataset. If not specified,
      * the sync configuration passed in the initDev method will be used
      * @param pQueryParams Query parameters for the dataset
-     * @throws Exception thrown if FHSyncClient isn't initialised.
+     * @throws IllegalStateException thrown if FHSyncClient isn't initialised.
      */
-    public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams) throws Exception {
+    public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams) {
         manage(pDataId, pConfig, pQueryParams, new JSONObject());
     }
 
@@ -142,12 +144,11 @@ public class FHSyncClient {
      * the sync configuration passed in the initDev method will be used
      * @param pQueryParams Query parameters for the dataset
      * @param pMetaData Meta for the dataset
-     * @throws Exception thrown if FHSyncClient isn't initialised.
+     * @throws IllegalStateException thrown if FHSyncClient isn't initialised.
      */
-    public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams, JSONObject pMetaData)
-            throws Exception {
+    public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams, JSONObject pMetaData) {
         if (!mInitialised) {
-            throw new Exception("FHSyncClient isn't initialised. Have you called the initDev function?");
+            throw new IllegalStateException("FHSyncClient isn't initialised. Have you called the initDev function?");
         }
         FHSyncDataset dataset = mDataSets.get(pDataId);
         FHSyncConfig syncConfig = mConfig;
@@ -224,14 +225,14 @@ public class FHSyncClient {
      * @param pData the actual data
      * @return the created data record. Each record contains a key "uid" with
      * the id value and a key "data" with the JSON data.
-     * @throws Exception if the dataId is not known
+     * @throws DataSetNotFound if the dataId is not known
      */
-    public JSONObject create(String pDataId, JSONObject pData) throws Exception {
+    public JSONObject create(String pDataId, JSONObject pData) throws DataSetNotFound {
         FHSyncDataset dataset = mDataSets.get(pDataId);
         if (null != dataset) {
             return dataset.createData(pData);
         } else {
-            throw new Exception("Unknown dataId : " + pDataId);
+            throw new DataSetNotFound("Unknown dataId : " + pDataId);
         }
     }
 
@@ -243,14 +244,14 @@ public class FHSyncClient {
      * @param pData the new content of the data record
      * @return the updated data record. Each record contains a key "uid" with
      * the id value and a key "data" with the JSON data.
-     * @throws Exception if the dataId is not known
+     * @throws DataSetNotFound if the dataId is not known
      */
-    public JSONObject update(String pDataId, String pUID, JSONObject pData) throws Exception {
+    public JSONObject update(String pDataId, String pUID, JSONObject pData) throws DataSetNotFound {
         FHSyncDataset dataset = mDataSets.get(pDataId);
         if (null != dataset) {
             return dataset.updateData(pUID, pData);
         } else {
-            throw new Exception("Unknown dataId : " + pDataId);
+            throw new DataSetNotFound("Unknown dataId : " + pDataId);
         }
     }
 
@@ -261,14 +262,14 @@ public class FHSyncClient {
      * @param pUID the id of the data record
      * @return the deleted data record. Each record contains a key "uid" with
      * the id value and a key "data" with the JSON data.
-     * @throws Exception if the dataId is not known
+     * @throws DataSetNotFound if the dataId is not known
      */
-    public JSONObject delete(String pDataId, String pUID) throws Exception {
+    public JSONObject delete(String pDataId, String pUID) throws DataSetNotFound {
         FHSyncDataset dataset = mDataSets.get(pDataId);
         if (null != dataset) {
             return dataset.deleteData(pUID);
         } else {
-            throw new Exception("Unknown dataId : " + pDataId);
+            throw new DataSetNotFound("Unknown dataId : " + pDataId);
         }
     }
 
@@ -277,10 +278,10 @@ public class FHSyncClient {
      *
      * @param pDataId the id of the dataset
      * @param pCallback the callback function
-     * @throws Exception thrown if building the list request or executing the
-     * list request fails
+     * @throws FHNotReadyException if FH is not initialized.
+     * 
      */
-    public void listCollisions(String pDataId, FHActCallback pCallback) throws Exception {
+    public void listCollisions(String pDataId, FHActCallback pCallback) throws FHNotReadyException {
         JSONObject params = new JSONObject();
         params.put("fn", "listCollisions");
         FHActRequest request = FH.buildActRequest(pDataId, params);
@@ -293,11 +294,9 @@ public class FHSyncClient {
      * @param pDataId the id of the dataset
      * @param pCollisionHash the hash value of the collision record
      * @param pCallback the callback function
-     * @throws Exception thrown if building the remove request or executing the
-     * remove request fails
+     * @throws FHNotReadyException thrown if FH is not initialized.
      */
-    public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback)
-            throws Exception {
+    public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback) throws FHNotReadyException {
         JSONObject params = new JSONObject();
         params.put("fn", "removeCollision");
         params.put("hash", pCollisionHash);

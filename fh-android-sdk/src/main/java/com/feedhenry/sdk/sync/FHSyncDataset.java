@@ -22,6 +22,7 @@ import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
+import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -344,7 +345,7 @@ public class FHSyncDataset {
         syncCompleteWithCode("online");
     }
 
-    private FHRemote makeCloudRequest(JSONObject pSyncLoopParams) throws Exception {
+    private FHRemote makeCloudRequest(JSONObject pSyncLoopParams) throws FHNotReadyException {
         FHRemote request = null;
         if(this.getSyncConfig().useCustomSync()){
             request = FH.buildActRequest(mDatasetId, pSyncLoopParams);

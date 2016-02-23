@@ -40,28 +40,18 @@ public abstract class FHRemote implements FHAct {
     }
 
     @Override
-    public void executeAsync() throws Exception {
+    public void executeAsync() {
         executeAsync(mCallback);
     }
 
     @Override
-    public void executeAsync(FHActCallback pCallback) throws Exception {
-        try {
-            mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
-        }
+    public void executeAsync(FHActCallback pCallback) {
+        mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
     }
 
     @Override
-    public void execute(FHActCallback pCallback) throws Exception {
-        try {
-            mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
-        }
+    public void execute(FHActCallback pCallback) {
+        mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
     }
 
     public void setCallback(FHActCallback pCallback) {
@@ -77,5 +67,5 @@ public abstract class FHRemote implements FHAct {
 
     protected abstract JSONObject getRequestArgs();
 
-    protected abstract Header[] buildHeaders(Header[] pHeaders) throws Exception;
+    protected abstract Header[] buildHeaders(Header[] pHeaders);
 }
