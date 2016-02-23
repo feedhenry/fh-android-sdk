@@ -19,18 +19,29 @@ android:
   - build-tools-23.0.1
   - android-22
   - android-23
-  - sys-img-armeabi-v7a-android-22
   - extra-google-m2repository
   - extra-android-m2repository
 
+licenses:
+    - android-sdk-license-5be876d5
 
 env:
   global:
     - RELEASE_VERSION=$(grep "<version>" fh-android-sdk/pom.xml | tr "\n" ":" | cut -d ':' -f1 | sed s/\<version\>//g| sed s/\"//g| sed s/\<\\/version\>//g | tr -d ' ')
+    - ANDROID_SDK=android-23 
   matrix:
-    - ANDROID_SDK=android-23 ANDROID_EMULATOR=android-22 ANDROID_ABI=armeabi-v7a
+    - ANDROID_EMULATOR=android-10 ANDROID_ABI=armeabi     ANDROID_PKGS=sys-img-armeabi-v7a-android-10
+    - ANDROID_EMULATOR=android-15 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-15
+    - ANDROID_EMULATOR=android-16 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-16
+    - ANDROID_EMULATOR=android-17 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-17
+    - ANDROID_EMULATOR=android-18 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-18
+    - ANDROID_EMULATOR=android-19 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-19
+    - ANDROID_EMULATOR=android-21 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-21
+    - ANDROID_EMULATOR=android-22 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-22
 
 before_install:
+  - echo y | android update sdk -a -u -t ${ANDROID_PKGS:-}
+
   # Checkout maven-android-sdk-deployer
   - git clone git://github.com/mosabua/maven-android-sdk-deployer.git
 
@@ -44,22 +55,27 @@ before_install:
   - mvn install --quiet
   - cd -
 
+install:
+  - echo no | android create avd --force -n test -t "$ANDROID_EMULATOR" --abi "$ANDROID_ABI"
+  - emulator -avd test -no-skin -no-audio -no-window &
+  - adb wait-for-device get-serialno
+  - mvn --version
+  - mvn clean
+
 before_script:
-  - echo no | android create avd --force -n test -t $ANDROID_EMULATOR --abi $ANDROID_ABI
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
 
 script:
-  - set -ev
-  - mvn clean install -Drelease
+  - mvn install -Drelease
   - cd fh-android-sdk-test
   - mvn clean package -DskipTests=true;
-  - emulator -avd test -no-skin -no-audio -no-window&
-  - wget https://raw.githubusercontent.com/travis-ci/travis-cookbooks/master/community-cookbooks/android-sdk/files/default/android-wait-for-emulator
-  - chmod a+x ./android-wait-for-emulator
-  - "./android-wait-for-emulator"
-  - adb shell input keyevent 82
   - adb shell df
   - adb install target/fh-android-sdk-test-$RELEASE_VERSION.apk
   - mvn android:instrument
+
+after_script:
+  - cat logcat.log; pkill -KILL -f adb
 
 before_deploy:
   - mkdir -p $TRAVIS_BUILD_DIR/FHStarterProject/libs
