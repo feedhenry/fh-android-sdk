@@ -22,6 +22,7 @@ import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
+import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -344,7 +345,7 @@ public class FHSyncDataset {
         syncCompleteWithCode("online");
     }
 
-    private FHRemote makeCloudRequest(JSONObject pSyncLoopParams) throws Exception {
+    private FHRemote makeCloudRequest(JSONObject pSyncLoopParams) throws FHNotReadyException {
         FHRemote request = null;
         if(this.getSyncConfig().useCustomSync()){
             request = FH.buildActRequest(mDatasetId, pSyncLoopParams);
@@ -415,11 +416,7 @@ public class FHSyncDataset {
     }
     
     private void updateCrashedInFlightFromNewData(JSONObject remoteData) {
-        JSONObject updateNotifications = new JSONObject();
-        updateNotifications.put("applied", NotificationMessage.REMOTE_UPDATE_APPLIED_CODE);
-        updateNotifications.put("failed", NotificationMessage.REMOTE_UPDATE_FAILED_CODE);
-        updateNotifications.put("collisions", NotificationMessage.COLLISION_DETECTED_CODE);
-
+        
         JSONObject resolvedCrashed = new JSONObject();
         List<String> keysToRemove = new ArrayList<String>();
 
@@ -453,7 +450,7 @@ public class FHSyncDataset {
                     keysToRemove.add(pendingHash);
                     if ("applied".equals(crashedUpdate.opt("type"))) {
                         doNotify(crashedUpdate.getString("uid"), NotificationMessage.REMOTE_UPDATE_APPLIED_CODE, crashedUpdate.toString());
-                    } else if ("applied".equals(crashedUpdate.opt("type"))) {
+                    } else if ("failed".equals(crashedUpdate.opt("type"))) {
                         doNotify(crashedUpdate.getString("uid"), NotificationMessage.REMOTE_UPDATE_FAILED_CODE, crashedUpdate.toString());
                     } else if ("collisions".equals(crashedUpdate.opt("type"))) {
                         doNotify(crashedUpdate.getString("uid"), NotificationMessage.COLLISION_DETECTED_CODE, crashedUpdate.toString());
@@ -753,10 +750,10 @@ public class FHSyncDataset {
             writeStream(bis, fos);
         } catch (FileNotFoundException ex) {
             FHLog.e(LOG_TAG, "File not found for writing: " + filePath, ex);
-            doNotify(null, NotificationMessage.CLIENT_STORAGE_FAILED_CODE, null);
+            doNotify(null, NotificationMessage.CLIENT_STORAGE_FAILED_CODE, ex.getMessage());
         } catch (IOException e) {
             FHLog.e(LOG_TAG, "Error writing file: " + filePath, e);
-            doNotify(null, NotificationMessage.CLIENT_STORAGE_FAILED_CODE, null);
+            doNotify(null, NotificationMessage.CLIENT_STORAGE_FAILED_CODE, e.getMessage());
         }
     }
 

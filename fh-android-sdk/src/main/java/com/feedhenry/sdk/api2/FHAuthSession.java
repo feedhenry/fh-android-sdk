@@ -80,9 +80,9 @@ public class FHAuthSession {
      *
      * @param pCallback a callback to be executed when remote call is completed
      * @param pSync     A flag to call it sync
-     * @throws Exception An exception will be thrown when callRemote fail
+     * 
      */
-    public void verify(Callback pCallback, boolean pSync) throws Exception {
+    public void verify(Callback pCallback, boolean pSync) {
         String sessionToken = mDataManager.read(SESSION_TOKEN_KEY);
         if (sessionToken != null) {
             callRemote(VERIFY_SESSION_ENDPOINT, sessionToken, pCallback, pSync);
@@ -93,52 +93,43 @@ public class FHAuthSession {
      * Removes the session token on the device and tries to remove it remotely as well.
      *
      * @param pSync     A flag to call it sync
-     * @throws Exception An exception will be thrown when callRemote fail
+     * 
      */
-    public void clear(boolean pSync) throws Exception {
+    public void clear(boolean pSync) {
         String sessionToken = mDataManager.read(SESSION_TOKEN_KEY);
         if (sessionToken != null) {
             mDataManager.remove(SESSION_TOKEN_KEY);
-            try {
-                callRemote(REVOKE_SESSION_ENDPOINT, sessionToken, null, pSync);
-            } catch (Exception e) {
-                FHLog.w(LOG_TAG, e.getMessage());
-            }
+            callRemote(REVOKE_SESSION_ENDPOINT, sessionToken, null, pSync);
         }
     }
 
-    private void callRemote(String pPath, String pSessionToken, final Callback pCallback, boolean pUseSync)
-        throws Exception {
+    private void callRemote(String pPath, String pSessionToken, final Callback pCallback, boolean pUseSync) {
         String host = AppProps.getInstance().getHost();
         String url = StringUtils.removeTrailingSlash(host) + FHRemote.PATH_PREFIX + pPath;
         JSONObject params = new JSONObject().put(SESSION_TOKEN_KEY, pSessionToken);
-        try {
-            mHttpClient.post(
-                url,
-                null,
-                params,
-                new FHActCallback() {
-                    @Override
-                    public void success(FHResponse pResponse) {
-                        JSONObject res = pResponse.getJson();
-                        if (pCallback != null) {
-                            pCallback.handleSuccess(res.getBoolean("isValid"));
-                        }
+        
+        mHttpClient.post(
+            url,
+            null,
+            params,
+            new FHActCallback() {
+                @Override
+                public void success(FHResponse pResponse) {
+                    JSONObject res = pResponse.getJson();
+                    if (pCallback != null) {
+                        pCallback.handleSuccess(res.getBoolean("isValid"));
                     }
+                }
 
-                    @Override
-                    public void fail(FHResponse pResponse) {
-                        FHLog.w(LOG_TAG, pResponse.getRawResponse());
-                        if (pCallback != null) {
-                            pCallback.handleError(pResponse);
-                        }
+                @Override
+                public void fail(FHResponse pResponse) {
+                    FHLog.w(LOG_TAG, pResponse.getRawResponse());
+                    if (pCallback != null) {
+                        pCallback.handleError(pResponse);
                     }
-                },
-                pUseSync);
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
-        }
+                }
+            },
+            pUseSync);
     }
 
 }
