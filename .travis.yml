@@ -16,7 +16,7 @@ android:
   components:
   - platform-tools
   - tools
-  - build-tools-23.0.1
+  - build-tools-23.0.3
   - android-22
   - android-23
   - extra-google-m2repository
@@ -38,6 +38,7 @@ env:
     - ANDROID_EMULATOR=android-19 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-19
     - ANDROID_EMULATOR=android-21 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-21
     - ANDROID_EMULATOR=android-22 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-22
+    - ANDROID_EMULATOR=android-23 ANDROID_ABI=armeabi-v7a ANDROID_PKGS=sys-img-armeabi-v7a-android-23
 
 before_install:
   - echo y | android update sdk -a -u -t ${ANDROID_PKGS:-}

@@ -51,8 +51,8 @@
 
         <!-- Plugins versions -->
         <maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
-        <maven.android.plugin.version>4.3.0</maven.android.plugin.version>
-        <builder.helper.plugin.version>1.7</builder.helper.plugin.version>
+        <maven.android.plugin.version>4.4.1</maven.android.plugin.version>
+        <builder.helper.plugin.version>1.10</builder.helper.plugin.version>
         <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
         <java-formatter.plugin.version>0.4</java-formatter.plugin.version>
         <license.plugin.version>1.9.0</license.plugin.version>
