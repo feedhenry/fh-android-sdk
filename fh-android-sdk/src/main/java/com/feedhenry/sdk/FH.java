@@ -466,7 +466,7 @@ public class FH {
     public static void pushRegister(final PushConfig pPushConfig, final FHActCallback pCallback) {
         RegistrarManager.config(FH_PUSH_NAME, AeroGearGCMPushConfiguration.class)
             .setPushServerURI(URI.create(AppProps.getInstance().getPushServerUrl()))
-            .setSenderIds(AppProps.getInstance().getPushSenderId())
+            .setSenderId(AppProps.getInstance().getPushSenderId())
             .setVariantID(AppProps.getInstance().getPushVariant())
             .setSecret(AppProps.getInstance().getPushSecret())
             .setAlias(pPushConfig.getAlias())
