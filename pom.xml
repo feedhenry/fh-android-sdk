@@ -151,14 +151,4 @@
             </modules>
         </profile>
     </profiles>
-    <distributionManagement>
-        <repository>
-            <id>releases-repo</id>
-            <url>https://github.com/feedhenry/fh-android-sdk-repository/raw/master/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshot-repo</id>
-            <url>https://github.com/feedhenry/fh-android-sdk-repository/raw/master/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
