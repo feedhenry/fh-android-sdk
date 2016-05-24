@@ -39,26 +39,6 @@ mvn clean package
 
 This will compile the source code, generating an aar and a jar file in the _target_ directory.
 
-## Deploy
-
-Until we don't have it released in Maven Central we are hosting it in a [Github repo](https://github.com/feedhenry/fh-android-sdk-repository)
-
-To deploy it, you need to follow the instructions below:
-
-### Snapshots
-
-```shell
-mvn -DaltDeploymentRepository=snapshot-repo::default::file:[your repo dir]/snapshots clean deploy
-```
-
-### Releases
-
-```shell
-mvn -DaltDeploymentRepository=releases-repo::default::file:[your repo dir]/releases clean deploy
-```
-
-After that, commit it in the [fh-android-sdk-repository](https://github.com/feedhenry/fh-android-sdk-repository) and send a PR on it
-
 ## Usage
 
 ### Gradle Projects (Recommended)
