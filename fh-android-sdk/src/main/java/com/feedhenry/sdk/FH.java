@@ -34,8 +34,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import org.jboss.aerogear.android.core.Callback;
 import org.jboss.aerogear.android.unifiedpush.RegistrarManager;
-import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushConfiguration;
-import org.jboss.aerogear.android.unifiedpush.gcm.AeroGearGCMPushRegistrar;
+import org.jboss.aerogear.android.unifiedpush.fcm.AeroGearFCMPushConfiguration;
+import org.jboss.aerogear.android.unifiedpush.fcm.AeroGearFCMPushRegistrar;
 import org.jboss.aerogear.android.unifiedpush.metrics.UnifiedPushMetricsMessage;
 import org.json.fh.JSONObject;
 
@@ -464,7 +464,7 @@ public class FH {
      * @param pCallback   the pCallback function to be executed after the device registration is finished
      */
     public static void pushRegister(final PushConfig pPushConfig, final FHActCallback pCallback) {
-        RegistrarManager.config(FH_PUSH_NAME, AeroGearGCMPushConfiguration.class)
+        RegistrarManager.config(FH_PUSH_NAME, AeroGearFCMPushConfiguration.class)
             .setPushServerURI(URI.create(AppProps.getInstance().getPushServerUrl()))
             .setSenderId(AppProps.getInstance().getPushSenderId())
             .setVariantID(AppProps.getInstance().getPushVariant())
@@ -493,7 +493,7 @@ public class FH {
      * @param pCallback  the pCallback function to be executed after the metrics sent
      */
     public static void sendPushMetrics(String pMessageId, final FHActCallback pCallback) {
-        AeroGearGCMPushRegistrar registrar = (AeroGearGCMPushRegistrar) RegistrarManager.getRegistrar(FH_PUSH_NAME);
+        AeroGearFCMPushRegistrar registrar = (AeroGearFCMPushRegistrar) RegistrarManager.getRegistrar(FH_PUSH_NAME);
         registrar.sendMetrics(
             new UnifiedPushMetricsMessage(pMessageId), new Callback<UnifiedPushMetricsMessage>() {
                 @Override
