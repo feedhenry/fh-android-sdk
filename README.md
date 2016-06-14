@@ -43,26 +43,11 @@ This will compile the source code, generating an aar and a jar file in the _targ
 
 ### Gradle Projects (Recommended)
 
-Add our Github host repo in your `gradle.build` project file
-
-
-```
-allprojects {
-	repositories {
-   	jcenter()
-   		// for snapshots
-		maven { url "https://github.com/feedhenry/fh-android-sdk-repository/raw/master/snapshots" }
-		// for released
-		maven { url "https://github.com/feedhenry/fh-android-sdk-repository/raw/master/releases" }
-	}
-}
-```
-
 Add the FH Android `aar` library in your `build.gradle` project
 
 ```
 dependencies {
-	compile 'com.feedhenry:fh-android-sdk:3.0.0'
+	compile 'com.feedhenry:fh-android-sdk:3.1.0'
 }
 ```
 
@@ -72,7 +57,7 @@ For more detail about our API, See [FH Android SDK Guide](http://docs.feedhenry.
 
 To use the Android SDK in Ant-based Android projects, the following files need to be added as the dependencies:
 
-* The fh-android-sdk jar file (e.g. [3.0.0 Jar File](https://github.com/feedhenry/fh-android-sdk-repository/blob/master/releases/com/feedhenry/fh-android-sdk/3.0.0/))
+* The fh-android-sdk jar file (e.g. [3.1.0 Jar File](https://repository.jboss.org/nexus/service/local/repositories/releases/content/com/feedhenry/fh-android-sdk/3.1.0/))
 * All the jar files in the [deps](./deps) directory
 
 
