@@ -1,0 +1,9 @@
+com.feedhenry.sdk
+com.feedhenry.sdk.api
+com.feedhenry.sdk.api2
+com.feedhenry.sdk.exceptions
+com.feedhenry.sdk.oauth
+com.feedhenry.sdk.sync
+com.feedhenry.sdk.utils
+com.feedhenry.sdk2
+org.json.fh
