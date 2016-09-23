@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import org.jboss.aerogear.android.core.Callback;
+import org.jboss.aerogear.android.unifiedpush.PushRegistrar;
 import org.jboss.aerogear.android.unifiedpush.RegistrarManager;
 import org.jboss.aerogear.android.unifiedpush.fcm.AeroGearFCMPushConfiguration;
 import org.jboss.aerogear.android.unifiedpush.fcm.AeroGearFCMPushRegistrar;
@@ -457,7 +458,7 @@ public class FH {
      * Registers a device on a push network.
      * The push information will be loaded from fhconfig.properties.
      *
-     * This method need to be called <b>after</b> an {@link #init(android.content.Context, FHActCallback)} success
+     * This method needs to be called <b>after</b> an {@link #init(android.content.Context, FHActCallback)} success
      * callback.
      *
      * @param pPushConfig extra configuration for push
@@ -486,6 +487,32 @@ public class FH {
                 });
     }
 
+    /**
+     * Unregisters a device on a push network.
+     * The push information will be loaded from fhconfig.properties.
+     *
+     * This method needs to be called <b>after</b> an {@link #pushRegister(com.feedhenry.sdk.FHActCallback) } success
+     * callback.
+     *
+     * @param pCallback   the pCallback function to be executed after the device registration is finished
+     */
+    public static void pushUnregister (final FHActCallback pCallback) {
+        PushRegistrar reg = RegistrarManager.getRegistrar(FH_PUSH_NAME);
+        if (reg != null) {
+            reg.unregister(mContext, new Callback<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        pCallback.success(new FHResponse(null, null, null, null));
+                    }
+
+                    @Override
+                    public void onFailure(Exception e) {
+                        pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
+                    }
+                });
+        }
+    }
+    
     /**
      * Sends confirmation a message was opened.
      *
