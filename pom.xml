@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>19</version>
+        <version>21</version>
     </parent>
 
     <groupId>com.feedhenry</groupId>
@@ -57,20 +57,20 @@
         <maven.compiler.target>1.7</maven.compiler.target>
 
         <!-- Project depencies versions -->
-        <android.version>[6.0.0,)</android.version>
+        <android.version>[7.0.0,)</android.version>
 
         <!-- Plugins versions -->
-        <maven.javadoc.plugin.version>2.10.3</maven.javadoc.plugin.version>
-        <maven.android.plugin.version>4.4.1</maven.android.plugin.version>
-        <builder.helper.plugin.version>1.10</builder.helper.plugin.version>
-        <maven.compiler.plugin.version>3.3</maven.compiler.plugin.version>
+        <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
+        <maven.android.plugin.version>4.4.3</maven.android.plugin.version>
+        <builder.helper.plugin.version>1.12</builder.helper.plugin.version>
+        <maven.compiler.plugin.version>3.6.0</maven.compiler.plugin.version>
         <java-formatter.plugin.version>0.4</java-formatter.plugin.version>
         <license.plugin.version>1.9.0</license.plugin.version>
         <aerogear-misc.version>0.2.0</aerogear-misc.version>
 
 
         <!-- Android configs -->
-        <android.platform>23</android.platform>
+        <android.platform>24</android.platform>
         <android.debug>false</android.debug>
         <proguard.skip>true</proguard.skip>
 
