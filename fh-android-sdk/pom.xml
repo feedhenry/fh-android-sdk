@@ -22,7 +22,7 @@
 
   <properties>
     <loopj.version>1.4.9</loopj.version>
-    <aerogear.android.push.version>4.0.2</aerogear.android.push.version>
+    <aerogear.android.push.version>4.1.0</aerogear.android.push.version>
     <httpcomponents.version>4.3.5.1</httpcomponents.version>
   </properties>
 
