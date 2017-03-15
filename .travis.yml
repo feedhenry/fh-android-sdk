@@ -40,11 +40,19 @@ cache:
     - $HOME/.android/build-cache
 
 before_install:
+  - echo "Travis branch is $TRAVIS_BRANCH"
+  - echo "Travis branch is in pull request $TRAVIS_PULL+REQUEST"
   - bash .travis-android-license-bugfix.sh
-  - echo y | android update sdk --no-ui --all --filter ${ANDROID_EMULATOR},${ANDROID_PKGS},build-tools-25.0.3
 
 before_script:
+  - echo y | android update sdk --no-ui --all --filter ${ANDROID_EMULATOR},${ANDROID_PKGS},build-tools-25.0.3
   - echo no | android create avd --force -n test -t "${ANDROID_EMULATOR}" --abi "${ANDROID_ABI}"
   - emulator -avd test -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
+
+after_success:
+  - ./gradlew coveralls
+
+after_failure:
+  - ./gradlew clean check --debug
