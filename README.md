@@ -1,8 +1,10 @@
-# FeedHenry Android SDK [![Build Status](https://travis-ci.org/feedhenry/fh-android-sdk.png)](https://travis-ci.org/feedhenry/fh-android-sdk)
+# FeedHenry Android SDK
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.feedhenry/fh-android-sdk/badge.svg?style=flat-square)](https://maven-badges.herokuapp.com/maven-central/com.feedhenry/fh-android-sdk/)
+[![Travis](https://img.shields.io/travis/feedhenry/fh-android-sdk.svg)](http://travis-ci.org/feedhenry/fh-android-sdk)
+[![Coveralls](https://img.shields.io/coveralls/feedhenry/fh-android-sdk/master.svg)](https://coveralls.io/github/feedhenry/fh-android-sdk)
+[![License](https://img.shields.io/badge/-Apache%202.0-blue.svg)](https://opensource.org/s/Apache-2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/com.feedhenry/fh-android-sdk.svg)](http://search.maven.org/#search%7Cga%7C1%7Cfh-android-sdk)
 [![Javadocs](http://www.javadoc.io/badge/com.feedhenry/fh-android-sdk.svg?color=blue)](http://www.javadoc.io/doc/com.feedhenry/fh-android-sdk)
-
 
 This SDK should provide you with all you'll need to start developing cloud-connected apps with the FeedHenry platform. The SDK provides access to cloud action calls, app authentication and authorization. 
 
