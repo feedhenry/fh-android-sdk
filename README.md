@@ -74,7 +74,7 @@ Take a look in our demo apps
 
 ## Development
 
-If you would like to help develop Feedhenry you can join our [developer's mailing list](http://feedhenry-dev.2363497.n4.nabble.com/), join #feedhenry on Freenode, or shout at us on Twitter @feedhenry.
+If you would like to help develop Feedhenry you can join our [developer's mailing list](http://feedhenry-dev.2363497.n4.nabble.com/), join #feedhenry on Freenode, or shout at us on Twitter [@feedhenry](https://twitter.com/feedhenry).
 
 ## Questions?
 
