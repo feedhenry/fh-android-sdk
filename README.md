@@ -78,7 +78,7 @@ If you would like to help develop Feedhenry you can join our [developer's mailin
 
 ## Questions?
 
-Join our [developer's mailing list](http://feedhenry-dev.2363497.n4.nabble.com/) for any questions or help! We really hope you enjoy app development with Feedhenry!
+Join our [developer's mailing list](http://feedhenry-dev.2363497.n4.nabble.com/) for any questions or shoot a question on Stackoverflow using [feedhenry tag](http://stackoverflow.com/questions/tagged/feedhenry)! We really hope you enjoy app development with Feedhenry!
 
 ## Found a bug?
 
