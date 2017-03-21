@@ -12,7 +12,7 @@ This SDK should provide you with all you'll need to start developing cloud-conne
 | --------------- | ------------------------------------------------------------ |
 | License:        | Apache License, Version 2.0                                  |
 | Build:          | Gradle                                                       |
-| Documentation:  | http://feedhenry.org/                                        |
+| Documentation:  | http://www.javadoc.io/doc/com.feedhenry/fh-android-sdk       |
 | Issue tracker:  | https://issues.jboss.org/browse/FH                           |
 | Mailing lists:  | [feedhenry-dev](http://feedhenry-dev.2363497.n4.nabble.com/) |
 
@@ -59,7 +59,7 @@ Include the following dependencies in your project's `pom.xml`
 
 ## Documentation
 
-For more details about that please consult [FH Android SDK Guide](http://docs.feedhenry.com/v3/dev_tools/sdks/android.html).
+For more details about that please consult our [JavaDoc](http://www.javadoc.io/doc/com.feedhenry/fh-android-sdk).
 
 ## Demo apps
 
