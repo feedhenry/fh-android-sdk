@@ -70,8 +70,8 @@ public class FH {
 
     private static Context mContext;
 
-    private FH() throws Exception {
-        throw new Exception("Not Supported");
+    private FH()  {
+        throw new UnsupportedOperationException("Not Supported");
     }
 
     /**
@@ -144,7 +144,7 @@ public class FH {
         }
         FHInitializeRequest initRequest = new FHInitializeRequest(mContext);
         try {
-            initRequest.executeAsync(
+            initRequest.execute(
                 new FHActCallback() {
                     @Override
                     public void success(FHResponse pResponse) {
@@ -194,11 +194,11 @@ public class FH {
         }
     }
 
-    private static FHAct buildAction(String pAction) throws FHNotReadyException {
+    private static com.feedhenry.sdk.FHAct buildAction(String pAction) throws FHNotReadyException {
         if (!mInitCalled) {
             throw new FHNotReadyException();
         }
-        FHAct action = null;
+        com.feedhenry.sdk.FHAct action = null;
         if (FH_API_ACT.equalsIgnoreCase(pAction)) {
             action = new FHActRequest(mContext);
         } else if (FH_API_AUTH.equalsIgnoreCase(pAction)) {
@@ -292,10 +292,11 @@ public class FH {
      * @param pParams  the request params, can be null
      * @return an instance of FHCloudRequest
      * @throws FHNotReadyException if init has not been called
-     * @throws Exception           if pMethod is not one of GET, POST, PUT and DELETE
+     * @throws IllegalArgumentException if pMethod is not one of GET, POST, PUT or DELETE
      */
-    public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams)
-        throws Exception {
+    public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams) 
+            throws FHNotReadyException
+         {
         FHCloudRequest request = (FHCloudRequest) buildAction(FH_API_CLOUD);
         request.setPath(pPath);
         request.setHeaders(pHeaders);
@@ -325,9 +326,9 @@ public class FH {
      * headers.
      *
      * @return a JSONObject contains the default params
-     * @throws Exception if the app property file is not loaded
+     * @throws IllegalStateException if the app property file is not loaded
      */
-    public static JSONObject getDefaultParams() throws Exception {
+    public static JSONObject getDefaultParams()  {
         AppProps appProps = AppProps.getInstance();
         JSONObject defaultParams = new JSONObject();
         defaultParams.put("appid", appProps.getAppId());
@@ -350,8 +351,10 @@ public class FH {
             defaultParams.put("init", initObj);
         }
 
-        if (FHAuthSession.exists()) {
-            defaultParams.put(FHAuthSession.SESSION_TOKEN_KEY, FHAuthSession.getToken());
+        final FHAuthSession fhAuthSession = new FHAuthSession(DataManager.getInstance(), new FHHttpClient());
+        
+        if (fhAuthSession.exists()) {
+            defaultParams.put(FHAuthSession.SESSION_TOKEN_KEY, fhAuthSession.getToken());
         }
 
         return defaultParams;
@@ -362,9 +365,9 @@ public class FH {
      *
      * @param pHeaders existing headers
      * @return new headers by combining existing headers and default headers
-     * @throws Exception if the app property file is not loaded
+     * @throws IllegalStateException if the app property file is not loaded
      */
-    public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders) throws Exception {
+    public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders) {
         JSONObject defaultParams = FH.getDefaultParams();
         ArrayList<Header> headers = new ArrayList<Header>(defaultParams.length());
 
@@ -389,18 +392,16 @@ public class FH {
      *                  on the HTTP method
      * @param pCallback the callback to be executed when the cloud call is finished
      * @throws FHNotReadyException if init has not been called
-     * @throws Exception           if pMethod is not one of GET, POST, PUT and DELETE OR if the cloud request
-     *                             fails
+     * @throws IllegalArgumentException if pMethod is not one of GET, POST, PUT and DELETE 
      */
     public static void cloud(
         String pPath,
         String pMethod,
         Header[] pHeaders,
         JSONObject pParams,
-        FHActCallback pCallback)
-        throws Exception {
+        FHActCallback pCallback) throws FHNotReadyException {
         FHCloudRequest cloudRequest = buildCloudRequest(pPath, pMethod, pHeaders, pParams);
-        cloudRequest.executeAsync(pCallback);
+        cloudRequest.execute(pCallback);
     }
 
     /**

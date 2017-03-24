@@ -30,40 +30,32 @@ public abstract class FHRemote implements FHAct {
 
     protected static String LOG_TAG = "com.feedhenry.sdk.FHRemote";
 
-    private final com.feedhenry.sdk2.FHHttpClient mHttpClient = new com.feedhenry.sdk2.FHHttpClient();
-    
     protected FHActCallback mCallback;
     protected Context mContext;
+    private final FHHttpClient mFHHttpClient = new FHHttpClient();
 
     public FHRemote(Context context) {
         mContext = context;
     }
 
     @Override
-    public void executeAsync() throws Exception {
-        executeAsync(mCallback);
+    public void execute()  {
+        execute(mCallback);
     }
 
     @Override
-    public void executeAsync(FHActCallback pCallback) throws Exception {
+    public void execute(FHActCallback pCallback) {
         try {
-            mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, false);
+            mFHHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback);
         } catch (Exception e) {
             FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
+            if (pCallback != null) {
+                pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
+            }
         }
     }
 
     @Override
-    public void execute(FHActCallback pCallback) throws Exception {
-        try {
-            mHttpClient.post(getApiURl(), buildHeaders(null), getRequestArgs(), pCallback, true);
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
-        }
-    }
-
     public void setCallback(FHActCallback pCallback) {
         mCallback = pCallback;
     }
@@ -77,5 +69,5 @@ public abstract class FHRemote implements FHAct {
 
     protected abstract JSONObject getRequestArgs();
 
-    protected abstract Header[] buildHeaders(Header[] pHeaders) throws Exception;
+    protected abstract Header[] buildHeaders(Header[] pHeaders);
 }

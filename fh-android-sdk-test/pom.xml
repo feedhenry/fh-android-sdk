@@ -35,6 +35,13 @@
             <type>aar</type>
         </dependency>
         
+        <dependency>
+            <groupId>com.feedhenry</groupId>
+            <artifactId>fh-android-sdk</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
         
         <dependency>
             <groupId>org.mockito</groupId>

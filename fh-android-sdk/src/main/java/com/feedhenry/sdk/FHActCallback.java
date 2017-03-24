@@ -40,14 +40,14 @@ package com.feedhenry.sdk;
  * ...
  *
  * FHActRequest request = FH.buildActRequest("readData, new JSONObject());
- * request.executeAsync(this);
+ * request.execute(this);
  * </code>
  *
  * Using an anonymous class:
  *
  * <code>
  * FHActRequest request = FH.buildActRequest("readData", new JSONObject());
- * request.executeAsync(new FHActCallback(){
+ * request.execute(new FHActCallback(){
  *   {@literal @}Override
  *   public void success(FHResponse pResp){
  *     //process response data

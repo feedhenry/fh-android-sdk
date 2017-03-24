@@ -21,20 +21,28 @@ import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHHttpClient;
 import com.feedhenry.sdk.FHRemote;
-import com.feedhenry.sdk.utils.FHLog;
 import cz.msebera.android.httpclient.Header;
 import org.json.fh.JSONObject;
 
 public class FHCloudRequest extends FHRemote {
 
+    private final FHHttpClient fhHTTPClient;
+
     public enum Methods {
         GET, POST, PUT, DELETE;
 
-        public static Methods parse(String pMethod) throws Exception {
+        /**
+         * Casts a HTTP Method name to a Methods enum.
+         * 
+         * @param pMethod the HTTP method to retrieve the enumerated value of.
+         * @return a Methods enum value
+         * @throws IllegalArgumentException if pMethod is not one of GET, POST, PUT, or DELETE
+         */
+        public static Methods parse(String pMethod)  {
             try {
                 return Methods.valueOf(pMethod.toUpperCase());
             } catch (Exception e) {
-                throw new Exception("Unsupported HTTP method: " + pMethod);
+                throw new IllegalArgumentException("Unsupported HTTP method: " + pMethod);
             }
         }
     }
@@ -48,6 +56,7 @@ public class FHCloudRequest extends FHRemote {
 
     public FHCloudRequest(Context context) {
         super(context);
+        this.fhHTTPClient = new FHHttpClient();
     }
 
     public void setPath(String pPath) {
@@ -77,51 +86,24 @@ public class FHCloudRequest extends FHRemote {
     }
 
     @Override
-    public void executeAsync(FHActCallback pCallback) throws Exception {
-        try {
+    public void execute(FHActCallback pCallback)  {
             switch (mMethod) {
                 case GET:
-                    FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
                     break;
                 case PUT:
-                    FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
                     break;
                 case POST:
-                    FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
                     break;
                 case DELETE:
-                    FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, false);
+                    fhHTTPClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback);
                     break;
                 default:
                     break;
             }
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
-        }
-    }
-
-    @Override
-    public void execute(FHActCallback pCallback) throws Exception {
-        try {
-            switch (mMethod) {
-                case GET:
-                    FHHttpClient.get(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                    break;
-                case PUT:
-                    FHHttpClient.put(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                    break;
-                case POST:
-                    FHHttpClient.post(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                    break;
-                case DELETE:
-                    FHHttpClient.delete(getURL(), buildHeaders(mHeaders), mArgs, pCallback, true);
-                    break;
-            }
-        } catch (Exception e) {
-            FHLog.e(LOG_TAG, e.getMessage(), e);
-            throw e;
-        }
+        
     }
 
     private String getURL() {
@@ -129,7 +111,8 @@ public class FHCloudRequest extends FHRemote {
         return host + (getPath().startsWith("/") ? getPath() : '/' + getPath());
     }
 
-    protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    @Override
+    protected Header[] buildHeaders(Header[] pHeaders) {
         return FH.getDefaultParamsAsHeaders(pHeaders);
     }
 }

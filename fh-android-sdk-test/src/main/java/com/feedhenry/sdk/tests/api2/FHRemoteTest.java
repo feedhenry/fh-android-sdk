@@ -17,11 +17,15 @@ package com.feedhenry.sdk.tests.api2;
 
 import android.test.AndroidTestCase;
 import com.feedhenry.sdk.FHActCallback;
+import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.tests.sync.FHTestUtils;
-import com.feedhenry.sdk2.FHHttpClient;
-import com.feedhenry.sdk2.FHRemote;
+import com.feedhenry.sdk.FHHttpClient;
+import com.feedhenry.sdk.FHRemote;
 import cz.msebera.android.httpclient.Header;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
 import org.json.fh.JSONObject;
+import org.mockito.Matchers;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import org.mockito.Mockito;
@@ -47,7 +51,7 @@ public class FHRemoteTest extends AndroidTestCase {
             }
             
             @Override
-            protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+            protected Header[] buildHeaders(Header[] pHeaders) {
                 return new Header[0];
             }
         };
@@ -60,7 +64,7 @@ public class FHRemoteTest extends AndroidTestCase {
         
         fhRemote.execute(callback);
         
-        verify(httpClient).post(eq("http://localhost:9000/box/srv/1.1/"), any(Header[].class), eq(new JSONObject()), eq(callback), eq(false));
+        verify(httpClient).post(eq("http://localhost:9000/box/srv/1.1/"), any(Header[].class), eq(new JSONObject()), eq(callback));
         
     }
     
@@ -71,44 +75,66 @@ public class FHRemoteTest extends AndroidTestCase {
         fhRemote.setCallback(callback);
         fhRemote.execute();
         
-        verify(httpClient).post(eq("http://localhost:9000/box/srv/1.1/"), any(Header[].class), eq(new JSONObject()), eq(callback), eq(false));
+        verify(httpClient).post(eq("http://localhost:9000/box/srv/1.1/"), any(Header[].class), eq(new JSONObject()), eq(callback));
         
     }
     
     public void testExecuteThrowsExceptionThrownByHttpClient() throws Exception {
         FHHttpClient httpClient = mock(FHHttpClient.class);
         FHTestUtils.injectInto(fhRemote, httpClient);
-        Exception stubException = new Exception();
+        final RuntimeException stubException = new RuntimeException("stubException");
         FHActCallback callback = mock(FHActCallback.class);
-        Mockito.doThrow(stubException).when(httpClient).post(eq("http://localhost:9000/box/srv/1.1/"), any(Header[].class), eq(new JSONObject()), eq(callback), eq(false));
+        Mockito.doThrow(stubException).when(httpClient).post(eq("http://localhost:9000/box/srv/1.1/"), any(Header[].class), eq(new JSONObject()), eq(callback));
         
         fhRemote.setCallback(callback);
+        fhRemote.execute();
         
-        try {
-            fhRemote.execute();
-        } catch(Exception compare) {
-            assertEquals(stubException, compare);
-            return;
-        }
-        
-        fail("expected exception;");
+        Mockito.verify(callback).fail(Matchers.argThat(new BaseMatcher<FHResponse>(){
+            @Override
+            public boolean matches(Object item) {
+                FHResponse resp = (FHResponse) item;
+                if (resp.getArray() != null && resp.getArray().length() > 0) {
+                    return false;
+                }
+                if (resp.getJson() != null && resp.getJson().length() > 0) {
+                    return false;
+                }
+                return resp.getErrorMessage() != null && resp.getError().equals(stubException);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                
+            }
+        } ));
     }
     
     public void testExecuteThrowsException2ThrownByHttpClient() throws Exception {
         FHHttpClient httpClient = mock(FHHttpClient.class);
         FHTestUtils.injectInto(fhRemote, httpClient);
-        Exception stubException = new Exception();
+        final RuntimeException stubException = new RuntimeException("stubException");
         FHActCallback callback = mock(FHActCallback.class);
-        Mockito.doThrow(stubException).when(httpClient).post(eq("http://localhost:9000/box/srv/1.1/"), any(Header[].class), eq(new JSONObject()), eq(callback), eq(false));
-        
-        try {
-            fhRemote.execute(callback);
-        } catch(Exception compare) {
-            assertEquals(stubException, compare);
-            return;
-        }
-        
-        fail("expected exception;");
+        Mockito.doThrow(stubException).when(httpClient).post(eq("http://localhost:9000/box/srv/1.1/"), any(Header[].class), eq(new JSONObject()), eq(callback));
+
+        fhRemote.execute(callback);
+        Mockito.verify(callback).fail(Matchers.argThat(new BaseMatcher<FHResponse>(){
+            @Override
+            public boolean matches(Object item) {
+                FHResponse resp = (FHResponse) item;
+                if (resp.getArray() != null && resp.getArray().length() > 0) {
+                    return false;
+                }
+                if (resp.getJson() != null && resp.getJson().length() > 0) {
+                    return false;
+                }
+                return resp.getErrorMessage() != null && resp.getError().equals(stubException);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                
+            }
+        } ));
     }
     
 }

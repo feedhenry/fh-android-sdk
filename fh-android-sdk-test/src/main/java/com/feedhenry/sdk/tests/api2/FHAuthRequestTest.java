@@ -23,11 +23,11 @@ import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.api.FHAuthRequest;
 import static com.feedhenry.sdk.api.FHAuthSession.SESSION_TOKEN_KEY;
-import com.feedhenry.sdk.api2.FHAuthSession;
+import com.feedhenry.sdk.api.FHAuthSession;
 import com.feedhenry.sdk.tests.MainActivity;
 import com.feedhenry.sdk.tests.sync.FHTestUtils;
 import com.feedhenry.sdk.utils.DataManager;
-import com.feedhenry.sdk2.FHHttpClient;
+import com.feedhenry.sdk.FHHttpClient;
 import cz.msebera.android.httpclient.Header;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.fh.JSONObject;
@@ -79,7 +79,7 @@ public class FHAuthRequestTest extends ActivityInstrumentationTestCase2 {
         authRequest.setAuthUser("testAuthPolicy", "test", "test");
 
         FHHttpClient mockClient = Mockito.mock(FHHttpClient.class);
-        Mockito.doAnswer(callSuccess()).when(mockClient).post(any(String.class), any(Header[].class), any(JSONObject.class), any(FHActCallback.class), anyBoolean());
+        Mockito.doAnswer(callSuccess()).when(mockClient).post(any(String.class), any(Header[].class), any(JSONObject.class), any(FHActCallback.class));
 
         final AtomicBoolean success = new AtomicBoolean(false);
         
@@ -108,7 +108,7 @@ public class FHAuthRequestTest extends ActivityInstrumentationTestCase2 {
         authRequest.setAuthUser("testAuthPolicy", "test", "test");
 
         FHHttpClient mockClient = Mockito.mock(FHHttpClient.class);
-        Mockito.doAnswer(callFailure()).when(mockClient).post(any(String.class), any(Header[].class), any(JSONObject.class), any(FHActCallback.class), anyBoolean());
+        Mockito.doAnswer(callFailure()).when(mockClient).post(any(String.class), any(Header[].class), any(JSONObject.class), any(FHActCallback.class));
 
         final AtomicBoolean success = new AtomicBoolean(false);
         

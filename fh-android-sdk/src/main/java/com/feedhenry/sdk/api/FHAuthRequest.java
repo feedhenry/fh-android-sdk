@@ -31,7 +31,7 @@ import com.feedhenry.sdk.oauth.FHOAuthIntent;
 import com.feedhenry.sdk.oauth.FHOAuthWebView;
 import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk.utils.FHLog;
-import com.feedhenry.sdk2.FHHttpClient;
+import com.feedhenry.sdk.FHHttpClient;
 import cz.msebera.android.httpclient.Header;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -54,7 +54,7 @@ import org.json.fh.JSONObject;
  *  // <activity android:name="com.feedhenry.sdk.oauth.FHOAuthIntent" />;
  *  authRequest.setPresentingActivity(this);
  *  authRequest.setAuthPolicyId("MyGooglePolicy");
- *  authRequest.executeAsync(new FHActCallback() {
+ *  authRequest.execute(new FHActCallback() {
  *    public void success(FHResponse resp) {
  *      Log.d("FHAuthActivity", "user sessionToken = "+ resp.getJson().getString("sessionToken"));
  *    }
@@ -78,7 +78,7 @@ public class FHAuthRequest extends FHRemote {
     private OAuthURLRedirectReceiver mReceiver;
 
     protected static String LOG_TAG = "com.feedhenry.sdk.FHAuthRequest";
-    private final com.feedhenry.sdk.api2.FHAuthSession mAuthSession;
+    private final com.feedhenry.sdk.api.FHAuthSession mAuthSession;
 
     /**
      * 
@@ -89,7 +89,7 @@ public class FHAuthRequest extends FHRemote {
     public FHAuthRequest(Context context) {
         super(context);
         mPresentingActivity = context;
-        mAuthSession = new com.feedhenry.sdk.api2.FHAuthSession(DataManager.init(context), new FHHttpClient());
+        mAuthSession = new com.feedhenry.sdk.api.FHAuthSession(DataManager.init(context), new FHHttpClient());
     }
     
     
@@ -98,7 +98,7 @@ public class FHAuthRequest extends FHRemote {
      * @param context The Android application context
      * @param pAuthSession an FHAuthSession to store and verify tokens
      */
-    public FHAuthRequest(Context context, com.feedhenry.sdk.api2.FHAuthSession pAuthSession) {
+    public FHAuthRequest(Context context, com.feedhenry.sdk.api.FHAuthSession pAuthSession) {
         super(context);
         mPresentingActivity = context;
         mAuthSession = pAuthSession;
@@ -171,47 +171,9 @@ public class FHAuthRequest extends FHRemote {
     }
 
     @Override
-    public void executeAsync(FHActCallback pCallback) throws Exception {
+    public void execute(FHActCallback pCallback) {
         if (mPresentingActivity == null) {
             // the app didn't provide an activity to presenting the webview, let the app handle the oauth process
-            super.executeAsync(pCallback);
-        } else {
-            final FHActCallback callback = pCallback;
-            FHActCallback tmpCallback = new FHActCallback() {
-                @Override
-                public void success(FHResponse pResponse) {
-                    final JSONObject jsonRes = pResponse.getJson();
-                    try {
-                        String status = jsonRes.getString("status");
-                        if ("ok".equalsIgnoreCase(status)) {
-                            if (jsonRes.has("url")) {
-                                startAuthIntent(jsonRes, callback);
-                            } else {
-                                if (jsonRes.has(FHAuthSession.SESSION_TOKEN_KEY)) {
-                                    mAuthSession.save(jsonRes.getString(FHAuthSession.SESSION_TOKEN_KEY));
-                                }
-                                callback.success(pResponse);
-                            }
-                        } else {
-                            callback.fail(pResponse);
-                        }
-                    } catch (Exception e) {
-                        FHLog.e(LOG_TAG, "Error handling response", e);
-                    }
-                }
-
-                @Override
-                public void fail(FHResponse pResponse) {
-                    callback.fail(pResponse);
-                }
-            };
-            super.executeAsync(tmpCallback);
-        }
-    }
-
-    @Override
-    public void execute(FHActCallback pCallback) throws Exception {
-        if (mPresentingActivity == null) {
             super.execute(pCallback);
         } else {
             final FHActCallback callback = pCallback;
@@ -233,8 +195,9 @@ public class FHAuthRequest extends FHRemote {
                         } else {
                             callback.fail(pResponse);
                         }
-                    } catch (Exception e) {
-                        FHLog.e(LOG_TAG, "Error handling response", e);
+                    }catch (Exception e) {
+                     FHLog.e(LOG_TAG, "Error handling response", e);
+                     callback.fail(new FHResponse(null, null, e, e.getMessage()));   
                     }
                 }
 
@@ -247,7 +210,7 @@ public class FHAuthRequest extends FHRemote {
         }
     }
 
-    private void startAuthIntent(final JSONObject pJsonRes, final FHActCallback pCallback) throws Exception {
+    private void startAuthIntent(final JSONObject pJsonRes, final FHActCallback pCallback) {
         String url = pJsonRes.getString("url");
         FHLog.v(LOG_TAG, "Got oAuth url back, url = " + url + ". Open it in new intent.");
         Bundle data = new Bundle();
@@ -324,7 +287,7 @@ public class FHAuthRequest extends FHRemote {
     }
 
     @Override
-    protected Header[] buildHeaders(Header[] pHeaders) throws Exception {
+    protected Header[] buildHeaders(Header[] pHeaders) {
         return null;
     }
 }

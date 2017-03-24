@@ -20,9 +20,9 @@ import android.util.Log;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.FHResponse;
 import static com.feedhenry.sdk.api.FHAuthSession.SESSION_TOKEN_KEY;
-import com.feedhenry.sdk.api2.FHAuthSession;
+import com.feedhenry.sdk.api.FHAuthSession;
 import com.feedhenry.sdk.utils.DataManager;
-import com.feedhenry.sdk2.FHHttpClient;
+import com.feedhenry.sdk.FHHttpClient;
 import cz.msebera.android.httpclient.Header;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.json.fh.JSONObject;
@@ -41,7 +41,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
     
     private static final String TEST_TOKEN = "testSessionToken";
     private DataManager mDataManager;
-    private com.feedhenry.sdk.api2.FHAuthSession session;
+    private FHAuthSession session;
     private FHHttpClient mFHHttpClient;
     @Override
     public void setUp() throws Exception {
@@ -65,7 +65,7 @@ public class FHAuthSessionTest extends AndroidTestCase {
     public void testVerify() throws Exception {
         final AtomicBoolean valid = new AtomicBoolean(false);
         
-        doAnswer(verifyTrue()).when(mFHHttpClient).post(matches("http://localhost:9000/box/srv/1.1/admin/authpolicy/verifysession"), any(Header[].class), eq(new JSONObject().put(SESSION_TOKEN_KEY, TEST_TOKEN)), any(FHActCallback.class), eq(true));
+        doAnswer(verifyTrue()).when(mFHHttpClient).post(matches("http://localhost:9000/box/srv/1.1/admin/authpolicy/verifysession"), any(Header[].class), eq(new JSONObject().put(SESSION_TOKEN_KEY, TEST_TOKEN)), any(FHActCallback.class));
         
         session.verify(new com.feedhenry.sdk.api.FHAuthSession.Callback() {
             private String TAG = "Callback";
@@ -80,17 +80,17 @@ public class FHAuthSessionTest extends AndroidTestCase {
             }
         }, true);
         
-        verify(mFHHttpClient).post(matches("http://localhost:9000/box/srv/1.1/admin/authpolicy/verifysession"), any(Header[].class), eq(new JSONObject().put(SESSION_TOKEN_KEY, TEST_TOKEN)), any(FHActCallback.class), eq(true));
+        verify(mFHHttpClient).post(matches("http://localhost:9000/box/srv/1.1/admin/authpolicy/verifysession"), any(Header[].class), eq(new JSONObject().put(SESSION_TOKEN_KEY, TEST_TOKEN)), any(FHActCallback.class));
         assertTrue(valid.get());
         assertEquals(TEST_TOKEN, session.getToken());
     }
 
     public void testClear() throws Exception {
-        doAnswer(verifyTrue()).when(mFHHttpClient).post(matches("http://localhost:9000/box/srv/1.1/admin/authpolicy/revokesession"), any(Header[].class), eq(new JSONObject().put(SESSION_TOKEN_KEY, TEST_TOKEN)), any(FHActCallback.class), eq(true));
+        doAnswer(verifyTrue()).when(mFHHttpClient).post(matches("http://localhost:9000/box/srv/1.1/admin/authpolicy/revokesession"), any(Header[].class), eq(new JSONObject().put(SESSION_TOKEN_KEY, TEST_TOKEN)), any(FHActCallback.class));
         
         session.clear(true);
         assertFalse(session.exists());
-        verify(mFHHttpClient).post(matches("http://localhost:9000/box/srv/1.1/admin/authpolicy/revokesession"), any(Header[].class), eq(new JSONObject().put(SESSION_TOKEN_KEY, TEST_TOKEN)), any(FHActCallback.class), eq(true));
+        verify(mFHHttpClient).post(matches("http://localhost:9000/box/srv/1.1/admin/authpolicy/revokesession"), any(Header[].class), eq(new JSONObject().put(SESSION_TOKEN_KEY, TEST_TOKEN)), any(FHActCallback.class));
     }
 
     private Answer verifyTrue() {
