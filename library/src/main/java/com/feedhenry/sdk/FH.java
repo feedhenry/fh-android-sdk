@@ -26,6 +26,7 @@ import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk.utils.FHLog;
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.client.HttpResponseException;
 import cz.msebera.android.httpclient.message.BasicHeader;
 import java.io.IOException;
 import java.net.URI;
@@ -165,8 +166,19 @@ public class FH {
                             LOG_TAG,
                             "FH init failed with error = " + pResponse.getErrorMessage(),
                             pResponse.getError());
+
+
+                        boolean tagDisabled = false;
+                        if (pResponse.getError() instanceof HttpResponseException) {
+                            HttpResponseException httpResponse = ((HttpResponseException) pResponse.getError());
+                            int statusCode = httpResponse.getStatusCode();
+                            if(statusCode == 400) {
+                                tagDisabled = true;
+                            }
+                        }
+
                         CloudProps props = CloudProps.load();
-                        if (props != null) {
+                        if ((props != null) && (!tagDisabled)) {
                             mReady = true;
                             FHLog.i(LOG_TAG, "Cached CloudProps data found");
                             if (cb != null) {
@@ -174,7 +186,11 @@ public class FH {
                             }
                         } else {
                             mReady = false;
-                            FHLog.i(LOG_TAG, "No cache data found for CloudProps");
+                            if(tagDisabled) {
+                                FHLog.i(LOG_TAG, pResponse.getErrorMessage());
+                            } else {
+                                FHLog.i(LOG_TAG, "No cache data found for CloudProps");
+                            }
                             if (cb != null) {
                                 cb.fail(pResponse);
                             }
