@@ -112,39 +112,32 @@ public class FH {
      * @param pContext  your application's context
      * @param pCallback the callback function to be executed after initialization is finished
      */
-    public static void init(Context pContext, FHActCallback pCallback) {
+    public static void init(Context pContext, final FHActCallback pCallback) {
         mContext = pContext;
+
+        // -- Load properties
         if (!mInitCalled) {
-            DataManager.init(mContext).migrateLegacyData();
+            DataManager.init(pContext).migrateLegacyData();
             checkNetworkStatus();
             try {
-                AppProps.load(mContext);
+                AppProps.load(pContext);
             } catch (IOException e) {
-                mReady = false;
                 FHLog.e(LOG_TAG, "Can not load property file.", e);
             }
             mInitCalled = true;
         }
-        if (mReady) {
+
+        if (AppProps.getInstance().isLocalDevelopment()) {
+            FHLog.i(LOG_TAG, "Local development mode enabled, loading properties " +
+                    "from assets/fhconfig.local.properties file");
+            CloudProps.initDev();
             if (pCallback != null) {
                 pCallback.success(null);
             }
             return;
         }
 
-        final FHActCallback cb = pCallback;
-        if (AppProps.getInstance().isLocalDevelopment()) {
-            FHLog.i(
-                LOG_TAG,
-                "Local development mode enabled, loading properties from assets/fhconfig.local.properties file");
-            CloudProps.initDev();
-            mReady = true;
-            if (cb != null) {
-                cb.success(null);
-            }
-            return;
-        }
-        FHInitializeRequest initRequest = new FHInitializeRequest(mContext);
+        FHInitializeRequest initRequest = new FHInitializeRequest(pContext);
         try {
             initRequest.executeAsync(
                 new FHActCallback() {
@@ -155,8 +148,8 @@ public class FH {
                         JSONObject cloudProps = pResponse.getJson();
                         CloudProps.init(cloudProps);
                         CloudProps.getInstance().save();
-                        if (cb != null) {
-                            cb.success(null);
+                        if (pCallback != null) {
+                            pCallback.success(null);
                         }
                     }
 
@@ -181,8 +174,8 @@ public class FH {
                         if ((props != null) && (!tagDisabled)) {
                             mReady = true;
                             FHLog.i(LOG_TAG, "Cached CloudProps data found");
-                            if (cb != null) {
-                                cb.success(null);
+                            if (pCallback != null) {
+                                pCallback.success(null);
                             }
                         } else {
                             mReady = false;
@@ -191,8 +184,8 @@ public class FH {
                             } else {
                                 FHLog.i(LOG_TAG, "No cache data found for CloudProps");
                             }
-                            if (cb != null) {
-                                cb.fail(pResponse);
+                            if (pCallback != null) {
+                                pCallback.fail(pResponse);
                             }
                         }
                     }
