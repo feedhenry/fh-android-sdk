@@ -117,7 +117,8 @@ public class FH {
      * @param pCallback the callback function to be executed after initialization is finished
      */
     public static void init(Context pContext, final FHActCallback pCallback) {
-        mContext = pContext;
+        // Be sure we are store the safety application context
+        mContext = pContext.getApplicationContext();
 
         // -- Load properties
         if (!mInitCalled) {
