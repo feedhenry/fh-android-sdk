@@ -1,12 +1,12 @@
 /**
  * Copyright Red Hat, Inc, and individual contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 package com.feedhenry.sdk;
 
 import android.content.Context;
+
 import com.feedhenry.sdk.api.FHActRequest;
 import com.feedhenry.sdk.api.FHAuthRequest;
 import com.feedhenry.sdk.api.FHAuthSession;
@@ -25,14 +26,17 @@ import com.feedhenry.sdk.api.FHInitializeRequest;
 import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.DataManager;
 import com.feedhenry.sdk.utils.FHLog;
+
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.client.HttpResponseException;
 import cz.msebera.android.httpclient.message.BasicHeader;
+
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+
 import org.jboss.aerogear.android.core.Callback;
 import org.jboss.aerogear.android.unifiedpush.PushRegistrar;
 import org.jboss.aerogear.android.unifiedpush.RegistrarManager;
@@ -72,7 +76,7 @@ public class FH {
 
     private static Context mContext;
 
-    private FH()  {
+    private FH() {
         throw new UnsupportedOperationException("Not Supported");
     }
 
@@ -112,91 +116,85 @@ public class FH {
      * @param pContext  your application's context
      * @param pCallback the callback function to be executed after initialization is finished
      */
-    public static void init(Context pContext, FHActCallback pCallback) {
-        mContext = pContext;
+    public static void init(Context pContext, final FHActCallback pCallback) {
+        // Be sure we are store the safety application context
+        mContext = pContext.getApplicationContext();
+
+        // -- Load properties
         if (!mInitCalled) {
-            DataManager.init(mContext).migrateLegacyData();
+            DataManager.init(pContext).migrateLegacyData();
             checkNetworkStatus();
             try {
-                AppProps.load(mContext);
+                AppProps.load(pContext);
             } catch (IOException e) {
-                mReady = false;
                 FHLog.e(LOG_TAG, "Can not load property file.", e);
             }
             mInitCalled = true;
         }
-        if (mReady) {
+
+        if (AppProps.getInstance().isLocalDevelopment()) {
+            FHLog.i(LOG_TAG, "Local development mode enabled, loading properties " +
+                    "from assets/fhconfig.local.properties file");
+            CloudProps.initDev();
             if (pCallback != null) {
                 pCallback.success(null);
             }
             return;
         }
 
-        final FHActCallback cb = pCallback;
-        if (AppProps.getInstance().isLocalDevelopment()) {
-            FHLog.i(
-                LOG_TAG,
-                "Local development mode enabled, loading properties from assets/fhconfig.local.properties file");
-            CloudProps.initDev();
-            mReady = true;
-            if (cb != null) {
-                cb.success(null);
-            }
-            return;
-        }
-        FHInitializeRequest initRequest = new FHInitializeRequest(mContext);
+        FHInitializeRequest initRequest = new FHInitializeRequest(pContext);
         try {
             initRequest.executeAsync(
-                new FHActCallback() {
-                    @Override
-                    public void success(FHResponse pResponse) {
-                        mReady = true;
-                        FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
-                        JSONObject cloudProps = pResponse.getJson();
-                        CloudProps.init(cloudProps);
-                        CloudProps.getInstance().save();
-                        if (cb != null) {
-                            cb.success(null);
-                        }
-                    }
-
-                    @Override
-                    public void fail(FHResponse pResponse) {
-                        FHLog.e(
-                            LOG_TAG,
-                            "FH init failed with error = " + pResponse.getErrorMessage(),
-                            pResponse.getError());
-
-
-                        boolean tagDisabled = false;
-                        if (pResponse.getError() instanceof HttpResponseException) {
-                            HttpResponseException httpResponse = ((HttpResponseException) pResponse.getError());
-                            int statusCode = httpResponse.getStatusCode();
-                            if(statusCode == 400) {
-                                tagDisabled = true;
-                            }
-                        }
-
-                        CloudProps props = CloudProps.load();
-                        if ((props != null) && (!tagDisabled)) {
+                    new FHActCallback() {
+                        @Override
+                        public void success(FHResponse pResponse) {
                             mReady = true;
-                            FHLog.i(LOG_TAG, "Cached CloudProps data found");
-                            if (cb != null) {
-                                cb.success(null);
-                            }
-                        } else {
-                            mReady = false;
-                            if(tagDisabled) {
-                                FHLog.i(LOG_TAG, pResponse.getErrorMessage());
-                            } else {
-                                FHLog.i(LOG_TAG, "No cache data found for CloudProps");
-                            }
-                            if (cb != null) {
-                                cb.fail(pResponse);
+                            FHLog.v(LOG_TAG, "FH init response = " + pResponse.getJson().toString());
+                            JSONObject cloudProps = pResponse.getJson();
+                            CloudProps.init(cloudProps);
+                            CloudProps.getInstance().save();
+                            if (pCallback != null) {
+                                pCallback.success(null);
                             }
                         }
-                    }
-                });
+
+                        @Override
+                        public void fail(FHResponse pResponse) {
+                            FHLog.e(
+                                    LOG_TAG,
+                                    "FH init failed with error = " + pResponse.getErrorMessage(),
+                                    pResponse.getError());
+
+
+                            boolean tagDisabled = false;
+                            if (pResponse.getError() instanceof HttpResponseException) {
+                                HttpResponseException httpResponse = ((HttpResponseException) pResponse.getError());
+                                int statusCode = httpResponse.getStatusCode();
+                                if (statusCode == 400) {
+                                    tagDisabled = true;
+                                }
+                            }
+
+                            CloudProps props = CloudProps.load();
+                            if ((props != null) && (!tagDisabled)) {
+                                mReady = true;
+                                FHLog.i(LOG_TAG, "Cached CloudProps data found");
+                                if (pCallback != null) {
+                                    pCallback.success(null);
+                                }
+                            } else {
+                                mReady = false;
+                                if (tagDisabled) {
+                                    FHLog.i(LOG_TAG, pResponse.getErrorMessage());
+                                } else {
+                                    FHLog.i(LOG_TAG, "No cache data found for CloudProps");
+                                }
+                                if (pCallback != null) {
+                                    pCallback.fail(pResponse);
+                                }
+                            }
+                        }
+                    });
         } catch (Exception e) {
             FHLog.e(LOG_TAG, "FH init exception = " + e.getMessage(), e);
         }
@@ -254,6 +252,9 @@ public class FH {
      * @throws FHNotReadyException
      */
     public static FHActRequest buildActRequest(String pRemoteAction, JSONObject pParams) throws FHNotReadyException {
+        if (!isReady()) {
+            throw new FHNotReadyException();
+        }
         FHActRequest request = (FHActRequest) buildAction(FH_API_ACT);
         request.setRemoteAction(pRemoteAction);
         request.setArgs(pParams);
@@ -267,6 +268,9 @@ public class FH {
      * @throws FHNotReadyException if init has not been called
      */
     public static FHAuthRequest buildAuthRequest() throws FHNotReadyException {
+        if (!isReady()) {
+            throw new FHNotReadyException();
+        }
         return (FHAuthRequest) buildAction(FH_API_AUTH);
     }
 
@@ -278,6 +282,9 @@ public class FH {
      * @throws FHNotReadyException if init has not been called
      */
     public static FHAuthRequest buildAuthRequest(String pPolicyId) throws FHNotReadyException {
+        if (!isReady()) {
+            throw new FHNotReadyException();
+        }
         FHAuthRequest request = (FHAuthRequest) buildAction(FH_API_AUTH);
         request.setAuthPolicyId(pPolicyId);
         return request;
@@ -294,7 +301,10 @@ public class FH {
      * @throws FHNotReadyException if init has not been called
      */
     public static FHAuthRequest buildAuthRequest(String pPolicyId, String pUserName, String pPassword)
-        throws FHNotReadyException {
+            throws FHNotReadyException {
+        if (!isReady()) {
+            throw new FHNotReadyException();
+        }
         FHAuthRequest request = (FHAuthRequest) buildAction(FH_API_AUTH);
         request.setAuthUser(pPolicyId, pUserName, pPassword);
         return request;
@@ -311,9 +321,11 @@ public class FH {
      * @throws FHNotReadyException if init has not been called
      * @throws IllegalArgumentException if pMethod is not one of GET, POST, PUT or DELETE
      */
-    public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams) 
-            throws FHNotReadyException
-         {
+    public static FHCloudRequest buildCloudRequest(String pPath, String pMethod, Header[] pHeaders, JSONObject pParams)
+            throws FHNotReadyException {
+        if (!isReady()) {
+            throw new FHNotReadyException();
+        }
         FHCloudRequest request = (FHCloudRequest) buildAction(FH_API_CLOUD);
         request.setPath(pPath);
         request.setHeaders(pHeaders);
@@ -329,6 +341,9 @@ public class FH {
      * @throws FHNotReadyException if init has not been called
      */
     public static String getCloudHost() throws FHNotReadyException {
+        if(!isReady()) {
+            throw new FHNotReadyException();
+        }
         if (CloudProps.getInstance() == null) {
             throw new FHNotReadyException();
         }
@@ -345,7 +360,7 @@ public class FH {
      * @return a JSONObject contains the default params
      * @throws IllegalStateException if the app property file is not loaded
      */
-    public static JSONObject getDefaultParams()  {
+    public static JSONObject getDefaultParams() {
         AppProps appProps = AppProps.getInstance();
         JSONObject defaultParams = new JSONObject();
         defaultParams.put("appid", appProps.getAppId());
@@ -382,7 +397,7 @@ public class FH {
      * @return new headers by combining existing headers and default headers
      * @throws IllegalStateException if the app property file is not loaded
      */
-    public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders)  {
+    public static Header[] getDefaultParamsAsHeaders(Header[] pHeaders) {
         JSONObject defaultParams = FH.getDefaultParams();
         ArrayList<Header> headers = new ArrayList<Header>(defaultParams.length());
 
@@ -410,11 +425,11 @@ public class FH {
      * @throws IllegalArgumentException if pMethod is not one of GET, POST, PUT and DELETE 
      */
     public static void cloud(
-        String pPath,
-        String pMethod,
-        Header[] pHeaders,
-        JSONObject pParams,
-        FHActCallback pCallback) throws FHNotReadyException {
+            String pPath,
+            String pMethod,
+            Header[] pHeaders,
+            JSONObject pParams,
+            FHActCallback pCallback) throws FHNotReadyException {
         FHCloudRequest cloudRequest = buildCloudRequest(pPath, pMethod, pHeaders, pParams);
         cloudRequest.executeAsync(pCallback);
     }
@@ -482,25 +497,25 @@ public class FH {
      */
     public static void pushRegister(final PushConfig pPushConfig, final FHActCallback pCallback) {
         RegistrarManager.config(FH_PUSH_NAME, AeroGearFCMPushConfiguration.class)
-            .setPushServerURI(URI.create(AppProps.getInstance().getPushServerUrl()))
-            .setSenderId(AppProps.getInstance().getPushSenderId())
-            .setVariantID(AppProps.getInstance().getPushVariant())
-            .setSecret(AppProps.getInstance().getPushSecret())
-            .setAlias(pPushConfig.getAlias())
-            .setCategories(pPushConfig.getCategories())
-            .asRegistrar()
-            .register(
-                mContext, new Callback<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        pCallback.success(new FHResponse(null, null, null, null));
-                    }
+                .setPushServerURI(URI.create(AppProps.getInstance().getPushServerUrl()))
+                .setSenderId(AppProps.getInstance().getPushSenderId())
+                .setVariantID(AppProps.getInstance().getPushVariant())
+                .setSecret(AppProps.getInstance().getPushSecret())
+                .setAlias(pPushConfig.getAlias())
+                .setCategories(pPushConfig.getCategories())
+                .asRegistrar()
+                .register(
+                        mContext, new Callback<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                pCallback.success(new FHResponse(null, null, null, null));
+                            }
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
-                    }
-                });
+                            @Override
+                            public void onFailure(Exception e) {
+                                pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
+                            }
+                        });
     }
 
     /**
@@ -512,23 +527,23 @@ public class FH {
      *
      * @param pCallback   the pCallback function to be executed after the device registration is finished
      */
-    public static void pushUnregister (final FHActCallback pCallback) {
+    public static void pushUnregister(final FHActCallback pCallback) {
         PushRegistrar reg = RegistrarManager.getRegistrar(FH_PUSH_NAME);
         if (reg != null) {
             reg.unregister(mContext, new Callback<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        pCallback.success(new FHResponse(null, null, null, null));
-                    }
+                @Override
+                public void onSuccess(Void aVoid) {
+                    pCallback.success(new FHResponse(null, null, null, null));
+                }
 
-                    @Override
-                    public void onFailure(Exception e) {
-                        pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
-                    }
-                });
+                @Override
+                public void onFailure(Exception e) {
+                    pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
+                }
+            });
         }
     }
-    
+
     /**
      * Sends confirmation a message was opened.
      *
@@ -538,16 +553,16 @@ public class FH {
     public static void sendPushMetrics(String pMessageId, final FHActCallback pCallback) {
         AeroGearFCMPushRegistrar registrar = (AeroGearFCMPushRegistrar) RegistrarManager.getRegistrar(FH_PUSH_NAME);
         registrar.sendMetrics(
-            new UnifiedPushMetricsMessage(pMessageId), new Callback<UnifiedPushMetricsMessage>() {
-                @Override
-                public void onSuccess(UnifiedPushMetricsMessage data) {
-                    pCallback.success(new FHResponse(null, null, null, null));
-                }
+                new UnifiedPushMetricsMessage(pMessageId), new Callback<UnifiedPushMetricsMessage>() {
+                    @Override
+                    public void onSuccess(UnifiedPushMetricsMessage data) {
+                        pCallback.success(new FHResponse(null, null, null, null));
+                    }
 
-                @Override
-                public void onFailure(Exception e) {
-                    pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
-                }
-            });
+                    @Override
+                    public void onFailure(Exception e) {
+                        pCallback.fail(new FHResponse(null, null, e, e.getMessage()));
+                    }
+                });
     }
 }
