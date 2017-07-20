@@ -139,6 +139,7 @@ public class FH {
             if (pCallback != null) {
                 pCallback.success(null);
             }
+            mReady = true;
             return;
         }
 
