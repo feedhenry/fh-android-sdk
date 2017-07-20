@@ -1,6 +1,5 @@
 # FeedHenry Android SDK
 
-[![Travis](https://img.shields.io/travis/feedhenry/fh-android-sdk/master.svg)](http://travis-ci.org/feedhenry/fh-android-sdk)
 [![circle-ci](https://img.shields.io/circleci/project/github/feedhenry/fh-android-sdk/master.svg)](https://circleci.com/gh/feedhenry/fh-android-sdk)
 [![Coveralls](https://img.shields.io/coveralls/feedhenry/fh-android-sdk/master.svg)](https://coveralls.io/github/feedhenry/fh-android-sdk)
 [![License](https://img.shields.io/badge/-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
