@@ -16,6 +16,7 @@
 
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'com.github.dcendents.android-maven'
 
 def isReleaseBuild() {
     return VERSION_NAME.contains("SNAPSHOT") == false
@@ -38,6 +39,10 @@ def getRepositoryUsername() {
 def getRepositoryPassword() {
     return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
 }
+
+group = POM_GROUP_ID
+project.archivesBaseName = POM_ARTIFACT_ID
+version = VERSION_NAME
 
 afterEvaluate { project ->
     uploadArchives {
