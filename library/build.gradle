@@ -5,12 +5,12 @@ plugins {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.1"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode Integer.parseInt(project.property("VERSION_CODE"))
         versionName project.property("VERSION_NAME")
 
@@ -44,19 +44,19 @@ android {
 }
 
 dependencies {
-    compile 'com.loopj.android:android-async-http:1.4.9'
-    compile 'org.jboss.aerogear:aerogear-android-push:4.1.0'
+    implementation 'com.loopj.android:android-async-http:1.4.9'
+    api 'org.jboss.aerogear:aerogear-android-push:4.1.0'
 
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 
-    androidTestCompile 'com.android.support:support-annotations:25.3.0'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestImplementation 'com.android.support:support-annotations:25.3.0'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support.test:rules:0.5'
 
-    androidTestCompile 'org.mockito:mockito-core:1.9.5'
-    androidTestCompile 'com.google.dexmaker:dexmaker:1.1'
-    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.1'
-    androidTestCompile 'com.squareup.okhttp:mockwebserver:2.4.0'
+    androidTestImplementation 'org.mockito:mockito-core:1.9.5'
+    androidTestImplementation 'com.google.dexmaker:dexmaker:1.1'
+    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.1'
+    androidTestImplementation 'com.squareup.okhttp:mockwebserver:2.4.0'
 }
 
 coveralls {
