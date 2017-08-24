@@ -1,12 +1,12 @@
 /**
  * Copyright Red Hat, Inc, and individual contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,10 +27,11 @@ import com.feedhenry.sdk.api.FHActRequest;
 import com.feedhenry.sdk.exceptions.DataSetNotFound;
 import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
+import org.json.fh.JSONObject;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.json.fh.JSONObject;
 
 /**
  * The sync client is part of the FeedHenry data sync framework. It provides a
@@ -83,10 +84,26 @@ public class FHSyncClient {
      * @param pConfig The sync configuration
      * @param pListener The sync listener
      */
+    @Deprecated
     public void init(Context pContext, FHSyncConfig pConfig, FHSyncListener pListener) {
         mContext = pContext.getApplicationContext();
         mConfig = pConfig;
         mSyncListener = pListener;
+        initHandlers();
+        mInitialised = true;
+        if (null == mMonitorTask) {
+            HandlerThread thread = new HandlerThread("monitor task");
+            thread.start();
+            Handler handler = new Handler(thread.getLooper());
+            mMonitorTask = new MonitorTask();
+            handler.post(mMonitorTask);
+        }
+    }
+
+    public void init(Context pContext, FHSyncConfig pConfig) {
+        mContext = pContext.getApplicationContext();
+        mConfig = pConfig;
+        mSyncListener = pConfig.mSyncListener;
         initHandlers();
         mInitialised = true;
         if (null == mMonitorTask) {
@@ -159,8 +176,7 @@ public class FHSyncClient {
             dataset.setContext(mContext);
             dataset.setNotificationHandler(mNotificationHandler);
         } else {
-            dataset
-                    = new FHSyncDataset(mContext, mNotificationHandler, pDataId, syncConfig, pQueryParams, pMetaData);
+            dataset = new FHSyncDataset(mContext, mNotificationHandler, pDataId, syncConfig, pQueryParams, pMetaData);
             mDataSets.put(pDataId, dataset);
             dataset.setSyncRunning(false);
             dataset.setInitialised(true);
@@ -279,7 +295,7 @@ public class FHSyncClient {
      * @param pDataId the id of the dataset
      * @param pCallback the callback function
      * @throws FHNotReadyException if FH is not initialized.
-     * 
+     *
      */
     public void listCollisions(String pDataId, FHActCallback pCallback) throws FHNotReadyException {
         JSONObject params = new JSONObject();
@@ -310,34 +326,33 @@ public class FHSyncClient {
      *
      * @param listener the listener to.  If null the current listener will be 
      * used.
-     * 
+     *
      */
     public void resumeSync(FHSyncListener listener) {
-        
+
         if (listener != null) {
             this.mSyncListener = listener;
         }
-        
+
         for (FHSyncDataset dataSet : mDataSets.values()) {
-                dataSet.stopSync(false);
+            dataSet.stopSync(false);
         }
-        
+
     }
-    
 
     /**
      * This method will pause synchronization. It should be called in the
      * {@link Activity#onPause()} block.
      */
     public void pauseSync() {
-        
+
         for (FHSyncDataset dataSet : mDataSets.values()) {
-                dataSet.stopSync(true);
+            dataSet.stopSync(true);
         }
-        
+
         this.mSyncListener = null;
     }
-    
+
     /**
      * Stops the sync process for dataset with id pDataId.
      *
@@ -397,13 +412,12 @@ public class FHSyncClient {
                         }
 
                         if (dataset.isSyncPending()) {
-                            mHandler.post(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            dataset.startSyncLoop();
-                                        }
-                                    });
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dataset.startSyncLoop();
+                                }
+                            });
                         }
                     }
                 }

@@ -24,29 +24,14 @@ import com.feedhenry.sdk.FHRemote;
 import com.feedhenry.sdk.FHResponse;
 import com.feedhenry.sdk.exceptions.FHNotReadyException;
 import com.feedhenry.sdk.utils.FHLog;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.json.fh.JSONArray;
 import org.json.fh.JSONException;
 import org.json.fh.JSONObject;
+
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class FHSyncDataset {
 
@@ -86,7 +71,7 @@ public class FHSyncDataset {
     private static final String KEY_QUERY_PARAMS = "queryParams";
     private static final String KEY_METADATA = "metaData";
 
-    private static final String LOG_TAG = "com.feedhenry.sdk.sync.FHSyncDataset";
+    private static final String LOG_TAG = "FHSyncDataset";
 
     public FHSyncDataset(
         Context pContext, FHSyncNotificationHandler pHandler, String pDatasetId,
@@ -689,7 +674,7 @@ public class FHSyncDataset {
 
     private void fromJSON(JSONObject pObj) {
         JSONObject syncConfigJson = pObj.getJSONObject(KEY_SYNC_CONFIG);
-        this.mSyncConfig = FHSyncConfig.fromJSON(syncConfigJson);
+        this.mSyncConfig = (new FHSyncConfig.Builder()).fromJSON(syncConfigJson).build();
         this.mHashvalue = pObj.optString(KEY_HASHVALUE, null);
         JSONObject pendingJSON = pObj.getJSONObject(KEY_PENDING_RECORDS);
         for (Iterator<String> it = pendingJSON.keys(); it.hasNext(); ) {
