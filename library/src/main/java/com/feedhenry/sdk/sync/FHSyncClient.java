@@ -1,12 +1,12 @@
 /**
  * Copyright Red Hat, Inc, and individual contributors.
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,17 +20,21 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import com.feedhenry.sdk.FH;
 import com.feedhenry.sdk.FHActCallback;
 import com.feedhenry.sdk.api.FHActRequest;
 import com.feedhenry.sdk.exceptions.DataSetNotFound;
 import com.feedhenry.sdk.exceptions.FHNotReadyException;
+import com.feedhenry.sdk.sync.android.AndroidFileStorage;
+import com.feedhenry.sdk.sync.android.FHSyncClientAndroid;
 import com.feedhenry.sdk.utils.FHLog;
+import org.json.fh.JSONObject;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import org.json.fh.JSONObject;
 
 /**
  * The sync client is part of the FeedHenry data sync framework. It provides a
@@ -43,11 +47,12 @@ public class FHSyncClient {
 
     private static FHSyncClient mInstance;
 
-    protected static final String LOG_TAG = "com.feedhenry.sdk.sync.FHSyncClient";
+    protected static final String LOG_TAG = "FHSyncClient";
 
     private final Handler mHandler;
+    private IFileStorage mFileStorage;
 
-    private Context mContext;
+    //private Context mContext;
     private Map<String, FHSyncDataset> mDataSets = new HashMap<String, FHSyncDataset>();
     private FHSyncConfig mConfig = new FHSyncConfig();
     private FHSyncListener mSyncListener = null;
@@ -69,6 +74,9 @@ public class FHSyncClient {
         return mInstance;
     }
 
+    /**
+     * Creates synchronization client.
+     */
     public FHSyncClient() {
         HandlerThread thread = new HandlerThread("FHSyncClient");
         thread.start();
@@ -79,14 +87,39 @@ public class FHSyncClient {
      * Initializes the sync client. Should be called every time an app/activity
      * starts.
      *
-     * @param pContext The app context
-     * @param pConfig The sync configuration
+     * @param pContext  The app context
+     * @param pConfig   The sync configuration
      * @param pListener The sync listener
+     *
+     * @deprecated Don't use this anymore it's leaking Context.
      */
+    @Deprecated
     public void init(Context pContext, FHSyncConfig pConfig, FHSyncListener pListener) {
-        mContext = pContext.getApplicationContext();
+        mFileStorage = new AndroidFileStorage(pContext);
         mConfig = pConfig;
         mSyncListener = pListener;
+        initHandlers();
+        mInitialised = true;
+        if (null == mMonitorTask) {
+            HandlerThread thread = new HandlerThread("monitor task");
+            thread.start();
+            Handler handler = new Handler(thread.getLooper());
+            mMonitorTask = new MonitorTask();
+            handler.post(mMonitorTask);
+        }
+    }
+
+    /**
+     * Initializes the sync client. Should be called every time an app/activity
+     * starts.
+     *
+     * @param pConfig      The sync configuration
+     * @param pFileStorage Filesystem access for storing the datasets
+     */
+    public void init(FHSyncConfig pConfig, @NonNull IFileStorage pFileStorage) {
+        mConfig = pConfig;
+        mSyncListener = pConfig.mSyncListener;
+        mFileStorage = pFileStorage;
         initHandlers();
         mInitialised = true;
         if (null == mMonitorTask) {
@@ -126,10 +159,11 @@ public class FHSyncClient {
     /**
      * Uses the sync client to manage a dataset.
      *
-     * @param pDataId The id of the dataset.
-     * @param pConfig The sync configuration for the dataset. If not specified,
-     * the sync configuration passed in the initDev method will be used
+     * @param pDataId      The id of the dataset.
+     * @param pConfig      The sync configuration for the dataset. If not specified,
+     *                     the sync configuration passed in the initDev method will be used
      * @param pQueryParams Query parameters for the dataset
+     *
      * @throws IllegalStateException thrown if FHSyncClient isn't initialised.
      */
     public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams) {
@@ -139,11 +173,12 @@ public class FHSyncClient {
     /**
      * Uses the sync client to manage a dataset.
      *
-     * @param pDataId The id of the dataset.
-     * @param pConfig The sync configuration for the dataset. If not specified,
-     * the sync configuration passed in the initDev method will be used
+     * @param pDataId      The id of the dataset.
+     * @param pConfig      The sync configuration for the dataset. If not specified,
+     *                     the sync configuration passed in the initDev method will be used
      * @param pQueryParams Query parameters for the dataset
-     * @param pMetaData Meta for the dataset
+     * @param pMetaData    Meta for the dataset
+     *
      * @throws IllegalStateException thrown if FHSyncClient isn't initialised.
      */
     public void manage(String pDataId, FHSyncConfig pConfig, JSONObject pQueryParams, JSONObject pMetaData) {
@@ -156,11 +191,9 @@ public class FHSyncClient {
             syncConfig = pConfig;
         }
         if (null != dataset) {
-            dataset.setContext(mContext);
             dataset.setNotificationHandler(mNotificationHandler);
         } else {
-            dataset
-                    = new FHSyncDataset(mContext, mNotificationHandler, pDataId, syncConfig, pQueryParams, pMetaData);
+            dataset = new FHSyncDataset(mFileStorage, mNotificationHandler, pDataId, syncConfig, pQueryParams, pMetaData);
             mDataSets.put(pDataId, dataset);
             dataset.setSyncRunning(false);
             dataset.setInitialised(true);
@@ -189,6 +222,7 @@ public class FHSyncClient {
      * Lists all the data in the dataset with pDataId.
      *
      * @param pDataId The id of the dataset
+     *
      * @return all data records. Each record contains a key "uid" with the id
      * value and a key "data" with the JSON data.
      */
@@ -205,7 +239,8 @@ public class FHSyncClient {
      * Reads a data record with pUID in dataset with pDataId.
      *
      * @param pDataId the id of the dataset
-     * @param pUID the id of the data record
+     * @param pUID    the id of the data record
+     *
      * @return the data record. Each record contains a key "uid" with the id
      * value and a key "data" with the JSON data.
      */
@@ -222,9 +257,11 @@ public class FHSyncClient {
      * Creates a new data record in dataset with pDataId.
      *
      * @param pDataId the id of the dataset
-     * @param pData the actual data
+     * @param pData   the actual data
+     *
      * @return the created data record. Each record contains a key "uid" with
      * the id value and a key "data" with the JSON data.
+     *
      * @throws DataSetNotFound if the dataId is not known
      */
     public JSONObject create(String pDataId, JSONObject pData) throws DataSetNotFound {
@@ -240,10 +277,12 @@ public class FHSyncClient {
      * Updates an existing data record in dataset with pDataId.
      *
      * @param pDataId the id of the dataset
-     * @param pUID the id of the data record
-     * @param pData the new content of the data record
+     * @param pUID    the id of the data record
+     * @param pData   the new content of the data record
+     *
      * @return the updated data record. Each record contains a key "uid" with
      * the id value and a key "data" with the JSON data.
+     *
      * @throws DataSetNotFound if the dataId is not known
      */
     public JSONObject update(String pDataId, String pUID, JSONObject pData) throws DataSetNotFound {
@@ -259,9 +298,11 @@ public class FHSyncClient {
      * Deletes a data record in the dataset with pDataId.
      *
      * @param pDataId the id of the dataset
-     * @param pUID the id of the data record
+     * @param pUID    the id of the data record
+     *
      * @return the deleted data record. Each record contains a key "uid" with
      * the id value and a key "data" with the JSON data.
+     *
      * @throws DataSetNotFound if the dataId is not known
      */
     public JSONObject delete(String pDataId, String pUID) throws DataSetNotFound {
@@ -276,10 +317,10 @@ public class FHSyncClient {
     /**
      * Lists sync collisions in dataset with id pDataId.
      *
-     * @param pDataId the id of the dataset
+     * @param pDataId   the id of the dataset
      * @param pCallback the callback function
+     *
      * @throws FHNotReadyException if FH is not initialized.
-     * 
      */
     public void listCollisions(String pDataId, FHActCallback pCallback) throws FHNotReadyException {
         JSONObject params = new JSONObject();
@@ -291,9 +332,10 @@ public class FHSyncClient {
     /**
      * Removes a sync collision record in the dataset with id pDataId.
      *
-     * @param pDataId the id of the dataset
+     * @param pDataId        the id of the dataset
      * @param pCollisionHash the hash value of the collision record
-     * @param pCallback the callback function
+     * @param pCallback      the callback function
+     *
      * @throws FHNotReadyException thrown if FH is not initialized.
      */
     public void removeCollision(String pDataId, String pCollisionHash, FHActCallback pCallback) throws FHNotReadyException {
@@ -308,36 +350,36 @@ public class FHSyncClient {
      * This method will begin synchronization. It should be called in the
      * {@link Activity#onResume()} block.
      *
-     * @param listener the listener to.  If null the current listener will be 
-     * used.
-     * 
+     * @param listener the listener to.  If null the current listener will be
+     *                 used.
+     * @deprecated use {@link FHSyncClientAndroid#pauseSync()}
      */
     public void resumeSync(FHSyncListener listener) {
-        
+
         if (listener != null) {
             this.mSyncListener = listener;
         }
-        
+
         for (FHSyncDataset dataSet : mDataSets.values()) {
-                dataSet.stopSync(false);
+            dataSet.stopSync(false);
         }
-        
+
     }
-    
 
     /**
      * This method will pause synchronization. It should be called in the
      * {@link Activity#onPause()} block.
+     * @deprecated use {@link FHSyncClientAndroid#pauseSync()}
      */
     public void pauseSync() {
-        
+
         for (FHSyncDataset dataSet : mDataSets.values()) {
-                dataSet.stopSync(true);
+            dataSet.stopSync(true);
         }
-        
+
         this.mSyncListener = null;
     }
-    
+
     /**
      * Stops the sync process for dataset with id pDataId.
      *
@@ -397,13 +439,12 @@ public class FHSyncClient {
                         }
 
                         if (dataset.isSyncPending()) {
-                            mHandler.post(
-                                    new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            dataset.startSyncLoop();
-                                        }
-                                    });
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    dataset.startSyncLoop();
+                                }
+                            });
                         }
                     }
                 }
