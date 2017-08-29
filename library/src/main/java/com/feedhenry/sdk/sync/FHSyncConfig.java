@@ -675,6 +675,10 @@ public class FHSyncConfig {
             return this;
         }
 
+        /**
+         * Creates FHSyncConfig
+         * @return created config object
+         */
         public FHSyncConfig build() {
             mInstance.mNotifyClientStorageFailed = (mInstance.mOnClientStorageFailed != null);
             mInstance.mNotifyDeltaReceived = (mInstance.mOnDeltaReceived != null);
