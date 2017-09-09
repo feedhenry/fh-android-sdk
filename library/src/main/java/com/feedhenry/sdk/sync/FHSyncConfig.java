@@ -37,6 +37,7 @@ public class FHSyncConfig {
     private int mCrashCountWait = 10;
     private boolean mResendCrashedUpdates = true;
     private boolean mUseCustomSync = false;
+    private boolean supressActivityWarnings = false;
 
     private static final String KEY_SYNC_FREQUENCY = "syncFrequency";
     private static final String KEY_AUTO_SYNC_UPDATES = "autoSyncLocalUpdates";
@@ -52,6 +53,7 @@ public class FHSyncConfig {
     private static final String KEY_NOTIFY_SYNC_FAILED = "notifySyncFailed";
     private static final String KEY_CRASHCOUNT = "crashCountWait";
     private static final String KEY_RESEND_CRASH = "resendCrashdUpdates";
+
 
     /**
      * Sets the sync interval in seconds.
@@ -372,5 +374,29 @@ public class FHSyncConfig {
     public FHSyncConfig clone() {
         JSONObject json = this.getJSON();
         return FHSyncConfig.fromJSON(json);
+    }
+
+    /**
+     * SyncClient can do some basic detection of activity state and if it detects a leak issue
+     * a warning.
+     *
+     * See {@link FHSyncClient#pauseSync()} and {@link FHSyncClient#resumeSync(FHSyncListener)} for details
+     *
+     * @return whether activity warnings are supressed.
+     */
+    public boolean isSupressActivityWarnings() {
+        return supressActivityWarnings;
+    }
+
+    /**
+     * * SyncClient can do some basic detection of activity state and if it detects a leak issue
+     * a warning.
+     *
+     * See {@link FHSyncClient#pauseSync()} and {@link FHSyncClient#resumeSync(FHSyncListener)} for details
+     *
+     * @param supressActivityWarnings
+     */
+    public void setSupressActivityWarnings(boolean supressActivityWarnings) {
+        this.supressActivityWarnings = supressActivityWarnings;
     }
 }

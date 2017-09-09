@@ -16,7 +16,9 @@
 package com.feedhenry.sdk.sync;
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -39,11 +41,11 @@ import org.json.fh.JSONObject;
  * <a href="http://docs.feedhenry.com/v3/guides/sync_service.html">data sync
  * framework docs</a>.
  */
-public class FHSyncClient {
+public class FHSyncClient implements Application.ActivityLifecycleCallbacks {
 
     private static FHSyncClient mInstance;
 
-    protected static final String LOG_TAG = "com.feedhenry.sdk.sync.FHSyncClient";
+    protected static final String LOG_TAG = "FHSyncClient";
 
     private final Handler mHandler;
 
@@ -56,6 +58,19 @@ public class FHSyncClient {
 
     private boolean mInitialised = false;
     private MonitorTask mMonitorTask = null;
+
+    /**
+     * FHSyncClient will perform some sniffing of its environment and, if it thinks it is being
+     * reference from an activity it will do sanity checks to keep in sync with the Activity state
+     * and log an warning otherwise.
+     */
+    private boolean checkActivity = false;
+
+    /**
+     * FHSyncClient the activity class to monitor for events of checkActivity.
+     */
+
+    private Class<? extends Activity> checkActivityClass;
 
     /**
      * Gets the singleton instance of the sync client.
@@ -88,6 +103,15 @@ public class FHSyncClient {
         mConfig = pConfig;
         mSyncListener = pListener;
         initHandlers();
+
+        if ((contextIsActivity(pContext) || listenerIsInnerClass(pListener)) && !pConfig.isSupressActivityWarnings()) {
+            checkActivityClass = fetchActivity(pContext, pListener);
+            checkActivity = true;
+            if (mContext instanceof Application) {
+                ((Application)mContext).registerActivityLifecycleCallbacks(this);
+            }
+        }
+
         mInitialised = true;
         if (null == mMonitorTask) {
             HandlerThread thread = new HandlerThread("monitor task");
@@ -97,6 +121,32 @@ public class FHSyncClient {
             handler.post(mMonitorTask);
         }
     }
+
+    /**
+     *
+     * If we are monitoring activity events to prevent pListener from leaking then we need to know
+     * what class to monitor.  This method will inspect FHSyncListener for an enclosing activity and
+     * then pContext for an activity.
+     *
+     * @param pContext The context to listen for Activity events from.
+     * @param pListener The Listener to listen to Activity events from.
+     * @return pListeners enclosing class, or pContext's class, or Activity.class
+     */
+    private Class<? extends Activity> fetchActivity(Context pContext, FHSyncListener pListener) {
+
+        Class<?> testClass = pListener.getClass().getEnclosingClass();
+        if (testClass != null && Activity.class.isAssignableFrom(pListener.getClass().getDeclaredConstructors()[0].getParameterTypes()[0])) {
+            return (Class<? extends Activity>) pListener.getClass().getDeclaredConstructors()[0].getParameterTypes()[0];
+        }
+        else if (pContext instanceof Activity) {
+            return (Class<? extends Activity>) pContext.getClass();
+        } else {
+            return Activity.class;
+        }
+
+
+    }
+
 
     /**
      * Initializes the notification handlers.
@@ -330,7 +380,6 @@ public class FHSyncClient {
      * {@link Activity#onPause()} block.
      */
     public void pauseSync() {
-        
         for (FHSyncDataset dataSet : mDataSets.values()) {
                 dataSet.stopSync(true);
         }
@@ -366,6 +415,52 @@ public class FHSyncClient {
             mDataSets = new HashMap<String, FHSyncDataset>();
             mInitialised = false;
         }
+    }
+
+    @Override
+    public void onActivityCreated(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityStarted(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityResumed(Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityPaused(Activity activity) {
+    }
+
+    @Override
+    public void onActivityStopped(Activity activity) {
+        if (checkActivity && this.mSyncListener != null && activity.getClass().equals(checkActivityClass)) {
+            Log.w(LOG_TAG, "Activity " + activity.getLocalClassName() + " was stopped however there is still an active sync listener.  Please call FHSyncListener.pauseSync in the Activity.onPause method.");
+        }
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(Activity activity, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(Activity activity) {
+
+    }
+
+    private boolean listenerIsInnerClass(FHSyncListener pListener) {
+        Class<?> testClass = pListener.getClass().getEnclosingClass();
+        return testClass != null && Activity.class.isAssignableFrom(pListener.getClass().getDeclaredConstructors()[0].getParameterTypes()[0]);
+    }
+
+    private boolean contextIsActivity(Context pContext) {
+        return pContext instanceof Activity;
+
     }
 
     private class MonitorTask implements Runnable {
