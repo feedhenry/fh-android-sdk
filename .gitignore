@@ -15,6 +15,8 @@ FHStarterProject/gen/*
 *android-support-*.jar
 FHStarterProject/.settings/
 fh-android-sdk-test/gen-external-apklibs/*
+build/*
+.gradle/*
 
 ## Maven
 
@@ -22,12 +24,18 @@ fh-android-sdk-test/gen-external-apklibs/*
 
 ## NetBeans
 nb-configuration.xml
+.nb-gradle/*
 
 ## IntelliJ
 *.iml
-.idea/
 
 #gradle
 build/*
 .gradle/*
 local.properties
+
+## Misc 
+.project
+.settings/*
+.vscode/*
+
