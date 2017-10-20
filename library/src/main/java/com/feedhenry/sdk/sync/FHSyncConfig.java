@@ -37,7 +37,7 @@ public class FHSyncConfig {
     private int mCrashCountWait = 10;
     private boolean mResendCrashedUpdates = true;
     private boolean mUseCustomSync = false;
-    private boolean supressActivityWarnings = false;
+    private boolean suppressActivityWarnings = false;
 
     private static final String KEY_SYNC_FREQUENCY = "syncFrequency";
     private static final String KEY_AUTO_SYNC_UPDATES = "autoSyncLocalUpdates";
@@ -384,8 +384,8 @@ public class FHSyncConfig {
      *
      * @return whether activity warnings are supressed.
      */
-    public boolean isSupressActivityWarnings() {
-        return supressActivityWarnings;
+    public boolean isSuppressActivityWarnings() {
+        return suppressActivityWarnings;
     }
 
     /**
@@ -394,9 +394,9 @@ public class FHSyncConfig {
      *
      * See {@link FHSyncClient#pauseSync()} and {@link FHSyncClient#resumeSync(FHSyncListener)} for details
      *
-     * @param supressActivityWarnings
+     * @param suppressActivityWarnings
      */
-    public void setSupressActivityWarnings(boolean supressActivityWarnings) {
-        this.supressActivityWarnings = supressActivityWarnings;
+    public void setSuppressActivityWarnings(boolean suppressActivityWarnings) {
+        this.suppressActivityWarnings = suppressActivityWarnings;
     }
 }

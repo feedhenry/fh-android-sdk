@@ -104,7 +104,7 @@ public class FHSyncClient implements Application.ActivityLifecycleCallbacks {
         mSyncListener = pListener;
         initHandlers();
 
-        if ((contextIsActivity(pContext) || listenerIsInnerClass(pListener)) && !pConfig.isSupressActivityWarnings()) {
+        if ((contextIsActivity(pContext) || listenerIsInnerClass(pListener)) && !pConfig.isSuppressActivityWarnings()) {
             checkActivityClass = fetchActivity(pContext, pListener);
             checkActivity = true;
             if (mContext instanceof Application) {
