@@ -2,11 +2,11 @@ plugins {
     id "com.github.kt3k.coveralls" version "2.8.1"
 }
 
-apply plugin: 'com.android.library'
+apply plugin: "com.android.library"
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.1"
+    buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 16
@@ -32,41 +32,46 @@ android {
         }
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 
     packagingOptions {
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
+        exclude "META-INF/NOTICE"
+        exclude "META-INF/LICENSE"
     }
 
 }
 
+ext {
+    android_support_library = "26.0.1"
+    android_support_test_library = "1.0.1"
+}
+
 dependencies {
-    implementation 'com.loopj.android:android-async-http:1.4.9'
-    api 'org.jboss.aerogear:aerogear-android-push:4.1.0'
+    implementation "com.loopj.android:android-async-http:1.4.9"
+    api "org.jboss.aerogear:aerogear-android-push:4.1.0"
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation "junit:junit:4.12"
 
-    androidTestCompile 'com.android.support:support-annotations:26.0.2'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestImplementation "com.android.support:support-annotations:${android_support_library}"
+    androidTestImplementation "com.android.support.test:runner:${android_support_test_library}"
+    androidTestImplementation "com.android.support.test:rules:${android_support_test_library}"
 
-    androidTestImplementation 'org.mockito:mockito-core:1.9.5'
-    androidTestImplementation 'com.google.dexmaker:dexmaker:1.1'
-    androidTestImplementation 'com.google.dexmaker:dexmaker-mockito:1.1'
-    androidTestImplementation 'com.squareup.okhttp:mockwebserver:2.4.0'
+    androidTestImplementation "org.mockito:mockito-core:1.9.5"
+    androidTestImplementation "com.google.dexmaker:dexmaker:1.1"
+    androidTestImplementation "com.google.dexmaker:dexmaker-mockito:1.1"
+    androidTestImplementation "com.squareup.okhttp:mockwebserver:2.4.0"
 }
 
 coveralls {
-    sourceDirs = files('library/src/main/java').flatten()
+    sourceDirs = files("library/src/main/java").flatten()
     jacocoReportPath = "${buildDir}/reports/coverage/debug/report.xml"
 }
 
 tasks.coveralls {
-    dependsOn 'connectedAndroidTest'
-    onlyIf { System.env.'CI' }
+    dependsOn "connectedAndroidTest"
+    onlyIf { System.env."CI" }
 }
 
 task copyLibs(type: Copy) {
