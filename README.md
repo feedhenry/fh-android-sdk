@@ -1,7 +1,7 @@
 # FeedHenry Android SDK
 
 [![circle-ci](https://img.shields.io/circleci/project/github/feedhenry/fh-android-sdk/master.svg)](https://circleci.com/gh/feedhenry/fh-android-sdk)
-[![Coveralls](https://img.shields.io/coveralls/feedhenry/fh-android-sdk/master.svg)](https://coveralls.io/github/feedhenry/fh-android-sdk)
+[![Codecov](https://img.shields.io/codecov/c/github/codecov/fh-android-sdk/master.svg)](https://codecov.io/gh/feedhenry/fh-android-sdk)
 [![License](https://img.shields.io/badge/-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Maven Central](https://img.shields.io/maven-central/v/com.feedhenry/fh-android-sdk.svg)](http://search.maven.org/#search%7Cga%7C1%7Cfh-android-sdk)
 [![Javadocs](http://www.javadoc.io/badge/com.feedhenry/fh-android-sdk.svg?color=blue)](http://www.javadoc.io/doc/com.feedhenry/fh-android-sdk)
