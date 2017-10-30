@@ -41,13 +41,13 @@ android {
 }
 
 ext {
-    android_support_library = "26.0.1"
+    android_support_library = "26.1.0"
     android_support_test_library = "1.0.1"
 }
 
 dependencies {
     implementation "com.loopj.android:android-async-http:1.4.9"
-    api "org.jboss.aerogear:aerogear-android-push:4.1.0"
+    api "org.jboss.aerogear:aerogear-android-push:5.0.0"
 
     testImplementation "junit:junit:4.12"
 
