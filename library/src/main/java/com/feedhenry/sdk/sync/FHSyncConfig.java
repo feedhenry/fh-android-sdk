@@ -312,13 +312,13 @@ public class FHSyncConfig {
 
     /**
      * Set if legacy mode is used
-     * @param mUseCustomSync
+     * @param mUseCustomSync set true if legacy mode
      */
     public void setUseCustomSync(boolean mUseCustomSync) { this.mUseCustomSync = mUseCustomSync; }
 
     /**
      * Check if legacy mode is enabled
-     * @return
+     * @return true if legacy mode
      */
     public boolean useCustomSync() { return this.mUseCustomSync; };
 
@@ -394,7 +394,7 @@ public class FHSyncConfig {
      *
      * See {@link FHSyncClient#pauseSync()} and {@link FHSyncClient#resumeSync(FHSyncListener)} for details
      *
-     * @param suppressActivityWarnings
+     * @param suppressActivityWarnings true if suppress activity warnings leak issue
      */
     public void setSuppressActivityWarnings(boolean suppressActivityWarnings) {
         this.suppressActivityWarnings = suppressActivityWarnings;

@@ -177,6 +177,8 @@ public class AppProps {
      *
      * @param context Application context
      * @return the AppProps after read the properties file
+     *
+     * @throws IOException if property file could not be created
      */
     public static AppProps load(Context context) throws IOException {
         if (mInstance == null) {
