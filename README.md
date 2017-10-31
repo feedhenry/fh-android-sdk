@@ -32,7 +32,7 @@ Add to your application's `build.gradle` file
 
 ```groovy
 dependencies {
-  compile 'com.feedhenry:fh-android-sdk:3.3.3'
+  compile 'com.feedhenry:fh-android-sdk:4.0.0'
 }
 ```
 
@@ -44,7 +44,7 @@ Include the following dependencies in your project's `pom.xml`
 <dependency>
   <groupId>com.feedhenry</groupId>
   <artifactId>fh-android-sdk</artifactId>
-  <version>3.3.3</version>
+  <version>4.0.0</version>
   <type>aar</type>
 </dependency>
 ```
