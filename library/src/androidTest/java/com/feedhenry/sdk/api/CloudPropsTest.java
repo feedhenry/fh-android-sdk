@@ -16,7 +16,7 @@
 package com.feedhenry.sdk.api;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.AndroidTestCase;
+
 import com.feedhenry.sdk.AppProps;
 import com.feedhenry.sdk.CloudProps;
 

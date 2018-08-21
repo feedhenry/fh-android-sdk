@@ -18,8 +18,9 @@ package com.feedhenry.sdk.api;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.AndroidTestCase;
+
 import com.feedhenry.sdk.utils.DataManager;
+
 import org.json.fh.JSONObject;
 import org.junit.After;
 import org.junit.Before;
